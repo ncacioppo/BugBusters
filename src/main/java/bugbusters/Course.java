@@ -88,7 +88,7 @@ public class Course {
         this.credits = credits;
     }
 
-    public boolean equals(Course other) {
+    public boolean equals(Object other) {
         return false;
     }
 

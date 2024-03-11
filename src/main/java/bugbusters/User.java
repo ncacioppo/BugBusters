@@ -11,7 +11,7 @@ public class User {
     private List<Minor> minors;
 
     public User(String firstName, String lastName, /**CollegeYear collegeYear,**/ List<Major> majors, List<Minor> minors){
-
+        // change again for in-class demonstration
     }
 
 

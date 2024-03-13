@@ -2,6 +2,7 @@ package bugbusters;
 
 public class Major {
 
+
 //    private List<Course> courses;
 //
 //    public Major(List<Course> courses){

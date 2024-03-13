@@ -3,6 +3,7 @@ package bugbusters;
 public class Course {
     private int id;
     private String name;
+    private String description;
     private String department;
     private int code;
     private Term term;
@@ -11,7 +12,7 @@ public class Course {
     private Set<MeetingTime> meetingTimes;
     private int credits;
 
-    public Course(int id, String name, String department, int code, Term term,
+    public Course(int id, String name, String description, String department, int code, Term term,
                    char section, String instructor, Set<MeetingTime> meetingTimes,
                    int credit) {
     }
@@ -30,6 +31,14 @@ public class Course {
 
     private void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription(){
+        return description;
+    }
+
+    private void setDescription(String description){
+        this.description = description;
     }
 
     public String getDepartment() {

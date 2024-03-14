@@ -1,6 +1,7 @@
 package bugbusters;
 
 public class Term {
+    // I will implement this in the next few days.
     private String season;
     private int year;
 

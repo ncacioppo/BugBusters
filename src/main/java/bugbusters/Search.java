@@ -44,11 +44,27 @@ public class Search {
     }
 
     public List<Course> byName(List<Course> courses, String name) {
-        return null;
+        List<Course> results = new ArrayList<Course>();
+
+        for (Course course : courses) {
+            if(course.getName().contains(name)){
+                results.add(course);
+            }
+        }
+
+        return results;
     }
 
     public List<Course> byDepartment(List<Course> courses, String department) {
-        return null;
+        List<Course> results = new ArrayList<Course>();
+
+        for (Course course : courses) {
+            if(course.getDepartment().contains(department)){
+                results.add(course);
+            }
+        }
+
+        return results;
     }
 
     public List<Course> byCode(List<Course> courses, String code) {
@@ -60,7 +76,15 @@ public class Search {
     }
 
     public List<Course> byProfessor(List<Course> courses, String professor) {
-        return null;
+        List<Course> results = new ArrayList<Course>();
+
+        for (Course course : courses) {
+            if(course.getInstructor().contains(professor)){
+                results.add(course);
+            }
+        }
+
+        return results;
     }
 
     public List<Course> byID(List<Course> courses, String id) {

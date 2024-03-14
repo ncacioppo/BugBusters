@@ -1,11 +1,12 @@
 package bugbusters;
 
+import java.util.List;
 import java.util.Set;
 
 public class Registrar {
     private static Set<String> majors;  //may want to use list indexing is more efficient
     private static Set<String> minors;
-    private static Set<Course> courses;
+    private static List<Course> courses;
 
     private boolean connectToDB() {
         return false;
@@ -25,7 +26,7 @@ public class Registrar {
         return minors;
     }
 
-    public static Set<Course> getCourses() {
+    public static List<Course> getCourses() {
         return courses;
     }
 }

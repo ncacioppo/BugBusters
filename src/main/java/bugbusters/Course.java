@@ -31,106 +31,103 @@ public class Course {
     }
 
     public Course(ArrayList<String> data) throws Exception {
-        if (data.size() < 18){
-            throw new Exception("Incorrect size of arraylist - size of arraylist: " + data.size());
+
+        //There are no Course id's in the Excel file. We could make our own maybe in SQL
+        setId("No protocol determined yet");
+
+        //Course Title is in the 6th column of the Excel file
+        setName(data.get(5));
+
+        //There is no description in the Excel file
+        setDescription("No protocol determined yet");
+
+        //Department is in the 3rd column of the Excel file
+        setDepartment(data.get(2));
+
+        //The course code is in the 4th column of the Excel file
+        setCode(Integer.parseInt(data.get(3)));
+
+        //The term code in the 2nd column of the Excel file is 10 for Fall and 30 for Spring
+        String season;
+        if (Integer.parseInt(data.get(1)) == 10){
+            season = "Fall";
         } else {
-
-            //There are no Course id's in the Excel file. We could make our own maybe in SQL
-            setId("No protocol determined yet");
-
-            //Course Title is in the 6th column of the Excel file
-            setName(data.get(5));
-
-            //There is no description in the Excel file
-            setDescription("No protocol determined yet");
-
-            //Department is in the 3rd column of the Excel file
-            setDepartment(data.get(2));
-
-            //The course code is in the 4th column of the Excel file
-            setCode(Integer.parseInt(data.get(3)));
-
-            //The term code in the 2nd column of the Excel file is 10 for Fall and 30 for Spring
-            String season;
-            if (Integer.parseInt(data.get(1)) == 10){
-                season = "Fall";
-            } else {
-                season = "Spring";
-            }
-            //The year of the term is in the 1st column of the Excel file
-            setTerm(new Term(season, Integer.parseInt(data.get(0))));
+            season = "Spring";
+        }
+        //The year of the term is in the 1st column of the Excel file
+        setTerm(new Term(season, Integer.parseInt(data.get(0))));
 
 
-            //Sections is in the 5th column, Section was changed from char to String because section can be empty
-            setSection(data.get(4));
+        //Sections is in the 5th column, Section was changed from char to String because section can be empty
+        setSection(data.get(4));
 
-            //First name of the instructor is their preferred name unless there is none, then it is their official first name
-            String firstName;
-            if (data.size() > 18) {
-                if (data.get(18).length() > 0) {
-                    firstName = data.get(18);
-                } else {
-                    firstName = data.get(17);
-                }
+        //First name of the instructor is their preferred name unless there is none, then it is their official first name
+        String firstName;
+        if (data.size() > 18) {
+            if (data.get(18).length() > 0) {
+                firstName = data.get(18);
             } else {
                 firstName = data.get(17);
             }
+        } else {
+            firstName = data.get(17);
+        }
 
-            //The instructors last name is in the 17th column of the Excel file
-            setInstructor(firstName + " " + data.get(16));
+        //The instructors last name is in the 17th column of the Excel file
+        setInstructor(firstName + " " + data.get(16));
 
-            Set<MeetingTime> times = new HashSet<>();
+        Set<MeetingTime> times = new HashSet<>();
 
-            //Some courses do not have meeting times. This checks if they do before it tries to add any.
-            if ((data.get(14).length() > 0)&&(data.get(15).length() > 0)) {
+        //Some courses do not have meeting times. This checks if they do before it tries to add any.
+        if ((data.get(14).length() > 0)&&(data.get(15).length() > 0)) {
 
-                String data14 = data.get(14);
-                String data15 = data.get(15);
+            String data14 = data.get(14);
+            String data15 = data.get(15);
 
-                List temp = Arrays.asList(data14.split(" "));
-                if (temp.contains("AM")||temp.contains("PM")){
-                    List tempEnd = Arrays.asList(data15.split(" "));
+            List temp = Arrays.asList(data14.split(" "));
+            if (temp.contains("AM")||temp.contains("PM")){
+                List tempEnd = Arrays.asList(data15.split(" "));
 
-                    String[] time = (data14.split(" ")[0]).split(":");
-                    if (temp.contains("AM")){
+                String[] time = (data14.split(" ")[0]).split(":");
+                if (temp.contains("AM")){
+                    data14 = "T " + time[0] + ":" + time[1];
+                } else {
+                    if (!time[0].equalsIgnoreCase("12")) {
+                        data14 = "T " + (Integer.parseInt(time[0]) + 12) + ":" + time[1];
+                    } else {
                         data14 = "T " + time[0] + ":" + time[1];
-                    } else {
-                        if (!time[0].equalsIgnoreCase("12")) {
-                            data14 = "T " + (Integer.parseInt(time[0]) + 12) + ":" + time[1];
-                        } else {
-                            data14 = "T " + time[0] + ":" + time[1];
-                        }
                     }
-
-                    time = (data15.split(" ")[0]).split(":");
-                    if (tempEnd.contains("AM")){
-                        data15 = "T " + time[0] + ":" + time[1];
-                    } else {
-                        if (!time[0].equalsIgnoreCase("12")) {
-                            data15 = "T " + (Integer.parseInt(time[0]) + 12) + ":" + time[1];
-                        } else {
-                            data15 = "T " + time[0] + ":" + time[1];
-                        }
-                    }
-
                 }
 
-                String startTime = (data14.split(" "))[1];
-                int startHour = Integer.parseInt((startTime.split(":"))[0]);
-                int startMinute = Integer.parseInt((startTime.split(":"))[1]);
-                LocalTime start = LocalTime.of(startHour, startMinute);
-
-                String endTime = (data15.split(" "))[1];
-                int endHour = Integer.parseInt((endTime.split(":"))[0]);
-                int endMinute = Integer.parseInt((endTime.split(":"))[1]);
-                LocalTime end = LocalTime.of(endHour, endMinute);
-
-                for (int i = 10; i <= 14; i++) {
-                    if (data.get(i).length() > 0) {
-                        times.add(new MeetingTime(toDay(data.get(i)), start, end));
+                time = (data15.split(" ")[0]).split(":");
+                if (tempEnd.contains("AM")){
+                    data15 = "T " + time[0] + ":" + time[1];
+                } else {
+                    if (!time[0].equalsIgnoreCase("12")) {
+                        data15 = "T " + (Integer.parseInt(time[0]) + 12) + ":" + time[1];
+                    } else {
+                        data15 = "T " + time[0] + ":" + time[1];
                     }
+                }
+
+            }
+
+            String startTime = (data14.split(" "))[1];
+            int startHour = Integer.parseInt((startTime.split(":"))[0]);
+            int startMinute = Integer.parseInt((startTime.split(":"))[1]);
+            LocalTime start = LocalTime.of(startHour, startMinute);
+
+            String endTime = (data15.split(" "))[1];
+            int endHour = Integer.parseInt((endTime.split(":"))[0]);
+            int endMinute = Integer.parseInt((endTime.split(":"))[1]);
+            LocalTime end = LocalTime.of(endHour, endMinute);
+
+            for (int i = 10; i <= 14; i++) {
+                if (data.get(i).length() > 0) {
+                    times.add(new MeetingTime(toDay(data.get(i)), start, end));
                 }
             }
+
 
             setMeetingTimes(times);
 

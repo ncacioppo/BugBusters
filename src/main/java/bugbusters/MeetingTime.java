@@ -5,11 +5,11 @@ import java.time.LocalTime;
 
 public class MeetingTime implements Comparable<MeetingTime>{
 
-//    private Day day;
+    private Day day;
     private LocalTime startTime;
     private LocalTime endTime;
 
-    public MeetingTime(/**Day day, **/LocalTime startTime, LocalTime endTime){
+    public MeetingTime(Day day, LocalTime startTime, LocalTime endTime){
 
     }
     public MeetingTime(String meetingTime){

@@ -1,5 +1,7 @@
 package bugbusters;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class Search {
@@ -13,7 +15,7 @@ public class Search {
         return false;
     }
 
-    public List<Courses> getAllCourses() {return null;}
+    public List<Course> getAllCourses() {return null;}
     
     public Filter removeFilter(Filter filter) {return null;}
 
@@ -25,7 +27,17 @@ public class Search {
 
     public List<Course> byCode(List<Course> courses, String code) {return null;}
 
-    public List<Course> byTerm(List<Course> courses, String term) {return null;}
+    public List<Course> byTerm(List<Course> courses, String term) {
+        ArrayList<Course> out = new ArrayList<>();
+        Term query = new Term(term);
+
+        for (Course course : courses){
+            if (course.getTerm() == query){
+                out.add(course);
+            }
+        }
+        return out;
+    }
 
     public List<Course> byProfessor(List<Course> courses, String professor) {return null;}
 

@@ -30,7 +30,7 @@ public class Course {
         setCredits(credits);
     }
 
-    public Course(ArrayList<String> data) throws Exception {
+    public Course(ArrayList<String> data) {
 
         //There are no Course id's in the Excel file. We could make our own maybe in SQL
         setId("No protocol determined yet");

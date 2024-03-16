@@ -1,5 +1,6 @@
 package bugbusters;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class User {
@@ -7,13 +8,19 @@ public class User {
     private String firstName;
     private String lastName;
 //    private CollegeYear collegeYear;
-    private List<Major> majors;
-    private List<Minor> minors;
+    private ArrayList<Major> majors;
+    private ArrayList<Minor> minors;
 
-    public User(String firstName, String lastName, /**CollegeYear collegeYear,**/ List<Major> majors, List<Minor> minors){
-        // change again for in-class demonstration
+    public User() {
+        this.firstName = "";
+        this.lastName = "";
+        this.majors = new ArrayList<Major>();
+        this.minors = new ArrayList<Minor>();
     }
 
+//    public User(String firstName, String lastName, /**CollegeYear collegeYear,**/ List<Major> majors, List<Minor> minors){
+//        // change again for in-class demonstration
+//    }
 
     private void setFirstName(String firstName){
 
@@ -36,16 +43,33 @@ public class User {
 //        return null;
 //    }
 
-    private void setMajors(List<Major> majors){
+    /**
+     * Take name of major and requirements year and add to the user's collection of majors
+     * @param majorName
+     * @param reqYr
+     */
+    public void addUserMajor(String majorName, int reqYr) {
+        Major newMajor = new Major(majorName, reqYr);
+        addUserMajor(newMajor);
+    }
 
+    /**
+     * take Major object and add to list of user's majors
+     * @param major
+     */
+    private void addUserMajor(Major major) {
+        this.majors.add(major);
+    }
+
+    private void setMajors(List<Major> majors){
     }
     public List<Major> getMajors(){
-        return null;
+        return majors;
     }
 
     private void setMinors(List<Minor> minors){
-
     }
+
     public List<Minor> getMinors(){
         return null;
     }

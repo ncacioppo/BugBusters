@@ -18,8 +18,8 @@ public class MeetingTime implements Comparable<MeetingTime>{
     public MeetingTime(String meetingTime){
         Scanner scn = new Scanner(meetingTime);
         setDay(Day.valueOf(scn.next()));
-        scn.useDelimiter(" to ");
         setStartTime(LocalTime.parse(scn.next()));
+        scn.useDelimiter(" to ");
         setEndTime(LocalTime.parse(scn.next()));
     }
 
@@ -69,9 +69,10 @@ public class MeetingTime implements Comparable<MeetingTime>{
         } else return endTime.equals((mt.endTime));
     }
 
+    // Format: MONDAY 10:00 to 10:50
     @Override
     public String toString(){
-        return day.toString() + " " + startTime.toString() + " to " + endTime.toString();
+        return getDay().toString() + " " + getStartTime().toString() + " to " + getEndTime().toString();
     }
 
     @Override

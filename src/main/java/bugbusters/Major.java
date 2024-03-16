@@ -1,13 +1,17 @@
 package bugbusters;
 
-public class Major {
+import java.util.List;
 
+public class Major {
+    private String majorName;
+    private int reqYr;
 
 //    private List<Course> courses;
-//
-//    public Major(List<Course> courses){
-//
-//    }
+
+    public Major(String majorName, int reqYr){
+        this.majorName = majorName;
+        this.reqYr = reqYr;
+    }
 //
 //
 //    private void setCourses(List<Course> courses){

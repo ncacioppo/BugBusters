@@ -1,5 +1,6 @@
 package bugbusters;
 
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,8 @@ public class User {
     private ArrayList<Major> majors;
     private ArrayList<Minor> minors;
 
+    private final int MAJOR_LIMIT = 2;   //limit to number of majors a user may have in software
+    
     public User() {
         this.firstName = "";
         this.lastName = "";
@@ -42,15 +45,39 @@ public class User {
 //    public CollegeYear getCollegeYear(){
 //        return null;
 //    }
+    private boolean isMajor(String newMajor) {
+        for(String major : Registrar.getMajors()) {
+            if(major.equals(newMajor)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isReasonableReqYr(int reqYr) {
+        //TODO: fact check this. may need to get from db
+        int endYr = Year.now().getValue();
+        int startYr = Year.now().minusYears(4).getValue();
+        return (reqYr < endYr) && (reqYr > startYr);
+    }
+
 
     /**
      * Take name of major and requirements year and add to the user's collection of majors
+     * A user can add duplicate majors but will not change functionality
+     * A user cannot add more majors than the limit
      * @param majorName
      * @param reqYr
      */
     public void addUserMajor(String majorName, int reqYr) {
-        Major newMajor = new Major(majorName, reqYr);
-        addUserMajor(newMajor);
+        if(majors.size() + 1 > MAJOR_LIMIT) {
+            System.out.println("Cannot add more than " + MAJOR_LIMIT + " majors.");
+        } else {
+            if(isMajor(majorName) && isReasonableReqYr(reqYr)) {
+                Major newMajor = new Major(majorName, reqYr);
+                addUserMajor(newMajor);
+            }
+        }
     }
 
     /**
@@ -61,9 +88,13 @@ public class User {
         this.majors.add(major);
     }
 
-    private void setMajors(List<Major> majors){
+    public void removeUserMajor(String majorName) {
+        
     }
-    public List<Major> getMajors(){
+
+    private void setUserMajors(List<Major> majors){
+    }
+    public ArrayList<Major> getUserMajors(){
         return majors;
     }
 

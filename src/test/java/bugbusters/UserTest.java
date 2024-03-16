@@ -13,7 +13,18 @@ class UserTest {
         int reqYr = 2022;
 
         user1.addUserMajor(majorName,reqYr);
-        assertEquals(1, user1.getMajors().size());
+        assertEquals(1, user1.getUserMajors().size());
+
+        majorName = "B.S. in Business Statistics";
+        reqYr = 2025;
+        user1.addUserMajor(majorName,reqYr);
+        assertEquals(1, user1.getUserMajors().size());
+
+        user1.addUserMajor("B.S. in Social Work", 2023);
+        assertEquals(2,user1.getUserMajors().size());
+
+        user1.addUserMajor("B.S. in Biology",2022);
+        assertEquals(2,user1.getUserMajors().size());
     }
 
     @Test

@@ -1,5 +1,6 @@
 package bugbusters;
 
+import java.util.List;
 import java.util.Map;
 
 public class Search {
@@ -13,7 +14,7 @@ public class Search {
         return false;
     }
 
-    public List<Courses> getAllCourses() {return null;}
+    public List<Course> getAllCourses() {return null;}
     
     public Filter removeFilter(Filter filter) {return null;}
 

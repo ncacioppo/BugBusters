@@ -1,5 +1,7 @@
 package bugbusters;
 
+import java.util.List;
+
 public class Schedule {
     String name;
     Term term;

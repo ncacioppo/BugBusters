@@ -1,6 +1,7 @@
 package bugbusters;
 
 import java.sql.*;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -79,6 +80,37 @@ public class Registrar {
 
         return majors;
     }
+    public int[] getReqYrs() {
+        //TODO: factcheck this. may need to get from db
+        int endYr = Year.now().getValue();
+        int startYr = Year.now().minusYears(4).getValue();
+        int[] reqYrs = new int[endYr-startYr];
+
+        int currYr = startYr;
+        for(int i = 0; i < reqYrs.length; i++) {
+            reqYrs[i] = currYr;
+            currYr += 1;
+        }
+        return reqYrs;
+    }
+
+    public boolean isMajor(String newMajor) {
+        for(String major : Registrar.getMajors()) {
+            if(major.equals(newMajor)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isReqYr(int reqYr) {
+        for(int yr : getReqYrs()){
+            if(reqYr == yr) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public static ArrayList<String> getMinors() {
         return minors;
@@ -89,7 +121,7 @@ public class Registrar {
     }
 
     public static void main(String[] args) {
-        System.out.println(connectToDB("schemaBugBuster","u222222","p222222"));
-        System.out.println(disconnectFromDB());
+//        System.out.println(connectToDB("schemaBugBuster","u222222","p222222"));
+//        System.out.println(disconnectFromDB());
     }
 }

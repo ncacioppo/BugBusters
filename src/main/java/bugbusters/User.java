@@ -11,6 +11,7 @@ public class User {
 //    private CollegeYear collegeYear;
     private ArrayList<Major> majors;
     private ArrayList<Minor> minors;
+    private Registrar registrar;
 
     private final int MAJOR_LIMIT = 2;   //limit to number of majors a user may have in software
     
@@ -19,6 +20,7 @@ public class User {
         this.lastName = "";
         this.majors = new ArrayList<Major>();
         this.minors = new ArrayList<Minor>();
+        this.registrar = new Registrar();
     }
 
 //    public User(String firstName, String lastName, /**CollegeYear collegeYear,**/ List<Major> majors, List<Minor> minors){
@@ -45,21 +47,6 @@ public class User {
 //    public CollegeYear getCollegeYear(){
 //        return null;
 //    }
-    private boolean isMajor(String newMajor) {
-        for(String major : Registrar.getMajors()) {
-            if(major.equals(newMajor)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isReasonableReqYr(int reqYr) {
-        //TODO: fact check this. may need to get from db
-        int endYr = Year.now().getValue();
-        int startYr = Year.now().minusYears(4).getValue();
-        return (reqYr < endYr) && (reqYr > startYr);
-    }
 
 
     /**
@@ -73,7 +60,7 @@ public class User {
         if(majors.size() + 1 > MAJOR_LIMIT) {
             System.out.println("Cannot add more than " + MAJOR_LIMIT + " majors.");
         } else {
-            if(isMajor(majorName) && isReasonableReqYr(reqYr)) {
+            if(registrar.isMajor(majorName) && registrar.isReqYr(reqYr)) {
                 Major newMajor = new Major(majorName, reqYr);
                 addUserMajor(newMajor);
             }

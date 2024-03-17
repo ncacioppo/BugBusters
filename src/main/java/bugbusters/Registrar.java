@@ -70,7 +70,12 @@ public class Registrar {
 //            System.out.println("Unable to connect to database");
 //            return null;
 //        }
+        //TODO: delete below after testing
         majors = new ArrayList<String>();
+        majors.add("B.S. in Computer Science");
+        majors.add("B.S. in Business Statistics");
+        majors.add("B.S. in Social Work");
+        majors.add("B.S. in Biology");
 
         return majors;
     }

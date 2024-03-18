@@ -105,6 +105,8 @@ class CourseTest {
         assertEquals("instructor", course.getInstructor());
     }
 
+
+
     @Test
     void getMeetingTimes() {
         Set<MeetingTime> meetingTimes = new HashSet<>();

@@ -1,5 +1,7 @@
 package bugbusters;
 
+import java.util.Set;
+
 public class Course {
     private int id;
     private String name;
@@ -15,6 +17,16 @@ public class Course {
     public Course(int id, String name, String description, String department, int code, Term term,
                    char section, String instructor, Set<MeetingTime> meetingTimes,
                    int credit) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.department = department;
+        this.code = code;
+        this.term = term;
+        this.section = section;
+        this.instructor = instructor;
+        this.meetingTimes = meetingTimes;
+        this.credits = credit;
     }
 
     public int getId() {

@@ -11,7 +11,7 @@ public class Search {
 
     }
 
-    public Search(Search search) {
+    public Search() {
 
     }
 
@@ -31,12 +31,24 @@ public class Search {
         List<Course> results = new ArrayList<Course>();
 
         results.addAll(byDepartment(courses, keyword));
-        results.addAll(byProfessor(courses, keyword));
-        results.addAll(byName(courses, keyword));
+
+        for (Course course : byProfessor(courses, keyword)){
+            if(!results.contains(course)){
+                results.add(course);
+            }
+        }
+
+        for (Course course : byName(courses, keyword)) {
+            if (!results.contains(course)) {
+                results.add(course);
+            }
+        }
 
         for (Course course : courses) {
-            if(course.getDescription().contains(keyword)){
-                results.add(course);
+            if(course.getDescription().toLowerCase().contains(keyword.toLowerCase())){
+                if(!results.contains(course)){
+                    results.add(course);
+                }
             }
         }
 
@@ -47,7 +59,7 @@ public class Search {
         List<Course> results = new ArrayList<Course>();
 
         for (Course course : courses) {
-            if(course.getName().contains(name)){
+            if(course.getName().toLowerCase().contains(name.toLowerCase())){
                 results.add(course);
             }
         }
@@ -59,7 +71,7 @@ public class Search {
         List<Course> results = new ArrayList<Course>();
 
         for (Course course : courses) {
-            if(course.getDepartment().contains(department)){
+            if(course.getDepartment().toLowerCase().contains(department.toLowerCase())){
                 results.add(course);
             }
         }
@@ -79,7 +91,7 @@ public class Search {
         List<Course> results = new ArrayList<Course>();
 
         for (Course course : courses) {
-            if(course.getInstructor().contains(professor)){
+            if(course.getInstructor().toLowerCase().contains(professor.toLowerCase())){
                 results.add(course);
             }
         }
@@ -108,7 +120,7 @@ public class Search {
     }
 
     public List<Filter> getFilters() {
-        return null;
+        return filters.keySet().stream().toList();
     }
 
     public void setFilters(List<Filter> filters) {

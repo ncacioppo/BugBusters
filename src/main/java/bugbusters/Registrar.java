@@ -121,7 +121,7 @@ public class Registrar {
     }
 
     public static void main(String[] args) {
-//        System.out.println(connectToDB("schemaBugBuster","u222222","p222222"));
-//        System.out.println(disconnectFromDB());
+        System.out.println(connectToDB("schemaBugBuster","u222222","p222222"));
+        System.out.println(disconnectFromDB());
     }
 }

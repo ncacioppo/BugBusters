@@ -120,8 +120,8 @@ public class Registrar {
         return courses;
     }
 
-    public static void main(String[] args) {
-        System.out.println(connectToDB("schemaBugBuster","u222222","p222222"));
-        System.out.println(disconnectFromDB());
-    }
+//    public static void main(String[] args) {
+//        System.out.println(connectToDB("schemaBugBuster","u222222","p222222"));
+//        System.out.println(disconnectFromDB());
+//    }
 }

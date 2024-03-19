@@ -76,7 +76,11 @@ public class User {
     }
 
     public void removeUserMajor(String majorName) {
-        
+        for(Major major : this.majors) {
+            if(major.getMajorName().equals(majorName)) {
+                this.majors.remove(major);
+            }
+        }
     }
 
     private void setUserMajors(List<Major> majors){
@@ -90,5 +94,10 @@ public class User {
 
     public List<Minor> getMinors(){
         return null;
+    }
+
+    public static void main(String[] args) {
+        User user1 = new User();
+
     }
 }

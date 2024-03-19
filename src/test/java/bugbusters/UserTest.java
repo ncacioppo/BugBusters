@@ -28,6 +28,17 @@ class UserTest {
     }
 
     @Test
+    void removeUserMajor() {
+        User user = new User();
+        user.addUserMajor("B.S. in Computer Science",2022);
+        user.addUserMajor("B.S. in Business Statistics",2023);
+        assertEquals(2,user.getUserMajors().size());
+
+        user.removeUserMajor("B.S. in Computer Science");
+        assertEquals(1,user.getUserMajors().size());
+    }
+
+    @Test
     void getFirstName() {
     }
 

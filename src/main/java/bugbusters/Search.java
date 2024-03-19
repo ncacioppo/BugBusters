@@ -80,7 +80,7 @@ public class Search {
     }
 
     public List<Course> byTerm(List<Course> courses, String term) {
-        // TODO: continue implementation
+        // to do: continue implementation
         List<Course> results = new ArrayList<>();
 
         for (Course course : courses){

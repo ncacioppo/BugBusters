@@ -1,7 +1,17 @@
 package bugbusters;
 
 public enum Day {
-    SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, NONE;
+    SUNDAY("SUNDAY"),
+    MONDAY("MONDAY"),
+    TUESDAY("TUESDAY"),
+    WEDNESDAY("WEDNESDAY"),
+    THURSDAY("THURSDAY"),
+    FRIDAY("FRIDAY"),
+    SATURDAY("SATURDAY");
 
-    public String toString() {return null;}
+    private final String name;
+    Day(String name) {
+        this.name = name;
+    }
+    public String toString() { return name;}
 }

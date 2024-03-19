@@ -32,11 +32,7 @@ public class Search {
 
         results.addAll(byDepartment(courses, keyword));
 
-        for (Course course : byProfessor(courses, keyword)){
-            if(!results.contains(course)){
-                results.add(course);
-            }
-        }
+
 
         for (Course course : byName(courses, keyword)) {
             if (!results.contains(course)) {
@@ -84,7 +80,17 @@ public class Search {
     }
 
     public List<Course> byTerm(List<Course> courses, String term) {
-        return null;
+        // TODO: continue implementation
+        List<Course> results = new ArrayList<>();
+
+        for (Course course : courses){
+
+            if(!results.contains(course)){
+                results.add(course);
+            }
+        }
+
+        return results;
     }
 
     public List<Course> byProfessor(List<Course> courses, String professor) {
@@ -100,7 +106,18 @@ public class Search {
     }
 
     public List<Course> byID(List<Course> courses, String id) {
-        return null;
+        List<Course> results = new ArrayList<>();
+
+        for (Course course : courses) {
+            String courseID = course.getId() + "";
+            if(courseID.equals(id)){
+                if(!results.contains(course)){
+                    results.add(course);
+                }
+            }
+        }
+
+        return results;
     }
 
     public List<Course> byDay(List<Course> courses, String day) {
@@ -126,4 +143,6 @@ public class Search {
     public void setFilters(List<Filter> filters) {
 
     }
+
+
 }

@@ -87,7 +87,7 @@ public class Search {
         Term query = new Term(term);
 
         for (Course course : courses){
-            if (course.getTerm() == query){
+            if (course.getTerm().equals(query)){
                 out.add(course);
             }
         }

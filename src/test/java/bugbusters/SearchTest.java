@@ -84,6 +84,28 @@ class SearchTest {
 
     @Test
     void byTerm() {
+        Search search = new Search();
+
+        List<Course> courses = new ArrayList<>();
+
+        courses.add(new Course(1, "physics", "101", "PHYS", 38888, new Term("SPRING", 2024), 'A', "Brower", null, 4));
+        courses.add(new Course(1, "physics", "101", "PHYS", 38888, new Term("SPRING", 2024), 'A', "Brower", null, 4));
+        courses.add(new Course(2, "calc", "163", "MATH", 38889, new Term("FALL", 2024), 'A', "McIntyre", null, 4));
+        courses.add(new Course(2, "calc", "163", "MATH", 38889, new Term("SPRING", 2023), 'A', "McIntyre", null, 4));
+
+        Term term1 = new Term("SPRING", 2024);
+        Term term2 = new Term("FALL", 2024);
+        Term term3 = new Term("SPRING", 2023);
+        Term term4 = new Term("FALL", 2023);
+        Term term5 = new Term("SPRING", 2022);
+        Term term6 = new Term("FALL", 2022);
+
+        assertTrue(search.byTerm(courses, term1.toString()).size() == 2);
+        assertTrue(search.byTerm(courses, term2.toString()).size() == 1);
+        assertTrue(search.byTerm(courses, term3.toString()).size() == 1);
+        assertTrue(search.byTerm(courses, term4.toString()).size() == 0);
+        assertTrue(search.byTerm(courses, term5.toString()).size() == 0);
+        assertTrue(search.byTerm(courses, term6.toString()).size() == 0);
     }
 
     @Test

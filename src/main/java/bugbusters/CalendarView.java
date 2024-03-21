@@ -2,17 +2,15 @@ package bugbusters;
 
 import com.mysql.cj.util.StringUtils;
 
+import java.text.Format;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 public class CalendarView {
     private Schedule schedule;
     private final int START_HOUR = 7;
-    private final int END_HOUR = 9;
+    private final int END_HOUR = 21;
     private ArrayList<LocalTime> hoursOfTheDay;
     private ArrayList<String> daysOfTheWeek;
 
@@ -23,7 +21,7 @@ public class CalendarView {
     }
 
     public void printDaysOfTheWeek() {
-        System.out.print("     "); //5 spaces
+        System.out.print("               ");             //15 spaces
         for(String day : this.daysOfTheWeek) {
             System.out.print(StringUtils.padString(day,15));
         }
@@ -34,7 +32,7 @@ public class CalendarView {
         ArrayList<LocalTime> hours = new ArrayList<>();
 
         for(int i = START_HOUR; i <= END_HOUR; i++) {
-            hours.add(LocalTime.of(7,0,0));
+            hours.add(LocalTime.of(i,0,0));
         }
 
         return hours;
@@ -45,9 +43,18 @@ public class CalendarView {
 
         for (LocalTime hour : this.hoursOfTheDay) {    //can replace with more granular time
                                                         // or while loop at smaller increment
-            System.out.printf("%dam", hour.getHour());
+            int hr_int = hour.getHour();
+            if(hr_int < 12) {
+                System.out.printf("%dam", hr_int);
+            } else if (hr_int == 12) {
+                System.out.printf("%dpm", hr_int);
+            }
+            else {
+                System.out.printf("%dpm", hr_int - 12);
+            }
             for (String day : this.daysOfTheWeek) {
-                System.out.print(StringUtils.padString("-",15));
+
+                System.out.print(StringUtils.padString("-",5));
 //                for (Course course : this.schedule.courses) {
 //                    for (MeetingTime meetingTime : course.getMeetingTimes()) {
 //                        if(day.equals(meetingTime.getDay().toString())) {

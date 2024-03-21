@@ -32,6 +32,6 @@ class CalendarViewTest {
         Schedule schedule = ScheduleTest.getSampleSchedule();
         System.out.println(schedule.getName());
         CalendarView calendarView = new CalendarView(schedule);
-        calendarView.printDaysOfTheWeek();
+        calendarView.printScheduleAsCalendar();
     }
 }

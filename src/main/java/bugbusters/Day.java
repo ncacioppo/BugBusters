@@ -7,7 +7,9 @@ public enum Day {
     WEDNESDAY("WEDNESDAY"),
     THURSDAY("THURSDAY"),
     FRIDAY("FRIDAY"),
-    SATURDAY("SATURDAY");
+    SATURDAY("SATURDAY"),
+    NONE("NONE");
+
 
     private final String name;
     Day(String name) {

@@ -62,4 +62,9 @@ public class Schedule {
     public String toString(){
         return null;
     }
+
+    public void printScheduleAsCalendar() {
+        System.out.println(this.name);
+        System.out.println();
+    }
 }

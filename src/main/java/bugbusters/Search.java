@@ -1,4 +1,5 @@
 package bugbusters;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -107,7 +108,17 @@ public class Search {
     }
 
     public List<Course> byID(List<Course> courses, String id) {
-        return null;
+        ArrayList<Course> out = new ArrayList<>();
+
+        int query = Integer.parseInt(id);
+
+        for (Course x : courses){
+            if (x.getId() == query){
+                out.add(x);
+            }
+        }
+
+        return out;
     }
 
     public List<Course> byDay(List<Course> courses, String day) {

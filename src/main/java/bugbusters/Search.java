@@ -1,4 +1,5 @@
 package bugbusters;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,7 @@ public class Search {
     public List<Course> getAllCourses() {
         return null;
     }
-    
+
     public Filter removeFilter(Filter filter) {
         return null;
     }
@@ -83,7 +84,15 @@ public class Search {
     }
 
     public List<Course> byTerm(List<Course> courses, String term) {
-        return null;
+        ArrayList<Course> out = new ArrayList<>();
+        Term query = new Term(term);
+
+        for (Course course : courses){
+            if (course.getTerm().equals(query)){
+                out.add(course);
+            }
+        }
+        return out;
     }
 
     public List<Course> byProfessor(List<Course> courses, String professor) {
@@ -99,7 +108,17 @@ public class Search {
     }
 
     public List<Course> byID(List<Course> courses, String id) {
-        return null;
+        ArrayList<Course> out = new ArrayList<>();
+
+        int query = Integer.parseInt(id);
+
+        for (Course x : courses){
+            if (x.getId() == query){
+                out.add(x);
+            }
+        }
+
+        return out;
     }
 
     public List<Course> byDay(List<Course> courses, String day) {

@@ -1,11 +1,8 @@
 package bugbusters;
 
-import java.time.Duration;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class Search {
     private Map<Filter, String> filters;
@@ -25,7 +22,7 @@ public class Search {
     public List<Course> getAllCourses() {
         return null;
     }
-    
+
     public Filter removeFilter(Filter filter) {
         return null;
     }
@@ -34,6 +31,12 @@ public class Search {
         List<Course> results = new ArrayList<Course>();
 
         results.addAll(byDepartment(courses, keyword));
+
+        for (Course course : byProfessor(courses, keyword)){
+            if(!results.contains(course)){
+                results.add(course);
+            }
+        }
 
         for (Course course : byName(courses, keyword)) {
             if (!results.contains(course)) {
@@ -57,9 +60,7 @@ public class Search {
 
         for (Course course : courses) {
             if(course.getName().toLowerCase().contains(name.toLowerCase())){
-                if (!results.contains(course)) {
-                    results.add(course);
-                }
+                results.add(course);
             }
         }
 
@@ -71,9 +72,7 @@ public class Search {
 
         for (Course course : courses) {
             if(course.getDepartment().toLowerCase().contains(department.toLowerCase())){
-                if (!results.contains(course)) {
-                    results.add(course);
-                }
+                results.add(course);
             }
         }
 
@@ -81,21 +80,19 @@ public class Search {
     }
 
     public List<Course> byCode(List<Course> courses, String code) {
-        List<Course> results = new ArrayList<Course>();
-
-        for (Course course : courses) {
-            if(Integer.toString(course.getCode()).contains(code)){
-                if (!results.contains(course)) {
-                    results.add(course);
-                }
-            }
-        }
-
-        return results;
+        return null;
     }
 
     public List<Course> byTerm(List<Course> courses, String term) {
-        return null;
+        ArrayList<Course> out = new ArrayList<>();
+        Term query = new Term(term);
+
+        for (Course course : courses){
+            if (course.getTerm().equals(query)){
+                out.add(course);
+            }
+        }
+        return out;
     }
 
     public List<Course> byProfessor(List<Course> courses, String professor) {
@@ -111,61 +108,25 @@ public class Search {
     }
 
     public List<Course> byID(List<Course> courses, String id) {
-        return null;
+        ArrayList<Course> out = new ArrayList<>();
+
+        int query = Integer.parseInt(id);
+
+        for (Course x : courses){
+            if (x.getId() == query){
+                out.add(x);
+            }
+        }
+
+        return out;
     }
 
     public List<Course> byDay(List<Course> courses, String day) {
-        List<Course> results = new ArrayList<>(courses);
-
-        if (day.equals(null) || day.equals("")) return results;
-
-        for (Course course : courses) {
-            Set<MeetingTime> courseMeetingTimes = course.getMeetingTimes();
-
-            boolean correctDay = false;
-
-            for (MeetingTime time : courseMeetingTimes){
-                if (time.getDay().toString().toLowerCase().equals(day.toLowerCase())) {
-                    correctDay = true;
-                }
-            }
-
-            if (!correctDay) {
-                if (results.contains(course)) {
-                    results.remove(course);
-                }
-            }
-        }
-
-        return results;
+        return null;
     }
 
     public List<Course> withinTime(List<Course> courses, String startTime, String endTime) {
-        List<Course> results = new ArrayList<>(courses);
-        LocalTime startTimeRange = LocalTime.parse(startTime);
-        LocalTime endTimeRange = LocalTime.parse(endTime);
-
-        for (Course course : courses) {
-            Set<MeetingTime> courseMeetingTimes = course.getMeetingTimes();
-
-            for (MeetingTime time : courseMeetingTimes) {
-                if (time.getStartTime().compareTo(startTimeRange) < 0) {
-                    if (results.contains(course)) {
-                        results.remove(course);
-                    }
-                } else if (time.getStartTime().compareTo(endTimeRange) >= 0) {
-                    if (results.contains(course)) {
-                        results.remove(course);
-                    }
-                } else if (Duration.between(startTimeRange, endTimeRange).compareTo(time.getDuration()) < 0) {
-                    if (results.contains(course)) {
-                        results.remove(course);
-                    }
-                }
-            }
-        }
-
-        return results;
+        return null;
     }
 
     public boolean equals(Object other) {

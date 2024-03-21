@@ -1,5 +1,7 @@
 package bugbusters;
 
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.*;
 
 public class Search {
@@ -154,11 +156,58 @@ public class Search {
     }
 
     public List<Course> byDay(List<Course> courses, String day) {
-        return null;
+        if (day.equals(null) || day.equals("")) return courses;
+
+        List<Course> results = new ArrayList<>();
+
+        for (Course course : courses) {
+            Set<MeetingTime> courseMeetingTimes = course.getMeetingTimes();
+
+            boolean correctDay = false;
+
+            for (MeetingTime time : courseMeetingTimes){
+                if (time.getDay().toString().toLowerCase().equals(day.toLowerCase())) {
+                    correctDay = true;
+                    break;
+                }
+            }
+
+            if (correctDay) {
+                if (!results.contains(course)) {
+                    results.add(course);
+                }
+            }
+        }
+
+        return results;
     }
 
     public List<Course> withinTime(List<Course> courses, String startTime, String endTime) {
-        return null;
+        List<Course> results = new ArrayList<>(courses);
+        LocalTime startTimeRange = LocalTime.parse(startTime);
+        LocalTime endTimeRange = LocalTime.parse(endTime);
+
+        for (Course course : courses) {
+            Set<MeetingTime> courseMeetingTimes = course.getMeetingTimes();
+
+            for (MeetingTime time : courseMeetingTimes) {
+                if (time.getStartTime().compareTo(startTimeRange) < 0) {
+                    if (results.contains(course)) {
+                        results.remove(course);
+                    }
+                } else if (time.getStartTime().compareTo(endTimeRange) >= 0) {
+                    if (results.contains(course)) {
+                        results.remove(course);
+                    }
+                } else if (Duration.between(startTimeRange, endTimeRange).compareTo(time.getDuration()) < 0) {
+                    if (results.contains(course)) {
+                        results.remove(course);
+                    }
+                }
+            }
+        }
+
+        return results;
     }
 
     public boolean equals(Object other) {

@@ -59,14 +59,17 @@ public class MeetingTime implements Comparable<MeetingTime>{
 
     @Override
     public boolean equals(Object other){
-        if (!(other instanceof MeetingTime mt)) {
+        if (!(other instanceof MeetingTime)) {
             return false;
         }
-        if (!(day.equals(mt.day))) {
+
+        MeetingTime mt = (MeetingTime) other;
+
+        if (!(this.day.equals(mt.day))) {
             return false;
-        } else if (!(startTime.equals(mt.startTime))) {
+        } else if (!(this.startTime.equals(mt.startTime))) {
             return false;
-        } else return endTime.equals((mt.endTime));
+        } else return (this.endTime.equals(mt.endTime));
     }
 
     // Format: MONDAY 10:00 to 10:50

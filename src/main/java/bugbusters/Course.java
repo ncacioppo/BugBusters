@@ -4,19 +4,19 @@ import java.time.LocalTime;
 import java.util.*;
 
 public class Course {
-    private String id;
+    private int id;
     private String name;
     private String description;
     private String department;
     private int code;
     private Term term;
-    private String section;
+    private char section;
     private String instructor;
     private Set<MeetingTime> meetingTimes;
     private int credits;
 
-    public Course(String id, String name, String description, String department, int code, Term term,
-                   String section, String instructor, Set<MeetingTime> meetingTimes,
+    public Course(int id, String name, String description, String department, int code, Term term,
+                   char section, String instructor, Set<MeetingTime> meetingTimes,
                    int credits) {
         setId(id);
         setName(name);
@@ -33,7 +33,7 @@ public class Course {
     public Course(ArrayList<String> data) {
 
         //There are no Course id's in the Excel file. We could make our own maybe in SQL
-        setId("No protocol determined yet");
+        setId(0);
 
         //Course Title is in the 6th column of the Excel file
         setName(data.get(5));
@@ -59,7 +59,12 @@ public class Course {
 
 
         //Sections is in the 5th column, Section was changed from char to String because section can be empty
-        setSection(data.get(4));
+        String testSection = (data.get(4));
+        if (testSection.length() == 0){
+            setSection('\0');
+        } else {
+            setSection(testSection.charAt(0));
+        }
 
         //First name of the instructor is their preferred name unless there is none, then it is their official first name
         String firstName;
@@ -137,11 +142,11 @@ public class Course {
 
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    private void setId(String id) {
+    private void setId(int id) {
         this.id = id;
     }
 
@@ -185,11 +190,11 @@ public class Course {
         this.term = term;
     }
 
-    public String getSection() {
+    public char getSection() {
         return section;
     }
 
-    private void setSection(String section) {
+    private void setSection(char section) {
         this.section = section;
     }
 
@@ -261,18 +266,34 @@ public class Course {
         }
 
         Course o = (Course) other;
+        boolean meetingTest = false;
+        boolean term = false;
 
         if (this.id == o.id){
             if (this.name.equalsIgnoreCase(o.name)){
                 if (this.department.equalsIgnoreCase(o.department)){
                     if (this.code == o.code){
-                        if (this.term == o.term){
+                        if (this.term.equals(o.term)){
                             if (this.section == o.section){
                                 if (this.instructor.equalsIgnoreCase(o.instructor)){
-                                    if (this.meetingTimes.equals(o.meetingTimes)){
-                                        if (this.credits == o.credits){
-                                            return true;
+                                    if (this.credits == o.credits){
+                                        if ((this.meetingTimes == null) && (o.meetingTimes == null)){
+                                            meetingTest = true;
+                                        } else if ((this.meetingTimes != null) && (o.meetingTimes != null)){
+                                            meetingTest = true;
+                                            for (MeetingTime meetingTime : this.meetingTimes){
+                                                boolean found = false;
+                                                for (MeetingTime otherMeetingTime : o.meetingTimes){
+                                                    if (meetingTime.equals(otherMeetingTime)){
+                                                        found = true;
+                                                    }
+                                                }
+                                                if (!found){
+                                                    meetingTest = false;
+                                                }
+                                            }
                                         }
+                                        return meetingTest;
                                     }
                                 }
                             }
@@ -281,7 +302,6 @@ public class Course {
                 }
             }
         }
-
         return false;
     }
 

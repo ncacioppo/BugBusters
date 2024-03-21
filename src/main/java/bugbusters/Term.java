@@ -8,18 +8,32 @@ public class Term {
     private int year;
 
     public Term(String season, int year) {
-        this.season = season;
-        this.year = year;
+        setSeason(season);
+        setYear(year);
     }
 
     public Term(String term) {
         Scanner scn = new Scanner(term);
-        this.season = scn.next();
-        this.year = scn.nextInt();
+        setSeason(scn.next());
+        setYear(scn.nextInt());
+    }
+
+    public String getSeason(){
+        return this.season;
+    }
+    private void setSeason(String season){
+        this.season = season;
+    }
+
+    public int getYear(){
+        return this.year;
+    }
+    private void setYear(int year){
+        this.year = year;
     }
 
     public boolean equals(Term other) {
-        return (this.season.equals(other.season)) && (this.year == other.year);
+        return (this.season.equalsIgnoreCase(other.season)) && (this.year == other.year);
     }
 
     // Format: SPRING 2024

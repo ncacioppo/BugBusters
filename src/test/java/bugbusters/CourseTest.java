@@ -15,10 +15,10 @@ class CourseTest {
         meetingTimes.add(new MeetingTime(Day.MONDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
-        Course course = new Course("id", "name", "description", "department", 10, new Term("Fall", 2018),
-                "section", "instructor", meetingTimes, 3);
+        Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
+                'A', "instructor", meetingTimes, 3);
 
-        assertEquals("id", course.getId());
+        assertEquals(0, course.getId());
     }
 
     @Test
@@ -27,8 +27,8 @@ class CourseTest {
         meetingTimes.add(new MeetingTime(Day.MONDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
-        Course course = new Course("id", "name", "description", "department", 10, new Term("Fall", 2018),
-                "section", "instructor", meetingTimes, 3);
+        Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
+                'A', "instructor", meetingTimes, 3);
 
         assertEquals("name", course.getName());
     }
@@ -39,8 +39,8 @@ class CourseTest {
         meetingTimes.add(new MeetingTime(Day.MONDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
-        Course course = new Course("id", "name", "description", "department", 10, new Term("Fall", 2018),
-                "section", "instructor", meetingTimes, 3);
+        Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
+                'A', "instructor", meetingTimes, 3);
 
         assertEquals("description", course.getDescription());
     }
@@ -51,8 +51,8 @@ class CourseTest {
         meetingTimes.add(new MeetingTime(Day.MONDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
-        Course course = new Course("id", "name", "description", "department", 10, new Term("Fall", 2018),
-                "section", "instructor", meetingTimes, 3);
+        Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
+                'A', "instructor", meetingTimes, 3);
 
         assertEquals("department", course.getDepartment());
     }
@@ -63,8 +63,8 @@ class CourseTest {
         meetingTimes.add(new MeetingTime(Day.MONDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
-        Course course = new Course("id", "name", "description", "department", 10, new Term("Fall", 2018),
-                "section", "instructor", meetingTimes, 3);
+        Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
+                'A', "instructor", meetingTimes, 3);
 
         assertEquals(10, course.getCode());
     }
@@ -75,10 +75,12 @@ class CourseTest {
         meetingTimes.add(new MeetingTime(Day.MONDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
-        Course course = new Course("id", "name", "description", "department", 10, new Term("Fall", 2018),
-                "section", "instructor", meetingTimes, 3);
+        Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
+                'A', "instructor", meetingTimes, 3);
 
-        assertEquals(new Term("Fall", 2018), course.getTerm());
+
+        assertEquals("Fall", course.getTerm().getSeason());
+        assertEquals(2018, course.getTerm().getYear());
     }
 
     @Test
@@ -87,10 +89,10 @@ class CourseTest {
         meetingTimes.add(new MeetingTime(Day.MONDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
-        Course course = new Course("id", "name", "description", "department", 10, new Term("Fall", 2018),
-                "section", "instructor", meetingTimes, 3);
+        Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
+                'A', "instructor", meetingTimes, 3);
 
-        assertEquals("section", course.getSection());
+        assertEquals('A', course.getSection());
     }
 
     @Test
@@ -99,8 +101,8 @@ class CourseTest {
         meetingTimes.add(new MeetingTime(Day.MONDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
-        Course course = new Course("id", "name", "description", "department", 10, new Term("Fall", 2018),
-                "section", "instructor", meetingTimes, 3);
+        Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
+                'A', "instructor", meetingTimes, 3);
 
         assertEquals("instructor", course.getInstructor());
     }
@@ -113,8 +115,8 @@ class CourseTest {
         meetingTimes.add(new MeetingTime(Day.MONDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
-        Course course = new Course("id", "name", "description", "department", 10, new Term("Fall", 2018),
-                "section", "instructor", meetingTimes, 3);
+        Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
+                'A', "instructor", meetingTimes, 3);
 
         assertEquals(meetingTimes, course.getMeetingTimes());
     }
@@ -125,8 +127,8 @@ class CourseTest {
         meetingTimes.add(new MeetingTime(Day.MONDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
-        Course course = new Course("id", "name", "description", "department", 10, new Term("Fall", 2018),
-                "section", "instructor", meetingTimes, 3);
+        Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
+                'A', "instructor", meetingTimes, 3);
 
         assertEquals(3, course.getCredits());
     }
@@ -136,11 +138,11 @@ class CourseTest {
         ArrayList<Queue<Course>> allCourses = getAllCoursesFromExcel();
         ArrayList<Queue<Course>> allCourses2 = getAllCoursesFromExcel();
         while (allCourses.get(0).peek() != null){
-            assertEquals(allCourses.get(0).poll() == allCourses2.get(0).poll(), true);
+            assertEquals(allCourses.get(0).poll().equals(allCourses2.get(0).poll()), true);
         }
 
         while ((allCourses.get(1).peek() != null)&&(allCourses2.get(2).peek() != null)){
-            assertEquals(allCourses.get(1).poll() == allCourses2.get(2).poll(), false);
+            assertEquals(allCourses.get(1).poll().equals(allCourses2.get(2).poll()), false);
         }
 
         ArrayList<Course> courseTest = new ArrayList<>();
@@ -151,7 +153,7 @@ class CourseTest {
         while (allCourses2.get(1).peek() != null){
             Course testingCourse = allCourses2.get(1).poll();
             for (Course course : courseTest){
-                assertEquals(course == testingCourse, false);
+                assertEquals(course.equals(testingCourse), false);
             }
         }
     }

@@ -79,8 +79,22 @@ public class Search {
         return results;
     }
 
+    //cod should be in the format "start(inclusive)-end(inclusive)
     public List<Course> byCode(List<Course> courses, String code) {
-        return null;
+        ArrayList<Course> out = new ArrayList<>();
+        String[] listInput = code.split("-");
+        int start = Integer.parseInt(listInput[0]);
+        int end = Integer.parseInt(listInput[1]);
+
+        for (Course course : courses){
+            int courseCode = course.getCode();
+            if ((courseCode >= start)&&(courseCode <= end)){
+                out.add(course);
+            }
+        }
+
+
+        return out;
     }
 
     public List<Course> byTerm(List<Course> courses, String term) {

@@ -80,6 +80,22 @@ class SearchTest {
 
     @Test
     void byCode() {
+        Search search = new Search();
+
+        List<Course> courses = new ArrayList<>();
+
+        courses.add(new Course(1, "physics", "101", "PHYS", 38888, new Term("SPRING", 2024), 'A', "Brower", null, 4));
+        courses.add(new Course(1, "physics", "101", "PHYS", 38888, new Term("SPRING", 2024), 'A', "Brower", null, 4));
+        courses.add(new Course(2, "calc", "163", "MATH", 39000, new Term("FALL", 2024), 'A', "McIntyre", null, 4));
+        courses.add(new Course(2, "calc", "163", "MATH", 39500, new Term("SPRING", 2023), 'A', "McIntyre", null, 4));
+
+
+        assertEquals(4, search.byCode(courses, "38000-40000").size());
+        assertEquals(3, search.byCode(courses, "38000-39000").size());
+        assertEquals(4, search.byCode(courses, "38888-39500").size());
+        assertEquals(1, search.byCode(courses, "38889-39499").size());
+        assertEquals(1, search.byCode(courses, "39000-39000").size());
+        assertEquals(0, search.byCode(courses, "39600-40000").size());
     }
 
     @Test

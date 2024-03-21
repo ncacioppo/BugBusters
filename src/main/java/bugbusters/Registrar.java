@@ -121,11 +121,99 @@ public class Registrar {
     }
 
     private static void insertCourses(String filepath) {
-        //TODO: implement method
+        int rows = 0;
+
+        //read values from csv and insert as args below
+        rows += insertCourse();
+    }
+
+    private static boolean deleteCourse(int courseID) {
+        try {
+            PreparedStatement ps = conn.prepareStatement("" +
+                    "DELETE FROM course WHERE courseID = ?");
+            ps.setInt(1, courseID);
+
+            int rows = ps.executeUpdate();
+            if(rows > 0) {
+                return true;
+            }
+        } catch(SQLException e) {
+            System.out.println("Failed to delete exception is " + e.getMessage());
+            return false;
+        }
+        return false;
+    }
+
+    private static int insertCourse() {    //will take all args;return 1 if successful
+        //dummy data, assume type casting
+        int courseID = 289410;   //TODO: we need to scrape refNums or create sql function
+        int year = 2020;
+        String semester = "Spring";
+        String dept = "ACCT";
+        int code = 201;
+        String section = "A";
+        String courseName = "PRINCIPLES OF ACCOUNTING I";
+        int hours = 3;
+        int capacity = 30;
+        int enrolled = 30;
+        String monday = "M";
+        String tuesday = "";
+        String wednesday = "W";
+        String thursday = "";
+        String friday = "F";
+        Time startTime = new Time(9,0,0);
+        Time endTime = new Time(9,50,0);
+        String lNameInstructor = "Stone";
+        String fNameInstructor = "Jennifer";
+        String prefNameInstructor = "Nicole";
+        String comment = "Online materials fee";
+        ////
+
+        try{
+            //TODO: remove hard-coded username and password
+            connectToDB("schemaBugBuster", "u222222", "p222222");
+            PreparedStatement ps = conn.prepareStatement("" +
+                    "INSERT INTO course VALUES" +
+                    "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");    //TODO: ADD ????
+
+            //Pass in parameters
+            ps.setInt(1,courseID);
+            ps.setInt(2,year);
+            ps.setString(3,semester);
+            ps.setString(4,dept);
+            ps.setInt(5,code);
+            ps.setString(6,section);
+            ps.setString(7,courseName);
+            ps.setInt(8,hours);
+            ps.setInt(9,capacity);
+            ps.setInt(10,enrolled);
+            ps.setString(11,monday);
+            ps.setString(12,tuesday);
+            ps.setString(13,wednesday);
+            ps.setString(14,thursday);
+            ps.setString(15,friday);
+            ps.setTime(16,startTime);
+            ps.setTime(17,endTime);
+            ps.setString(18,lNameInstructor);
+            ps.setString(19,fNameInstructor);
+            ps.setString(20,prefNameInstructor);
+            ps.setString(21,comment);
+
+            //Execute prepared statement
+            //TODO: adjust for replication
+            int rows = ps.executeUpdate();
+            disconnectFromDB();
+            return rows;
+        } catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return 0;   //insert failed; no rows updated
     }
 
     public static void main(String[] args) {
         System.out.println(connectToDB("schemaBugBuster","u222222","p222222"));
+        System.out.println(deleteCourse(289410));
+        System.out.println(Registrar.insertCourse());
         System.out.println(disconnectFromDB());
 //        insertCourses(filepath);
 //        insertCourses(filepath);

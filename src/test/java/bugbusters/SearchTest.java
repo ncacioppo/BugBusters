@@ -10,6 +10,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class SearchTest {
     @Test
     void getAllCourses() {
+        Search search = new Search();
+
+        List<Course> courses = search.getAllCoursesFromExcel();
+
+        assertEquals(4526, courses.size());
 
     }
 

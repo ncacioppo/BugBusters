@@ -1,8 +1,6 @@
 package bugbusters;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Search {
     private Map<Filter, String> filters;
@@ -22,33 +20,33 @@ public class Search {
     public List<Course> getAllCoursesFromExcel() {
         ArrayList<Course> out = new ArrayList<>();
 
-//        Queue<Course> courses2019 = new LinkedList<>();
-//        Queue<ArrayList<String>> data2019 = Excel.csv.read("2018-2019.csv");
-//        data2019.poll();
-//        while (data2019.peek() != null) {
-//            ArrayList<String> line = data2019.poll();
-//            courses2019.add(new Course(line));
-//        }
-//
-//        Queue<Course> courses2020 = new LinkedList<>();
-//        Queue<ArrayList<String>> data2020 = Excel.csv.read("2019-2020.csv");
-//        data2020.poll();
-//        while (data2020.peek() != null) {
-//            ArrayList<String> line = data2020.poll();
-//            courses2020.add(new Course(line));
-//        }
-//
-//        Queue<Course> courses2021 = new LinkedList<>();
-//        Queue<ArrayList<String>> data2021 = Excel.csv.read("2020-2021.csv");
-//        data2021.poll();
-//        while (data2021.peek() != null) {
-//            ArrayList<String> line = data2021.poll();
-//            courses2021.add(new Course(line));
-//        }
-//
-//        out.addAll(courses2019);
-//        out.addAll(courses2020);
-//        out.addAll(courses2021);
+        Queue<Course> courses2019 = new LinkedList<>();
+        Queue<ArrayList<String>> data2019 = Excel.csv.read("2018-2019.csv");
+        data2019.poll();
+        while (data2019.peek() != null) {
+            ArrayList<String> line = data2019.poll();
+            courses2019.add(new Course(line));
+        }
+
+        Queue<Course> courses2020 = new LinkedList<>();
+        Queue<ArrayList<String>> data2020 = Excel.csv.read("2019-2020.csv");
+        data2020.poll();
+        while (data2020.peek() != null) {
+            ArrayList<String> line = data2020.poll();
+            courses2020.add(new Course(line));
+        }
+
+        Queue<Course> courses2021 = new LinkedList<>();
+        Queue<ArrayList<String>> data2021 = Excel.csv.read("2020-2021.csv");
+        data2021.poll();
+        while (data2021.peek() != null) {
+            ArrayList<String> line = data2021.poll();
+            courses2021.add(new Course(line));
+        }
+
+        out.addAll(courses2019);
+        out.addAll(courses2020);
+        out.addAll(courses2021);
 
         return out;
     }

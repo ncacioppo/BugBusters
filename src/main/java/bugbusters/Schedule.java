@@ -13,9 +13,9 @@ import java.util.Set;
 public class Schedule {
     String name;
     Term term;
-    List<Course> courses;
+    ArrayList<Course> courses;
 
-    public Schedule(String name, Term term, List<Course> courses){
+    public Schedule(String name, Term term, ArrayList<Course> courses){
         this.name = name;
         this.term = term;
         this.courses = courses;
@@ -26,7 +26,7 @@ public class Schedule {
     }
 
     public String getName(){
-        return null;
+        return name;
     }
 
     private void setTerm(Term term){
@@ -41,8 +41,8 @@ public class Schedule {
         return;
     }
 
-    public List<Course> getCourses(){
-        return null;
+    public ArrayList<Course> getCourses(){
+        return courses;
     }
 
     private boolean isValid(){

@@ -267,13 +267,21 @@ public class Course {
 
         Course o = (Course) other;
         boolean meetingTest = false;
+        boolean termTest = false;
         boolean term = false;
 
         if (this.id == o.id){
             if (this.name.equalsIgnoreCase(o.name)){
                 if (this.department.equalsIgnoreCase(o.department)){
                     if (this.code == o.code){
-                        if (this.term.equals(o.term)){
+                        if ((this.term == null)&&(o.term == null)) {
+                            termTest = true;
+                        } else if ((this.term != null)&&(o.term != null)) {
+                            if (this.term.equals(o.term)) {
+                                termTest = true;
+                            }
+                        }
+                        if (termTest == true){
                             if (this.section == o.section){
                                 if (this.instructor.equalsIgnoreCase(o.instructor)){
                                     if (this.credits == o.credits){

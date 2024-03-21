@@ -107,6 +107,21 @@ class SearchTest {
 
     @Test
     void byID() {
+        Search search = new Search();
+
+        List<Course> courses = new ArrayList<>();
+        List<Course> outcome1 = new ArrayList<>();
+        List<Course> outcome2 = new ArrayList<>();
+
+        courses.add(new Course(1, "physics", "101", "PHYS", 38888, null, 'A', "Brower", null, 4));
+        courses.add(new Course(2, "physics", "101", "PHYS", 38888, null, 'A', "Brower", null, 4));
+        courses.add(new Course(2, "calc", "163", "MATH", 38889, null, 'A', "McIntyre", null, 4));
+        courses.add(new Course(3, "calc", "163", "MATH", 38889, null, 'A', "McIntyre", null, 4));
+
+        assertTrue(search.byID(courses, "00001").size() == 1);
+        assertTrue(search.byID(courses, "00002").size() == 2);
+        assertTrue(search.byID(courses, "00003").size() == 1);
+        assertTrue(search.byID(courses, "00004").size() == 0);
     }
 
     @Test

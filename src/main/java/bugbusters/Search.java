@@ -22,7 +22,7 @@ public class Search {
     public List<Course> getAllCourses() {
         return null;
     }
-    
+
     public Filter removeFilter(Filter filter) {
         return null;
     }
@@ -84,7 +84,15 @@ public class Search {
     }
 
     public List<Course> byTerm(List<Course> courses, String term) {
-        return null;
+        ArrayList<Course> out = new ArrayList<>();
+        Term query = new Term(term);
+
+        for (Course course : courses){
+            if (course.getTerm().equals(query)){
+                out.add(course);
+            }
+        }
+        return out;
     }
 
     public List<Course> byProfessor(List<Course> courses, String professor) {

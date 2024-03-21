@@ -2,7 +2,7 @@ package bugbusters;
 
 import java.util.Scanner;
 
-public class Term {
+public class Term implements Comparable<Term> {
     // I will implement this in the next few days.
     private String season;
     private int year;
@@ -32,16 +32,22 @@ public class Term {
         this.year = year;
     }
 
-    public boolean equals(Term other) {
-        return (this.season.equalsIgnoreCase(other.season)) && (this.year == other.year);
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Term)){
+            return false;
+        }
+        Term other = (Term) o;
+        return (this.season.equals(other.season)) && (this.year == other.year);
     }
 
+    @Override
     // Format: SPRING 2024
     public String toString() {
         return season + " " + year;
     }
 
-
+    @Override
     public int compareTo(Term other) {
         if ((other.year < this.year) ||
                 ((other.year == this.year) &&

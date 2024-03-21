@@ -1,6 +1,14 @@
 package bugbusters;
 
+import com.mysql.cj.util.StringUtils;
+import org.apache.poi.util.StringUtil;
+
+import java.lang.reflect.Array;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Schedule {
     String name;
@@ -8,7 +16,9 @@ public class Schedule {
     List<Course> courses;
 
     public Schedule(String name, Term term, List<Course> courses){
-        return;
+        this.name = name;
+        this.term = term;
+        this.courses = courses;
     }
 
     private void setName(String name){
@@ -61,10 +71,5 @@ public class Schedule {
 
     public String toString(){
         return null;
-    }
-
-    public void printScheduleAsCalendar() {
-        System.out.println(this.name);
-        System.out.println();
     }
 }

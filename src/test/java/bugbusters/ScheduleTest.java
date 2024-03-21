@@ -47,33 +47,4 @@ class ScheduleTest {
     @Test
     void testToString() {
     }
-
-    public static ArrayList<Course> getTestCourses() {
-        ArrayList<Course> springCourses = new ArrayList<Course>();
-
-        //ACCT 201
-        Set<MeetingTime> ACCT201A_meetingTimes = new HashSet<>();
-        ACCT201A_meetingTimes.add(
-                new MeetingTime(Day.MONDAY, LocalTime.of(9,0,0),
-                        LocalTime.of(9,50,0)));
-        ACCT201A_meetingTimes.add(
-                new MeetingTime(Day.WEDNESDAY, LocalTime.of(9,0,0),
-                        LocalTime.of(9,50,0)));
-        ACCT201A_meetingTimes.add(
-                new MeetingTime(Day.FRIDAY, LocalTime.of(9,0,0),
-                        LocalTime.of(9,50,0)));
-
-        springCourses.add(new Course(289410, "PRINCIPLES OF ACCOUNTING I", "", "ACCT",
-                201, new Term("Spring", 2020), 'A', "Stone, Jennifer",
-                ACCT201A_meetingTimes, 4));
-
-        return springCourses;
-    }
-
-    @Test
-    void printScheduleAsCalendar() {
-        ArrayList<Course> springCourses = getTestCourses();
-        Schedule schedule = new Schedule("Spring 2020 #1",new Term("Spring",2020),
-                springCourses);
-    }
 }

@@ -12,8 +12,8 @@ import java.util.Set;
 
 public class Schedule {
     String name;
-    Term term;
-    ArrayList<Course> courses;
+    private Term term;
+    private ArrayList<Course> courses;
 
     public Schedule(String name, Term term, ArrayList<Course> courses){
         this.name = name;
@@ -63,6 +63,23 @@ public class Schedule {
 
     public Course removeCourse(String courseName){
         return null;
+    }
+
+    /**
+     * @return ending hour of latest course in schedule (military time)
+     */
+    public int getLatestHour() {
+        int latestHour = 7;
+
+        for (Course course : this.courses) {
+            for (MeetingTime meetingTime : course.getMeetingTimes()) {
+                int currHour = meetingTime.getEndTime().getHour();
+                if (latestHour < currHour) {
+                    latestHour = currHour;
+                }
+            }
+        }
+        return latestHour;
     }
 
     public boolean equals(Object other){

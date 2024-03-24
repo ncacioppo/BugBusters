@@ -10,36 +10,52 @@ import java.util.*;
 public class CalendarView {
     private Schedule schedule;
     private final int START_HOUR = 7;
-    private final int END_HOUR = 17;
+    private final int END_HOUR = 16;
     private ArrayList<LocalTime> hoursOfTheDay;
+    private ArrayList<LocalTime> halfHoursOfTheDay;
     private ArrayList<String> daysOfTheWeek;
 
     public CalendarView(Schedule schedule) {
         this.daysOfTheWeek = new ArrayList<>(List.of("MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY"));
         this.hoursOfTheDay = setHoursOfTheDay();
+        this.halfHoursOfTheDay = setHalfHoursOfTheDay();
         this.schedule = schedule;
     }
 
-    public void printDaysOfTheWeek() {
-        System.out.format("%10s","");             //15 spaces
-        for(String day : this.daysOfTheWeek) {
-            if(day.equals("MONDAY")) {
-                System.out.format("%-10s","Mon");
-            }
-            if(day.equals("TUESDAY")) {
-                System.out.format("%6s","Tue");
-            }
-            if(day.equals("WEDNESDAY")) {
-                System.out.format("%13s","Wed");
-            }
-            if(day.equals("THURSDAY")) {
-                System.out.format("%13s","Thu");
-            }
-            if(day.equals("FRIDAY")) {
-                System.out.format("%13s","Fri");
+    private ArrayList<LocalTime> setHalfHoursOfTheDay() {
+        ArrayList<LocalTime> halfHours = new ArrayList<>();
+        ArrayList<Integer> increments = new ArrayList<>(List.of(0,30));
+
+        for(int i = START_HOUR; i <= END_HOUR; i++) {
+            for(int j = 0; j < increments.size(); j++) {
+                halfHours.add(LocalTime.of(i,increments.get(j),0));
             }
         }
-        System.out.println();
+
+        return halfHours;
+    }
+
+    public void printDaysOfTheWeek() {
+        System.out.format("%-15s","");             //15 spaces
+        for(String day : this.daysOfTheWeek) {
+            if(day.equals("MONDAY")) {
+                System.out.format("%-20s","Mon");       //System.out.format("%-10s","Mon");
+            }
+            if(day.equals("TUESDAY")) {
+                System.out.format("%-20s","Tue");     //System.out.format("%6s","Tue");
+            }
+            if(day.equals("WEDNESDAY")) {
+                System.out.format("%-20s","Wed");        //System.out.format("%13s","Wed");
+            }
+            if(day.equals("THURSDAY")) {
+                System.out.format("%-20s","Thu");        //System.out.format("%13s","Thu");
+            }
+            if(day.equals("FRIDAY")) {
+                System.out.format("%-20s\n","Fri");        //System.out.format("%13s","Fri");
+            }
+        }
+        System.out.println("-----------------------------------------------------------------------------------------" +
+                "-----------------");
     }
 
     private ArrayList<LocalTime> setHoursOfTheDay() {
@@ -50,7 +66,7 @@ public class CalendarView {
         for(int i = START_HOUR; i <= END_HOUR; i++) {
             hours.add(LocalTime.of(i,0,0));
         }
-        //if latest class exceeds 5pm, add more hours
+        //if latest class exceeds 4pm, add more hours
         //This is for expanding the calendar view
 //        if (latestHourInSchedule > 17) {
 //            for(int i = END_HOUR; i <= latestHourInSchedule + 1; i++) {
@@ -62,31 +78,46 @@ public class CalendarView {
     }
 
     public void printScheduleAsCalendar() {
-        int hr_int;                                 //acts as hour counter
+        int hrCounter;                                 //acts as hour counter
+        int halfHrCounter;                              //acts as 30 min counter
+
         printDaysOfTheWeek();
 
-        for (LocalTime hour : this.hoursOfTheDay) {    //can replace with more granular time
-                                                        // or while loop at smaller increment
-            hr_int = hour.getHour();
-            if(hr_int < 12) {
-                System.out.printf("%2d am", hr_int);
-            } else if (hr_int == 12) {
-                System.out.printf("%2d pm", hr_int);
+        for (LocalTime halfHr : this.halfHoursOfTheDay) {    //can replace with more granular time
+            hrCounter = halfHr.getHour();
+            halfHrCounter = halfHr.getMinute();
+
+            //Print hour-blocks on left of calendar view
+            if((hrCounter < 12) && (halfHrCounter == 0)) {
+                System.out.printf("%2d am", hrCounter);
+            } else if ((hrCounter == 12) && (halfHrCounter == 0)) {
+                System.out.printf("%2d pm", hrCounter);
+            } else if ((hrCounter > 12 ) && (halfHrCounter == 0)) {
+                System.out.printf("%2d pm", hrCounter - 12);
+            } else {
+                System.out.format("%-5s","     ");
             }
-            else {
-                System.out.printf("%2d pm", hr_int - 12);
-            }
+
+            //Print classes in calendar view
             for (String day : this.daysOfTheWeek) {
-//                System.out.format("%6s","-");   //if monday
                 for (Course course : this.schedule.getCourses()) {
                     for (MeetingTime meetingTime : course.getMeetingTimes()) {
                         if (day.equals(meetingTime.getDay().toString())) {
-                            int courseStartingHr = meetingTime.getStartTime().getHour();
-                            int courseEndingHr = meetingTime.getEndTime().getHour();
-                            if ((hr_int >= courseStartingHr) && (hr_int <= courseEndingHr)) {
-                                System.out.format("%9s %3d",course.getDepartment(),course.getCode());
+
+                            if ((halfHr.isAfter(meetingTime.getStartTime())
+                                    || halfHr.equals(meetingTime.getStartTime()))
+                                    &&
+                                    ((halfHr.isBefore(meetingTime.getEndTime())
+                                            || halfHr.equals(meetingTime.getEndTime())))) {
+                                if (halfHr.isAfter(meetingTime.getStartTime())) {
+                                    System.out.format("%-15s","............");
+                                } else {
+                                    System.out.format("%-1s%1s %-1d%-1s", ". ",course.getDepartment(),course.getCode()," .");
+//                                    System.out.format("%9s %3d", course.getDepartment(), course.getCode());
+
+                                }
                             } else {
-                                System.out.format("%9s %3s","    ", "   ");
+                                System.out.format("%-15s","            ");
                             }
                         }
                     }
@@ -94,6 +125,44 @@ public class CalendarView {
             }
             System.out.println();
         }
+        System.out.println("-----------------------------------------------------------------------------------------" +
+                "-----------------");
     }
+
+/////////////////Working at hour-increments
+//    public void printScheduleAsCalendar() {
+//        int hrCounter;                                 //acts as hour counter
+//        printDaysOfTheWeek();
+//
+//        for (LocalTime hour : this.hoursOfTheDay) {    //can replace with more granular time
+//                                                        // or while loop at smaller increment
+//            hrCounter = hour.getHour();
+//            if(hrCounter < 12) {
+//                System.out.printf("%2d am", hrCounter);
+//            } else if (hrCounter == 12) {
+//                System.out.printf("%2d pm", hrCounter);
+//            }
+//            else {
+//                System.out.printf("%2d pm", hrCounter - 12);
+//            }
+//            for (String day : this.daysOfTheWeek) {
+////                System.out.format("%6s","-");   //if monday
+//                for (Course course : this.schedule.getCourses()) {
+//                    for (MeetingTime meetingTime : course.getMeetingTimes()) {
+//                        if (day.equals(meetingTime.getDay().toString())) {
+//                            int courseStartingHr = meetingTime.getStartTime().getHour();
+//                            int courseEndingHr = meetingTime.getEndTime().getHour();
+//                            if ((hrCounter >= courseStartingHr) && (hrCounter <= courseEndingHr)) {
+//                                System.out.format("%9s %3d",course.getDepartment(),course.getCode());
+//                            } else {
+//                                System.out.format("%9s %3s","    ", "   ");
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            System.out.println();
+//        }
+//    }
 
 }

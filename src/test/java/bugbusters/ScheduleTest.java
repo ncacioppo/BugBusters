@@ -69,6 +69,19 @@ class ScheduleTest {
                 201, new Term("Spring", 2020), 'A', "Stone, Jennifer",
                 ACCT201A_meetingTimes, 3));
 
+        //HUMA 301 F
+        Set<MeetingTime> HUMA301F_meetingTimes = new HashSet<>();
+        HUMA301F_meetingTimes.add(
+                new MeetingTime(Day.TUESDAY, LocalTime.of(10,0,0),
+                        LocalTime.of(11,20,0)));
+        HUMA301F_meetingTimes.add(
+                new MeetingTime(Day.THURSDAY, LocalTime.of(10,0,0),
+                        LocalTime.of(11,20,0)));
+
+        springCourses.add(new Course(100653, "CIV/THE ARTS", "", "HUMA",
+                301, new Term("Spring", 2020), 'F', "Munson, Paul",
+                HUMA301F_meetingTimes, 3));
+
         //COMP 244 B
         Set<MeetingTime> COMP244B_meetingTimes = new HashSet<>();
         COMP244B_meetingTimes.add(
@@ -81,6 +94,7 @@ class ScheduleTest {
         springCourses.add(new Course(927348, "DATABASE MGT SYSTEMS", "", "COMP",
                 244, new Term("Spring", 2020), 'B', "Al Moakar, Lory",
                 COMP244B_meetingTimes, 3));
+
 
         //sanity check: print each course TODO:delete after testing
         for(Course c : springCourses) {

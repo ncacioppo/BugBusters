@@ -39,19 +39,19 @@ public class CalendarView {
         System.out.format("%-15s","");             //15 spaces
         for(String day : this.daysOfTheWeek) {
             if(day.equals("MONDAY")) {
-                System.out.format("%-20s","Mon");       //System.out.format("%-10s","Mon");
+                System.out.format("%-18s","Mon");       //System.out.format("%-10s","Mon");
             }
             if(day.equals("TUESDAY")) {
-                System.out.format("%-20s","Tue");     //System.out.format("%6s","Tue");
+                System.out.format("%-18s","Tue");     //System.out.format("%6s","Tue");
             }
             if(day.equals("WEDNESDAY")) {
-                System.out.format("%-20s","Wed");        //System.out.format("%13s","Wed");
+                System.out.format("%-18s","Wed");        //System.out.format("%13s","Wed");
             }
             if(day.equals("THURSDAY")) {
-                System.out.format("%-20s","Thu");        //System.out.format("%13s","Thu");
+                System.out.format("%-18s","Thu");        //System.out.format("%13s","Thu");
             }
             if(day.equals("FRIDAY")) {
-                System.out.format("%-20s\n","Fri");        //System.out.format("%13s","Fri");
+                System.out.format("%-18s\n","Fri");        //System.out.format("%13s","Fri");
             }
         }
         System.out.println("-----------------------------------------------------------------------------------------" +
@@ -77,6 +77,7 @@ public class CalendarView {
         return hours;
     }
 
+    /*
     public void printScheduleAsCalendar() {
         int hrCounter;                                 //acts as hour counter
         int halfHrCounter;                              //acts as 30 min counter
@@ -129,40 +130,42 @@ public class CalendarView {
                 "-----------------");
     }
 
+     */
+
 /////////////////Working at hour-increments
-//    public void printScheduleAsCalendar() {
-//        int hrCounter;                                 //acts as hour counter
-//        printDaysOfTheWeek();
-//
-//        for (LocalTime hour : this.hoursOfTheDay) {    //can replace with more granular time
-//                                                        // or while loop at smaller increment
-//            hrCounter = hour.getHour();
-//            if(hrCounter < 12) {
-//                System.out.printf("%2d am", hrCounter);
-//            } else if (hrCounter == 12) {
-//                System.out.printf("%2d pm", hrCounter);
-//            }
-//            else {
-//                System.out.printf("%2d pm", hrCounter - 12);
-//            }
-//            for (String day : this.daysOfTheWeek) {
-////                System.out.format("%6s","-");   //if monday
-//                for (Course course : this.schedule.getCourses()) {
-//                    for (MeetingTime meetingTime : course.getMeetingTimes()) {
-//                        if (day.equals(meetingTime.getDay().toString())) {
-//                            int courseStartingHr = meetingTime.getStartTime().getHour();
-//                            int courseEndingHr = meetingTime.getEndTime().getHour();
-//                            if ((hrCounter >= courseStartingHr) && (hrCounter <= courseEndingHr)) {
-//                                System.out.format("%9s %3d",course.getDepartment(),course.getCode());
-//                            } else {
-//                                System.out.format("%9s %3s","    ", "   ");
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//            System.out.println();
-//        }
-//    }
+    public void printScheduleAsCalendar() {
+        int hrCounter;                                 //acts as hour counter
+        printDaysOfTheWeek();
+
+        for (LocalTime hour : this.hoursOfTheDay) {    //can replace with more granular time
+                                                        // or while loop at smaller increment
+            hrCounter = hour.getHour();
+            if(hrCounter < 12) {
+                System.out.printf("%2d am", hrCounter);
+            } else if (hrCounter == 12) {
+                System.out.printf("%2d pm", hrCounter);
+            }
+            else {
+                System.out.printf("%2d pm", hrCounter - 12);
+            }
+            for (String day : this.daysOfTheWeek) {
+//                System.out.format("%6s","-");   //if monday
+                for (Course course : this.schedule.getCourses()) {
+                    for (MeetingTime meetingTime : course.getMeetingTimes()) {
+                        if (day.equals(meetingTime.getDay().toString())) {
+                            int courseStartingHr = meetingTime.getStartTime().getHour();
+                            int courseEndingHr = meetingTime.getEndTime().getHour();
+                            if ((hrCounter >= courseStartingHr) && (hrCounter <= courseEndingHr)) {
+                                System.out.format("%9s %3d",course.getDepartment(),course.getCode());
+                            } else {
+                                System.out.format("%9s %3s","    ", "   ");
+                            }
+                        }
+                    }
+                }
+            }
+            System.out.println();
+        }
+    }
 
 }

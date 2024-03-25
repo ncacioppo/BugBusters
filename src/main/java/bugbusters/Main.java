@@ -104,7 +104,7 @@ public class Main {
                         System.out.println("TIME not implemented yet");
                         break;
                     default:
-                        System.out.println("Searching by " + filter + "is not currently supported.");
+                        System.out.println("Searching by " + filter + " is not currently supported.");
                 }
             }
 

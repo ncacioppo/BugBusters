@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0822d3a5-b7ab-44d1-a113-8f29c6569b1a" name="Changes" comment="Started logic for byTerm." />
+    <list default="true" id="0822d3a5-b7ab-44d1-a113-8f29c6569b1a" name="Changes" comment="Started logic for byTerm.">
+      <change beforePath="$PROJECT_DIR$/src/main/java/bugbusters/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bugbusters/Main.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -105,7 +107,7 @@
       <recent name="bugbusters" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.SearchTest.byDepartment">
+  <component name="RunManager">
     <configuration name="SearchTest.byDepartment" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -204,9 +206,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.SearchTest.byDepartment" />
         <item itemvalue="Gradle.SearchTest.byKeyword" />
         <item itemvalue="Gradle.SearchTest.byName" />
-        <item itemvalue="Gradle.SearchTest.byDepartment" />
         <item itemvalue="Gradle.SearchTest.byProfessor" />
       </list>
     </recent_temporary>

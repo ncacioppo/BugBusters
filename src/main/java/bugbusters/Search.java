@@ -119,7 +119,12 @@ public class Search {
 
     public List<Course> byTerm(List<Course> courses, String term) {
         ArrayList<Course> out = new ArrayList<>();
+
+        System.out.println(term);
+
         Term query = new Term(term);
+        System.out.println(query);
+
 
         for (Course course : courses){
             if (course.getTerm().equals(query)){
@@ -161,20 +166,24 @@ public class Search {
         List<Course> results = new ArrayList<>();
 
         for (Course course : courses) {
-            Set<MeetingTime> courseMeetingTimes = course.getMeetingTimes();
+            if (course.getMeetingTimes() == null){
+//                results.add(course);
+            } else {
+                Set<MeetingTime> courseMeetingTimes = course.getMeetingTimes();
 
-            boolean correctDay = false;
+                boolean correctDay = false;
 
-            for (MeetingTime time : courseMeetingTimes){
-                if (time.getDay().toString().toLowerCase().equals(day.toLowerCase())) {
-                    correctDay = true;
-                    break;
+                for (MeetingTime time : courseMeetingTimes) {
+                    if (time.getDay().toString().toLowerCase().equals(day.toLowerCase())) {
+                        correctDay = true;
+                        break;
+                    }
                 }
-            }
 
-            if (correctDay) {
-                if (!results.contains(course)) {
-                    results.add(course);
+                if (correctDay) {
+                    if (!results.contains(course)) {
+                        results.add(course);
+                    }
                 }
             }
         }

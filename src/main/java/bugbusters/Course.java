@@ -127,7 +127,7 @@ public class Course {
             int endMinute = Integer.parseInt((endTime.split(":"))[1]);
             LocalTime end = LocalTime.of(endHour, endMinute);
 
-            for (int i = 10; i <= 14; i++) {
+            for (int i = 9; i <= 13; i++) {
                 if (data.get(i).length() > 0) {
                     times.add(new MeetingTime(toDay(data.get(i)), start, end));
                 }
@@ -231,7 +231,7 @@ public class Course {
     private Day toDay(String dayChar){
         Day out;
 
-        switch (dayChar) {
+        switch (dayChar.toUpperCase()) {
             case "M":
                 out = Day.MONDAY;
                 break;
@@ -248,6 +248,7 @@ public class Course {
                 out = Day.FRIDAY;
                 break;
             default:
+                System.out.println(dayChar);
                 out = Day.NONE;
         }
 

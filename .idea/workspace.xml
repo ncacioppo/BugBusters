@@ -4,14 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0822d3a5-b7ab-44d1-a113-8f29c6569b1a" name="Changes" comment="Started logic for byTerm.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bugbusters/Course.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bugbusters/Course.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bugbusters/Day.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bugbusters/Day.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bugbusters/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bugbusters/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bugbusters/Search.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bugbusters/Search.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/bugbusters/Term.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bugbusters/Term.java" afterDir="false" />
-    </list>
+    <list default="true" id="0822d3a5-b7ab-44d1-a113-8f29c6569b1a" name="Changes" comment="Started logic for byTerm." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -79,28 +72,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.BugBusters [:Main.main()].executor": "Run",
-    "Gradle.Build BugBusters.executor": "Run",
-    "Gradle.CourseTest.executor": "Run",
-    "Gradle.MeetingTimeTest.executor": "Run",
-    "Gradle.SearchTest.byDepartment.executor": "Run",
-    "Gradle.SearchTest.byKeyword.executor": "Run",
-    "Gradle.SearchTest.byName.executor": "Run",
-    "Gradle.SearchTest.byProfessor.executor": "Run",
-    "Gradle.SearchTest.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
-    "git-widget-placeholder": "BUG-9",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/CACIOPPOND21/IdeaProjects/BugBusters/src/main/java/bugbusters",
-    "onboarding.tips.debug.path": "C:/Users/CACIOPPOND21/IdeaProjects/BugBusters/src/main/java/Main.java",
-    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.BugBusters [:Main.main()].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Build BugBusters.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.CourseTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.MeetingTimeTest.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.SearchTest.byDepartment.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.SearchTest.byKeyword.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.SearchTest.byName.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.SearchTest.byProfessor.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.SearchTest.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;BUG-9&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/CACIOPPOND21/IdeaProjects/BugBusters/src/main/java/bugbusters&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/CACIOPPOND21/IdeaProjects/BugBusters/src/main/java/Main.java&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.gradle&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\CACIOPPOND21\IdeaProjects\BugBusters\src\main\java\bugbusters" />
@@ -112,7 +105,7 @@
       <recent name="bugbusters" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Gradle.SearchTest.byDepartment">
     <configuration name="SearchTest.byDepartment" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />

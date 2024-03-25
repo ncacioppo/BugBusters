@@ -4,11 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0822d3a5-b7ab-44d1-a113-8f29c6569b1a" name="Changes" comment="Started logic for byTerm." />
+    <list default="true" id="0822d3a5-b7ab-44d1-a113-8f29c6569b1a" name="Changes" comment="Calendar view at hour increments with 3 courses">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bugbusters/CollegeYear.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bugbusters/CollegeYear.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/bugbusters/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bugbusters/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/bugbusters/UserTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/bugbusters/UserTest.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CoverageOptionsProvider">
+    <option name="myAddOrReplace" value="1" />
   </component>
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
@@ -78,6 +86,8 @@
     "Gradle.SearchTest.byKeyword.executor": "Run",
     "Gradle.SearchTest.byName.executor": "Run",
     "Gradle.SearchTest.byProfessor.executor": "Run",
+    "Gradle.UserTest.getCollegeYear.executor": "Run",
+    "Gradle.UserTest.getEmptyCollegeYear.executor": "Coverage",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
@@ -100,7 +110,7 @@
       <recent name="bugbusters" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.SearchTest.byKeyword">
+  <component name="RunManager" selected="Gradle.UserTest.getCollegeYear">
     <configuration name="SearchTest.byDepartment" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -173,7 +183,7 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="SearchTest.byProfessor" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="UserTest.getCollegeYear" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -186,7 +196,31 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;bugbusters.SearchTest.byProfessor&quot;" />
+            <option value="&quot;bugbusters.UserTest.getCollegeYear&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="UserTest.getEmptyCollegeYear" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;bugbusters.UserTest.getEmptyCollegeYear&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -199,6 +233,8 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.UserTest.getCollegeYear" />
+        <item itemvalue="Gradle.UserTest.getEmptyCollegeYear" />
         <item itemvalue="Gradle.SearchTest.byKeyword" />
         <item itemvalue="Gradle.SearchTest.byName" />
         <item itemvalue="Gradle.SearchTest.byDepartment" />
@@ -302,6 +338,22 @@
     <MESSAGE value="Added code for searching by keyword. Will test later." />
     <MESSAGE value="Added logic for search by department, professor, and course name. Will be testing this weekend." />
     <MESSAGE value="Started logic for byTerm." />
-    <option name="LAST_COMMIT_MESSAGE" value="Started logic for byTerm." />
+    <MESSAGE value="Calendar view at hour increments with 3 courses" />
+    <option name="LAST_COMMIT_MESSAGE" value="Calendar view at hour increments with 3 courses" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/bugbusters/User.java</url>
+          <line>51</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/BugBusters$UserTest_getEmptyCollegeYear.ic" NAME="UserTest.getEmptyCollegeYear Coverage Results" MODIFIED="1711377010340" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/BugBusters$UserTest_getCollegeYear.ic" NAME="UserTest.getCollegeYear Coverage Results" MODIFIED="1711377188011" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
   </component>
 </project>

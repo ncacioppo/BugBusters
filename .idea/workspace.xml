@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0822d3a5-b7ab-44d1-a113-8f29c6569b1a" name="Changes" comment="Started logic for byTerm." />
+    <list default="true" id="0822d3a5-b7ab-44d1-a113-8f29c6569b1a" name="Changes" comment="Started logic for byTerm.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -78,6 +80,7 @@
     "Gradle.SearchTest.byKeyword.executor": "Run",
     "Gradle.SearchTest.byName.executor": "Run",
     "Gradle.SearchTest.byProfessor.executor": "Run",
+    "Gradle.SearchTest.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
@@ -100,7 +103,7 @@
       <recent name="bugbusters" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.SearchTest.byKeyword">
+  <component name="RunManager">
     <configuration name="SearchTest.byDepartment" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />

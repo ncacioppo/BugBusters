@@ -18,8 +18,16 @@ public class Term {
         this.year = scn.nextInt();
     }
 
-    public boolean equals(Term other) {
-        return (this.season.equals(other.season)) && (this.year == other.year);
+    public boolean equals(Object other) {
+        if (!(other instanceof Term t)) {
+            return false;
+        }
+        if (!(season.equals(t.season))) {
+            return false;
+        } else if (!(year == t.year)) {
+            return false;
+        }
+        return true;
     }
 
     // Format: SPRING 2024

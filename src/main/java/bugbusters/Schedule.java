@@ -43,7 +43,7 @@ public class Schedule {
         return courses;
     }
 
-    private boolean isValid(){
+    public boolean isValid(){
         // loop through our courses
         for (Course course1 : courses) {
             Set<MeetingTime> course1Times = course1.getMeetingTimes();
@@ -141,7 +141,7 @@ public class Schedule {
         StringBuilder sb = new StringBuilder();
         sb.append(name).append("\n").append(term).append("\n");
         for (Course course : courses) {
-            sb.append(course).append("\n");
+            sb.append(course.toString()).append("\n");
         }
         sb.append("\n");
         return sb.toString();

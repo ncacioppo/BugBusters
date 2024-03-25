@@ -110,7 +110,7 @@
       <recent name="bugbusters" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.UserTest.getCollegeYear">
+  <component name="RunManager">
     <configuration name="SearchTest.byDepartment" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />

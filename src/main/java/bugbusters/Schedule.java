@@ -126,6 +126,7 @@ public class Schedule {
         return null;
     }
 
+    @Override
     public boolean equals(Object other){
         if (!(other instanceof Schedule schedule)) {
             return false;
@@ -137,6 +138,7 @@ public class Schedule {
         } else return courses.equals(schedule.courses);
     }
 
+    @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
         sb.append(name).append("\n").append(term).append("\n");

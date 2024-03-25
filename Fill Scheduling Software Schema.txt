@@ -1,0 +1,63 @@
+# Fills schemabugbuster:
+     # department table with some sample data
+     # major table with some sample data
+     # minor table with some sample data
+
+use schemabugbuster;
+
+# Fill department table with sample data
+INSERT INTO department VALUES('COMP');
+INSERT INTO department VALUES('DSCI');
+INSERT INTO department VALUES('MNGT');
+INSERT INTO department VALUES('ACCT');
+INSERT INTO department VALUES('RELI');
+INSERT INTO department VALUES('PHIL');
+INSERT INTO department VALUES('BIOL');
+INSERT INTO department VALUES('INBS');
+INSERT INTO department VALUES('COMM');
+INSERT INTO department VALUES('EDUC');
+INSERT INTO department VALUES('ELEE');
+INSERT INTO department VALUES('ENGL');
+INSERT INTO department VALUES('MATH');
+INSERT INTO department VALUES('MECE');
+INSERT INTO department VALUES('HIST');
+INSERT INTO department VALUES('STAT');
+INSERT INTO department VALUES('MARK');
+INSERT INTO department VALUES('CHEM');
+INSERT INTO department VALUES('POLS');
+INSERT INTO department VALUES('THEA');
+INSERT INTO department VALUES('EXER');
+INSERT INTO department VALUES('ECON');
+
+
+# Fill major table with sample data
+INSERT INTO major(MajorID,ArtSci,Title,Dept) VALUES(100001,'Science','Computer Science','COMP');
+INSERT INTO major(MajorID,ArtSci,Title,Dept) VALUES(100002,'Science','Data Science','DSCI');
+INSERT INTO major(MajorID,ArtSci,Title,Dept) VALUES(100003,'Science','Business Statistics','MNGT');
+INSERT INTO major(MajorID,ArtSci,Title,Dept) VALUES(100004,'Science','Accounting','ACCT');
+INSERT INTO major(MajorID,ArtSci,Title,Dept) VALUES(100005,'Arts','Biblical and Religious Studies','RELI');
+INSERT INTO major(MajorID,ArtSci,Title,Dept) VALUES(100006,'Arts','Philosophy','PHIL');
+INSERT INTO major(MajorID,ArtSci,Title,Dept) VALUES(100007,'Science','Biology/Health','BIOL');
+INSERT INTO major(MajorID,ArtSci,Title,Dept) VALUES(100008,'Science','International Business','INBS');
+INSERT INTO major(MajorID,ArtSci,Title,Dept) VALUES(100009,'Arts','Communication Arts','COMM');
+INSERT INTO major(MajorID,Title,Dept) VALUES(100010,'Elementary Education','EDUC');
+INSERT INTO major(MajorID,ArtSci,Title,Dept) VALUES(100011,'Science','Electrical Engineering','ELEE');
+INSERT INTO major(MajorID,ArtSci,Title,Dept) VALUES(100012,'Arts','English','ENGL');
+INSERT INTO major(MajorID,ArtSci,Title,Dept) VALUES(100013,'Science','Mathematics','MATH');
+INSERT INTO major(MajorID,ArtSci,Title,Dept) VALUES(100014,'Science','Mechanical Engineering','MECE');
+INSERT INTO major(MajorID,ArtSci,Title,Dept) VALUES(100015,'Arts','History','HIST');
+INSERT INTO major(MajorID,ArtSci,Title,Dept,StartYear) VALUES(100016,'Science','Applied Statistics','STAT',2024);
+
+# Fill minor table with sample data
+INSERT INTO minor(MinorID,Title,Dept) VALUES(600001,'Computer Science','COMP');
+INSERT INTO minor(MinorID,Title,Dept) VALUES(600002,'Cybersecurity','COMP');
+INSERT INTO minor(MinorID,Title,Dept) VALUES(600003,'Data Science','DSCI');
+INSERT INTO minor(MinorID,Title,Dept) VALUES(600004,'Biblical and Religious Studies','RELI');
+INSERT INTO minor(MinorID,Title,Dept) VALUES(600005,'Philosophy','PHIL');
+INSERT INTO minor(MinorID,Title,Dept) VALUES(600006,'Economics','ECON');
+INSERT INTO minor(MinorID,Title,Dept) VALUES(600007,'Marketing','MARK');
+INSERT INTO minor(MinorID,Title,Dept) VALUES(600008,'Chemistry','CHEM');
+INSERT INTO minor(MinorID,Title,Dept) VALUES(600009,'Pre-Law','POLS');
+INSERT INTO minor(MinorID,Title,Dept) VALUES(600010,'Mobile Development','COMP');
+INSERT INTO minor(MinorID,Title,Dept) VALUES(600011,'Theatre','THEA');
+INSERT INTO minor(MinorID,Title,Dept) VALUES(600012,'Exercise Science','EXER');

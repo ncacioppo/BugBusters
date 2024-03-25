@@ -24,7 +24,8 @@ public class User {
         this.lastName = "";
         this.majors = new ArrayList<Major>();
         this.minors = new ArrayList<Minor>();
-        this.registrar = new Registrar();
+        //TODO: note that this is hard-coded for u222222
+        this.registrar = new Registrar("schemaBugBuster","u222222","p222222");
     }
 
     private void setFirstName(String firstName){

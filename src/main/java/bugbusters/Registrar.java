@@ -12,11 +12,36 @@ public class Registrar {
     private static ArrayList<Course> courses;
     private static Connection conn;
 
-    public Registrar() {
-        majors = new ArrayList<>();
-        minors = new ArrayList<>();
+    public Registrar(String schema, String username, String password) {
+        if(!connectToDB(schema, username, password)) {
+            System.out.println("Unable to connect to database");
+            majors = getSampleMajors();
+            minors = getSampleMinors();
+            //TODO: move a sample courses section in here
+        }
+        majors = getMajors();
+        minors = getMinors();
         courses = new ArrayList<>();
-        conn = null;
+    }
+
+    private ArrayList<String> getSampleMajors() {
+        ArrayList<String> sampleMajors = new ArrayList<String>();
+        sampleMajors.add("B.S. in Computer Science");
+        sampleMajors.add("B.S. in Business Statistics");
+        sampleMajors.add("B.S. in Social Work");
+        sampleMajors.add("B.S. in Biology");
+
+        return sampleMajors;
+    }
+
+    private ArrayList<String> getSampleMinors() {
+        ArrayList<String> sampleMinors = new ArrayList<String>();
+        sampleMinors.add("Computer Science");
+        sampleMinors.add("Philosophy");
+        sampleMinors.add("Cybersecurity");
+        sampleMinors.add("Pre-Law");
+
+        return sampleMinors;
     }
 
     private static boolean connectToDB(String schema, String username, String password) {
@@ -29,12 +54,11 @@ public class Registrar {
             info.put("user", username);
             info.put("password", password);
 
-
             //Connect to the database (schemabugbuster)
             conn = DriverManager.getConnection("jdbc:mysql://CSDB1901/" + "schemaBugBuster", info);
-//            conn = DriverManager.getConnection("jdbc:mysql://CSDB1901/" + schema, info);
             //TODO: delete this print statement after testing
             System.out.println("Connection successful");
+
         } catch(SQLException e) {
             //TODO: delete this print statement after testing
             System.out.println("Connection unsuccessful");
@@ -67,17 +91,6 @@ public class Registrar {
      * @return set of major names
      */
     public static ArrayList<String> getMajors() {
-//        if(!connectToDB()) {
-//            System.out.println("Unable to connect to database");
-//            return null;
-//        }
-        //TODO: delete below after testing
-        majors = new ArrayList<String>();
-        majors.add("B.S. in Computer Science");
-        majors.add("B.S. in Business Statistics");
-        majors.add("B.S. in Social Work");
-        majors.add("B.S. in Biology");
-
         return majors;
     }
     public int[] getReqYrs() {
@@ -120,8 +133,8 @@ public class Registrar {
         return courses;
     }
 
-//    public static void main(String[] args) {
-//        System.out.println(connectToDB("schemaBugBuster","u222222","p222222"));
-//        System.out.println(disconnectFromDB());
-//    }
+    public static void main(String[] args) {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        System.out.println(disconnectFromDB());
+    }
 }

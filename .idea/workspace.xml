@@ -237,7 +237,6 @@
         <item itemvalue="Gradle.UserTest.getEmptyCollegeYear" />
         <item itemvalue="Gradle.SearchTest.byKeyword" />
         <item itemvalue="Gradle.SearchTest.byName" />
-        <item itemvalue="Gradle.SearchTest.byDepartment" />
         <item itemvalue="Gradle.SearchTest.byProfessor" />
       </list>
     </recent_temporary>

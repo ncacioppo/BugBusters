@@ -222,12 +222,12 @@ class SearchTest {
         courses.add(new Course(1, "physics", "101", "PHYS", 38888, courseTerm, 'A', "Brower", firstCourseTimes, 4));
         courses.add(new Course(2, "calc", "163", "MATH", 38889, courseTerm, 'A', "McIntyre", secondCourseTimes, 4));
 
-        assertTrue(search.withinTime(courses, "10:00:00", "15:00:00").size() == 2);
-        assertTrue(search.withinTime(courses, "10:00:00", "10:50:00").size() == 1);
-        assertTrue(search.withinTime(courses, "10:00:00", "10:30:00").size() == 0);
-        assertTrue(search.withinTime(courses, "10:30:00", "13:50:00").size() == 1);
-        assertTrue(search.withinTime(courses, "13:00:00", "13:50:00").size() == 1);
-        assertTrue(search.withinTime(courses, "13:00:00", "13:01:00").size() == 0);
+        assertTrue(search.withinTime(courses, "10:00:00-15:00:00").size() == 2);
+        assertTrue(search.withinTime(courses, "10:00:00-10:50:00").size() == 1);
+        assertTrue(search.withinTime(courses, "10:00:00-10:30:00").size() == 0);
+        assertTrue(search.withinTime(courses, "10:30:00-13:50:00").size() == 1);
+        assertTrue(search.withinTime(courses, "13:00:00-13:50:00").size() == 1);
+        assertTrue(search.withinTime(courses, "13:00:00-13:01:00").size() == 0);
     }
 
     @Test

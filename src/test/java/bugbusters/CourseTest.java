@@ -7,7 +7,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CourseTest {
+class  CourseTest {
 
     @Test
     void getId() {

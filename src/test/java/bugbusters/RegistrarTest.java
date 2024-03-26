@@ -17,6 +17,10 @@ class RegistrarTest {
 
     @Test
     void getReqYrs() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        registrar.setReqYrsFromCurrent();
+//        int[] currReqYrs = new int[]
+//        assertEquals(, registrar.getReqYrs());
     }
 
     @Test

@@ -7,19 +7,47 @@ import java.util.List;
 import java.util.Properties;
 
 public class Registrar {
-    private static ArrayList<String> majors;  //may want to use list indexing if more efficient
-    private static ArrayList<String> minors;
-    private static ArrayList<Course> courses;
-    private static Connection conn;
+    private ArrayList<String> majors;  //may want to use list indexing if more efficient
+    private ArrayList<String> minors;
+    private ArrayList<Course> courses;
+    private Connection conn;
 
-    public Registrar() {
-        majors = new ArrayList<>();
-        minors = new ArrayList<>();
-        courses = new ArrayList<>();
-        conn = null;
+    public Registrar(String schema, String username, String password) {
+        if(!connectToDB(schema, username, password)) {
+            System.out.println("Unable to connect to database");
+            majors = getSampleMajors();
+            minors = getSampleMinors();
+            //TODO: move a sample courses section in here
+        } else {
+            majors = new ArrayList<>();
+            minors = new ArrayList<>();
+            setMajorsFromDB();
+//            minors = getMinors();
+            courses = new ArrayList<>();
+        }
     }
 
-    private static boolean connectToDB(String schema, String username, String password) {
+    private ArrayList<String> getSampleMajors() {
+        ArrayList<String> sampleMajors = new ArrayList<String>();
+        sampleMajors.add("B.S. in Computer Science");
+        sampleMajors.add("B.S. in Business Statistics");
+        sampleMajors.add("B.S. in Social Work");
+        sampleMajors.add("B.S. in Biology");
+
+        return sampleMajors;
+    }
+
+    private ArrayList<String> getSampleMinors() {
+        ArrayList<String> sampleMinors = new ArrayList<String>();
+        sampleMinors.add("Computer Science");
+        sampleMinors.add("Philosophy");
+        sampleMinors.add("Cybersecurity");
+        sampleMinors.add("Pre-Law");
+
+        return sampleMinors;
+    }
+
+    private boolean connectToDB(String schema, String username, String password) {
         try {
             //Get a properties variable so that we can pass the username and password to
             // the database.
@@ -29,12 +57,11 @@ public class Registrar {
             info.put("user", username);
             info.put("password", password);
 
-
             //Connect to the database (schemabugbuster)
             conn = DriverManager.getConnection("jdbc:mysql://CSDB1901/" + "schemaBugBuster", info);
-//            conn = DriverManager.getConnection("jdbc:mysql://CSDB1901/" + schema, info);
             //TODO: delete this print statement after testing
             System.out.println("Connection successful");
+
         } catch(SQLException e) {
             //TODO: delete this print statement after testing
             System.out.println("Connection unsuccessful");
@@ -44,7 +71,7 @@ public class Registrar {
         return true;
     }
 
-    private static boolean disconnectFromDB() {
+    public boolean disconnectFromDB() {
         try {
             if (conn != null) {
                 conn.close();
@@ -61,24 +88,36 @@ public class Registrar {
     }
 
     /**
-     * Calls connectToDB() and pulls major titles into a set
+     * Calls connectToDB() and pulls major titles into an ArrayList
      * B.S. in Computer Science, B.A. in Computer Science, or B.S. in Data Science
      * combines ex. "B.S." + " in " + "Computer Science"
      * @return set of major names
      */
-    public static ArrayList<String> getMajors() {
-//        if(!connectToDB()) {
-//            System.out.println("Unable to connect to database");
-//            return null;
-//        }
-        //TODO: delete below after testing
-        majors = new ArrayList<String>();
-        majors.add("B.S. in Computer Science");
-        majors.add("B.S. in Business Statistics");
-        majors.add("B.S. in Social Work");
-        majors.add("B.S. in Biology");
+    private void setMajorsFromDB() {
+        try {
+            PreparedStatement ps = conn.prepareStatement("" +
+                    "SELECT ArtSci, Title FROM major");
+            ResultSet rs = ps.executeQuery();
 
-        return majors;
+            while(rs.next()) {
+                String artsci = rs.getString(1);
+                String title = rs.getString(2);
+                String output;
+
+                if (artsci == null) {
+                    output = title;
+                } else if (artsci.equals("Arts")) {
+                    output = "B.A. in " + title;
+                } else {
+                    output = "B.S. in " + title;
+                }
+                majors.add(output);
+            }
+
+        } catch(SQLException e) {
+            System.out.println("Failed to select majors from database.");
+            System.out.println(e.getMessage());
+        }
     }
     public int[] getReqYrs() {
         //TODO: factcheck this. may need to get from db
@@ -95,12 +134,16 @@ public class Registrar {
     }
 
     public boolean isMajor(String newMajor) {
-        for(String major : Registrar.getMajors()) {
+        for(String major : majors) {
             if(major.equals(newMajor)) {
                 return true;
             }
         }
         return false;
+    }
+
+    public ArrayList<String> getMajors() {
+        return majors;
     }
 
     public boolean isReqYr(int reqYr) {
@@ -112,16 +155,16 @@ public class Registrar {
         return false;
     }
 
-    public static ArrayList<String> getMinors() {
+    public ArrayList<String> getMinors() {
         return minors;
     }
 
-    public static ArrayList<Course> getCourses() {
+    public ArrayList<Course> getCourses() {
         return courses;
     }
 
-//    public static void main(String[] args) {
-//        System.out.println(connectToDB("schemaBugBuster","u222222","p222222"));
-//        System.out.println(disconnectFromDB());
-//    }
+    public static void main(String[] args) {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        System.out.println(registrar.disconnectFromDB());
+    }
 }

@@ -22,7 +22,7 @@ public class Registrar {
             majors = new ArrayList<>();
             minors = new ArrayList<>();
             setMajorsFromDB();
-//            minors = getMinors();
+            setMinorsFromDB();
             courses = new ArrayList<>();
         }
     }
@@ -119,6 +119,31 @@ public class Registrar {
             System.out.println(e.getMessage());
         }
     }
+
+
+    /**
+     * Calls connectToDB() and pulls minor titles into an ArrayList
+     * @return set of major names
+     */
+    private void setMinorsFromDB() {
+        try {
+            PreparedStatement ps = conn.prepareStatement("" +
+                    "SELECT Title FROM minor");
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()) {
+                String title = rs.getString(1);
+                minors.add(title);
+            }
+
+        } catch(SQLException e) {
+            System.out.println("Failed to select minors from database.");
+            System.out.println(e.getMessage());
+        }
+    }
+
+
+
     public int[] getReqYrs() {
         //TODO: factcheck this. may need to get from db
         int endYr = Year.now().getValue();

@@ -14,6 +14,14 @@ class RegistrarTest {
             System.out.println(major);
         }
     }
+    @Test
+    void getMinors() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+
+        for (String minor : registrar.getMinors()) {
+            System.out.println(minor);
+        }
+    }
 
     @Test
     void getReqYrs() {
@@ -25,10 +33,6 @@ class RegistrarTest {
 
     @Test
     void isReqYr() {
-    }
-
-    @Test
-    void getMinors() {
     }
 
     @Test

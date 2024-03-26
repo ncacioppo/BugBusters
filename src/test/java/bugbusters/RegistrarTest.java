@@ -17,6 +17,11 @@ class RegistrarTest {
         Time actual = registrar.parseTimeAttribute("1/1/1900 16:00", "2018-2019_GCC_Courses.csv");
 
         assertEquals(expected.getTime(),actual.getTime());
+
+        expected = Time.valueOf(LocalTime.of(15,50,0));
+        actual = registrar.parseTimeAttribute("3:50:00 PM", "2019-2020_GCC_Courses.csv");
+
+        assertEquals(expected.getTime(),actual.getTime());
     }
 
     @Test

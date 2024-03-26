@@ -356,6 +356,7 @@ public class Registrar {
         int hour = 0;
         int minute = 0;
         int second = 0;
+        String AM_PM = "AM";
 
         String inputTimeStr = (String) inputTime;
 
@@ -371,6 +372,22 @@ public class Registrar {
                 if (timeScanner.hasNext()) {minute = timeScanner.nextInt();}
                 return Time.valueOf(LocalTime.of(hour, minute, second));
             }
+        }
+
+        if ((filename == "2019-2020_GCC_Courses.csv") ||
+                (filename == "2020-2021_GCC_Courses.csv")) {      //expect format "3:50:00 PM"
+            Scanner scanner = new Scanner(inputTimeStr);
+            scanner.useDelimiter(" ");
+            if (scanner.hasNext()) {
+                String time = scanner.next();
+                Scanner timeScanner = new Scanner(time);
+                timeScanner.useDelimiter(":");
+                if (timeScanner.hasNext()) {hour = timeScanner.nextInt();}
+                if (timeScanner.hasNext()) {minute = timeScanner.nextInt();}
+                if (timeScanner.hasNext()) {second = timeScanner.nextInt();}
+            }
+            if (scanner.hasNext()) {AM_PM = scanner.next();}
+            if (AM_PM.equals("PM")) {hour += 12;}
         }
         return Time.valueOf(LocalTime.of(hour, minute, second));
     }

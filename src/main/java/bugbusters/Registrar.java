@@ -32,7 +32,7 @@ public class Registrar {
 
     private void setReqYearsFromDB() {
         int[] minMaxYrs = new int[2];
-        getCourseYearsFromDB(minMaxYrs);
+        minMaxYrs = getCourseYearsFromDB(minMaxYrs);
         try {
             setReqYrs(minMaxYrs[0],minMaxYrs[1]);
         } catch (NullPointerException e) {
@@ -127,7 +127,6 @@ public class Registrar {
      * Calls connectToDB() and pulls major titles into an ArrayList
      * B.S. in Computer Science, B.A. in Computer Science, or B.S. in Data Science
      * combines ex. "B.S." + " in " + "Computer Science"
-     * @return set of major names
      */
     private void setMajorsFromDB() {
         try {
@@ -161,9 +160,9 @@ public class Registrar {
         setReqYrs(startYr,endYr);
     }
     private void setReqYrs(int startYr, int endYr) {
-        int[] reqYrs = new int[endYr-startYr];
+        int[] reqYrs = new int[endYr-startYr+2];    //preceding year through this year
 
-        int currYr = startYr;
+        int currYr = startYr - 1;
         for(int i = 0; i < reqYrs.length; i++) {
             reqYrs[i] = currYr;
             currYr += 1;

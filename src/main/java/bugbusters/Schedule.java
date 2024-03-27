@@ -102,10 +102,11 @@ public class Schedule {
         return null;
     }
 
-    public Course removeCourse(int code){
+    // do we need this when we have a remove by object reference?
+    public Course removeCourse(int id){
         Course removed;
         for (int i = 0; i < courses.size(); i++) {
-            if (courses.get(i).getCode() == code) {
+            if (courses.get(i).getId() == id) {
                 removed = courses.get(i);
                 courses.remove(i);
                 return removed;
@@ -114,6 +115,7 @@ public class Schedule {
         return null;
     }
 
+    // same here?
     public Course removeCourse(String courseName){
         Course removed;
         for (int i = 0; i < courses.size(); i++) {

@@ -333,4 +333,17 @@ public class Course {
         return out;
     }
 
+    public String forPDf(MeetingTime meetingTime) {
+
+        String out = name + "\n" +
+                department + " " + code + " " + section + "\n" +
+                "Instructor: " + instructor + "\n";
+
+        if (meetingTime != null){
+            out = out + "Meeting Time: " + meetingTime.toString() + "\n";
+        }
+
+        return out;
+    }
+
 }

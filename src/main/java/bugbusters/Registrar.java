@@ -3,13 +3,13 @@ package bugbusters;
 import java.sql.*;
 import java.time.Year;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 public class Registrar {
     private ArrayList<String> majors;  //may want to use list indexing if more efficient
     private ArrayList<String> minors;
     private ArrayList<Course> courses;
+    private int[] reqYears;
     private Connection conn;
 
     public Registrar(String schema, String username, String password) {
@@ -17,14 +17,49 @@ public class Registrar {
             System.out.println("Unable to connect to database");
             majors = getSampleMajors();
             minors = getSampleMinors();
+            setReqYrsFromCurrent();
             //TODO: move a sample courses section in here
         } else {
             majors = new ArrayList<>();
             minors = new ArrayList<>();
             setMajorsFromDB();
-//            minors = getMinors();
+            setReqYearsFromDB();
+            minors = getSampleMinors();
             courses = new ArrayList<>();
+//            disconnectFromDB();
         }
+    }
+
+    private void setReqYearsFromDB() {
+        int[] minMaxYrs = getCourseYearsFromDB();
+        try {
+            setReqYrs(minMaxYrs[0],minMaxYrs[1]);
+        } catch (NullPointerException e) {
+            System.out.println(e.getMessage());
+            setReqYrsFromCurrent();
+        }
+
+    }
+
+    public int[] getCourseYearsFromDB() {
+        int[] minMaxYrs = new int[2];
+
+        try {
+            PreparedStatement ps = conn.prepareStatement("" +
+                    "SELECT MIN(Year) AS minYr, MAX(Year) AS maxYr FROM course");
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()) {
+                int minYr = rs.getInt(1);
+                int maxYr = rs.getInt(2);
+                minMaxYrs[0] = minYr;
+                minMaxYrs[1] = maxYr;
+            }
+        } catch(SQLException e) {
+            System.out.println("Failed to get course years from database.");
+            System.out.println(e.getMessage());
+        }
+        return minMaxYrs;
     }
 
     private ArrayList<String> getSampleMajors() {
@@ -43,6 +78,7 @@ public class Registrar {
         sampleMinors.add("Philosophy");
         sampleMinors.add("Cybersecurity");
         sampleMinors.add("Pre-Law");
+        sampleMinors.add("Psychology");
 
         return sampleMinors;
     }
@@ -91,7 +127,6 @@ public class Registrar {
      * Calls connectToDB() and pulls major titles into an ArrayList
      * B.S. in Computer Science, B.A. in Computer Science, or B.S. in Data Science
      * combines ex. "B.S." + " in " + "Computer Science"
-     * @return set of major names
      */
     private void setMajorsFromDB() {
         try {
@@ -119,18 +154,20 @@ public class Registrar {
             System.out.println(e.getMessage());
         }
     }
-    public int[] getReqYrs() {
-        //TODO: factcheck this. may need to get from db
+    public void setReqYrsFromCurrent() {
         int endYr = Year.now().getValue();
         int startYr = Year.now().minusYears(4).getValue();
-        int[] reqYrs = new int[endYr-startYr];
+        setReqYrs(startYr,endYr);
+    }
+    private void setReqYrs(int startYr, int endYr) {
+        int[] reqYrs = new int[endYr-startYr+2];    //preceding year through this year
 
-        int currYr = startYr;
+        int currYr = startYr - 1;
         for(int i = 0; i < reqYrs.length; i++) {
             reqYrs[i] = currYr;
             currYr += 1;
         }
-        return reqYrs;
+        reqYears = reqYrs;
     }
 
     public boolean isMajor(String newMajor) {
@@ -142,9 +179,20 @@ public class Registrar {
         return false;
     }
 
+    public boolean isMinor(String newMinor) {
+        for(String minor : minors) {
+            if(minor.equals(newMinor)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public ArrayList<String> getMajors() {
         return majors;
     }
+
+    public int[] getReqYrs() {return reqYears;}
 
     public boolean isReqYr(int reqYr) {
         for(int yr : getReqYrs()){
@@ -163,8 +211,10 @@ public class Registrar {
         return courses;
     }
 
-    public static void main(String[] args) {
-        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
-        System.out.println(registrar.disconnectFromDB());
+    public void printReqYears() {
+        for (int i = 0; i < reqYears.length; i++) {
+            System.out.print(reqYears[i] + ", ");
+        }
+        System.out.print(reqYears[reqYears.length - 1]);    //print last year without following comma
     }
 }

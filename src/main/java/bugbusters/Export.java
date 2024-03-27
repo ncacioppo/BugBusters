@@ -17,24 +17,21 @@ import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class Export {
 
-    public static void main(String[] args) {
-        Search search = new Search();
-        ArrayList<Course> courses = new ArrayList<>(search.getAllCoursesFromExcel());
-        Term term = new Term("Spring", 2020);
-        Schedule schedule = new Schedule("Test", term, new ArrayList<>(courses.subList(10, 19)));
-
-//        String xmlData = generateXMLData(schedule);
-//        System.out.println(xmlData);
-        toPDF(schedule, "TEST2.pdf");
-
-    }
+//    public static void main(String[] args) {
+//        Search search = new Search();
+//        ArrayList<Course> courses = new ArrayList<>(search.getAllCoursesFromExcel());
+//        Term term = new Term("Spring", 2020);
+//        Schedule schedule = new Schedule("Test", term, new ArrayList<>(courses.subList(10, 19)));
+//
+////        String xmlData = generateXMLData(schedule);
+////        System.out.println(xmlData);
+//        toPDF(schedule, "TEST2.pdf");
+//
+//    }
 
     private Export(){}
 
@@ -70,13 +67,26 @@ public class Export {
     }
 
     private static String generateXMLData(Schedule schedule){
-        try{
+        try {
             ArrayList<Course> courses = new ArrayList<>(schedule.getCourses());
             Map<MeetingTime, Course> sortedCourseMap = new TreeMap<>();
+
+            Map<Day, ArrayList<Course>> sortedDayMap = new TreeMap<>();
 
             for (Course course : courses) {
                 for (MeetingTime meetTime : course.getMeetingTimes()) {
                     sortedCourseMap.put(meetTime, course);
+                }
+            }
+
+            for (MeetingTime meetingTime : sortedCourseMap.keySet()) {
+                if (sortedDayMap.keySet().contains(meetingTime.getDay())){
+                    sortedDayMap.get(meetingTime.getDay()).add(sortedCourseMap.get(meetingTime));
+                } else {
+                    Course courseToAdd = sortedCourseMap.get(meetingTime);
+                    ArrayList<Course> coursesToAdd = new ArrayList<>();
+                    coursesToAdd.add(courseToAdd);
+                    sortedDayMap.put(meetingTime.getDay(), coursesToAdd);
                 }
             }
 
@@ -111,16 +121,24 @@ public class Export {
             pageSequence.appendChild(flow);
 
 // Iterate over sortedCourseMap and add content to fo:flow
-            for (MeetingTime meetingTime : sortedCourseMap.keySet()) {
-                Course course = sortedCourseMap.get(meetingTime);
+            for (Day day : sortedDayMap.keySet()) {
+                String addString = "\n" + day + ":\n";
+                addString += "-----------------------------------------\n";
+                ArrayList<Course> listedCourses = sortedDayMap.get(day);
 
                 Element block = doc.createElementNS("http://www.w3.org/1999/XSL/Format", "fo:block");
                 block.setAttribute("linefeed-treatment", "preserve");
 
-                if (course != null) {
-                    block.setTextContent(course.forPDf(meetingTime));
-                    flow.appendChild(block);
+
+                for (Course course : listedCourses){
+                    addString += course.forPDf(day);
+                    addString += "-----------------------------------------\n";
                 }
+
+                addString += "==============================================\n";
+
+                block.setTextContent(addString);
+                flow.appendChild(block);
             }
 
 // Transform the XSL-FO document into a string

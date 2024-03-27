@@ -1,14 +1,18 @@
 package bugbusters;
 
+import com.mysql.cj.jdbc.jmx.LoadBalanceConnectionGroupManager;
+
 import java.time.Year;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class User {
 
     private String firstName;
     private String lastName;
-//    private CollegeYear collegeYear;
+    private CollegeYear collegeYear;
     private ArrayList<Major> majors;
     private ArrayList<Minor> minors;
     private Registrar registrar;
@@ -23,30 +27,42 @@ public class User {
         this.registrar = new Registrar();
     }
 
-//    public User(String firstName, String lastName, /**CollegeYear collegeYear,**/ List<Major> majors, List<Minor> minors){
-//        // change again for in-class demonstration
-//    }
-
     private void setFirstName(String firstName){
-
+        this.firstName = firstName;
     }
     public String getFirstName(){
-        return null;
+        return firstName;
     }
 
     private void setLastName(String lastName){
-
+        this.lastName = lastName;
     }
     public String getLastName(){
-        return null;
+        return lastName;
     }
 
-//    private void setCollegeYear(CollegeYear collegeYear){
-//
-//    }
-//    public CollegeYear getCollegeYear(){
-//        return null;
-//    }
+    public void setCollegeYear(CollegeYear collegeYear){
+        this.collegeYear = collegeYear;
+    }
+    public void setCollegeYear(String collegeYearInput){
+        String input = collegeYearInput.toUpperCase();
+        switch (input) {
+            case "FRESHMAN": this.collegeYear = CollegeYear.FRESHMAN;
+                break;
+            case "SOPHOMORE": this.collegeYear = CollegeYear.SOPHOMORE;
+                break;
+            case "JUNIOR": this.collegeYear = CollegeYear.JUNIOR;
+                break;
+            case "SENIOR": this.collegeYear = CollegeYear.SENIOR;
+                break;
+            case "SUPERSENIOR": this.collegeYear = CollegeYear.SUPERSENIOR;
+                break;
+        }
+    }
+
+    public CollegeYear getCollegeYear(){
+        return collegeYear;
+    }
 
 
     /**

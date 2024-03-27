@@ -48,6 +48,36 @@ class UserTest {
     }
 
     @Test
+    void addUserMinor() {
+        User user1 = new User();
+        String minorName = "Computer Science";
+        int reqYr = 2018;
+
+        user1.addUserMinor(minorName,reqYr);
+        assertEquals(1, user1.getUserMinors().size());
+
+        minorName = "Philosophy";
+        reqYr = 2025;
+        user1.addUserMinor(minorName,reqYr);
+        assertEquals(1, user1.getUserMinors().size());
+
+        user1.addUserMinor("Philosophy", 2019);
+        assertEquals(2,user1.getUserMinors().size());
+
+        user1.addUserMinor("Cybersecurity",2020);
+        assertEquals(3,user1.getUserMinors().size());
+
+        user1.addUserMinor("Cybersecurity",2020);
+        assertEquals(3,user1.getUserMinors().size());
+
+        user1.addUserMinor("Pre-Law",2018);
+        assertEquals(4,user1.getUserMinors().size());
+
+        user1.addUserMinor("Psychology",2019);
+        assertEquals(4,user1.getUserMinors().size());
+    }
+
+    @Test
     void removeUserMajor() {
         User user = new User();
         user.addUserMajor("B.S. in Computer Science",2022);

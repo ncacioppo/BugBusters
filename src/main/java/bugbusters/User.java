@@ -25,6 +25,7 @@ public class User {
         this.minors = new ArrayList<Minor>();
         //TODO: note that this is hard-coded for u222222
         this.registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        registrar.disconnectFromDB();
     }
 
     private void setFirstName(String firstName){
@@ -66,8 +67,8 @@ public class User {
 
 
     /**
-     * Take name of major and requirements year and add to the user's collection of majors.
-     * A user cannot add duplicate minors.
+     * Take name of major and requirement year and add to the user's collection of majors.
+     * A user cannot add duplicate majors.
      * A user cannot add more majors than the limit.
      * @param majorName
      * @param reqYr
@@ -83,8 +84,10 @@ public class User {
             System.out.println("Major '" + majorName + "' does not exist.");
 
         } else if (!registrar.isReqYr(reqYr)) {
-            System.out.print("Majors can only belong to the following requirement years: ");
+            System.out.println("Majors can only belong to the following requirement years: ");
             registrar.printReqYears();
+            System.out.println();
+        } else {
             Major newMajor = new Major(majorName, reqYr);
             addUserMajor(newMajor);
         }
@@ -115,17 +118,64 @@ public class User {
         }
     }
 
-
     public ArrayList<Major> getUserMajors(){
         return majors;
+    }
+
+    /**
+     * Take name of minor and requirement year and add to the user's collection of minors.
+     * A user cannot add duplicate minors.
+     * A user cannot add more minors than the limit.
+     * @param minorName
+     * @param reqYr
+     */
+    public void addUserMinor(String minorName, int reqYr) {
+        if(minors.size() + 1 > MINOR_LIMIT) {
+            System.out.println("Cannot add more than " + MINOR_LIMIT + " minors.");
+
+        } else if (userHasMinor(minorName)) {
+            System.out.println("Cannot add duplicate minor.");
+
+        } else if(!registrar.isMinor(minorName)) {
+            System.out.println("Minor '" + minorName + "' does not exist.");
+
+        } else if (!registrar.isReqYr(reqYr)) {
+            System.out.println("Minors can only belong to the following requirement years: ");
+            registrar.printReqYears();
+            System.out.println();
+        } else {
+            Minor newMinor = new Minor(minorName, reqYr);
+            addUserMinor(newMinor);
+        }
+    }
+
+    private boolean userHasMinor(String input) {
+        for (Minor minor : minors) {
+            if (minor.getMinorName().equals(input)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * take Minor object and add to list of user's minors
+     * @param minor
+     */
+    private void addUserMinor(Minor minor) {
+        this.minors.add(minor);
+    }
+
+    public void removeUserMinor(String minorName) {
+        for(Minor minor : this.minors) {
+            if(minor.getMinorName().equals(minorName)) {
+                this.minors.remove(minor);
+            }
+        }
     }
 
     public List<Minor> getUserMinors(){
         return minors;
     }
 
-    public static void main(String[] args) {
-        User user1 = new User();
-
-    }
 }

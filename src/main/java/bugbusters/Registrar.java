@@ -31,8 +31,7 @@ public class Registrar {
     }
 
     private void setReqYearsFromDB() {
-        int[] minMaxYrs = new int[2];
-        minMaxYrs = getCourseYearsFromDB(minMaxYrs);
+        int[] minMaxYrs = getCourseYearsFromDB();
         try {
             setReqYrs(minMaxYrs[0],minMaxYrs[1]);
         } catch (NullPointerException e) {
@@ -42,12 +41,12 @@ public class Registrar {
 
     }
 
-    private int[] getCourseYearsFromDB(int[] minMaxYrs) {
+    public int[] getCourseYearsFromDB() {
+        int[] minMaxYrs = new int[2];
 
-        //TODO: test select statement
         try {
             PreparedStatement ps = conn.prepareStatement("" +
-                    "SELECT MIN(Year) AS minYr, MAX(Year) AS maxYr FROM course GROUP BY Year");
+                    "SELECT MIN(Year) AS minYr, MAX(Year) AS maxYr FROM course");
             ResultSet rs = ps.executeQuery();
 
             while(rs.next()) {
@@ -79,6 +78,7 @@ public class Registrar {
         sampleMinors.add("Philosophy");
         sampleMinors.add("Cybersecurity");
         sampleMinors.add("Pre-Law");
+        sampleMinors.add("Psychology");
 
         return sampleMinors;
     }
@@ -179,6 +179,15 @@ public class Registrar {
         return false;
     }
 
+    public boolean isMinor(String newMinor) {
+        for(String minor : minors) {
+            if(minor.equals(newMinor)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public ArrayList<String> getMajors() {
         return majors;
     }
@@ -200,11 +209,6 @@ public class Registrar {
 
     public ArrayList<Course> getCourses() {
         return courses;
-    }
-
-    public static void main(String[] args) {
-        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
-        System.out.println(registrar.disconnectFromDB());
     }
 
     public void printReqYears() {

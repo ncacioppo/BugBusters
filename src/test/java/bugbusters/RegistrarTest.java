@@ -56,6 +56,7 @@ class RegistrarTest {
         for (String minor : registrar.getMinors()) {
             System.out.println(minor);
         }
+
     }
 
     @Test

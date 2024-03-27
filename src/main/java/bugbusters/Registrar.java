@@ -2,8 +2,6 @@ package bugbusters;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.InvalidClassException;
 import java.sql.*;
 import java.time.LocalTime;
 import java.time.Year;
@@ -12,7 +10,7 @@ import java.util.*;
 public class Registrar {
     private ArrayList<String> majors;  //may want to use list indexing if more efficient
     private ArrayList<String> minors;
-    private ArrayList<Course> courses;
+    private ArrayList<Course> courses;  //we do not currently create course objects from all courses in database
     private Connection conn;
 
     public Registrar(String schema, String username, String password) {
@@ -196,12 +194,12 @@ public class Registrar {
         if(!connectToDB("schemaBugBuster","u222222","p222222")) {
             System.out.println("Unable to connect to database");
         } else {
-            rows = parseCSV(filename);
+            rows = parseFileWithCourses(filename);
         }
         return rows;
     }
 
-    public int parseCSV(String filename) {
+    public int parseFileWithCourses(String filename) {
         int rows = 0;
 
         //Open file for reading
@@ -385,7 +383,7 @@ public class Registrar {
         }
         return false;
     }
-    public void printHashMap(HashMap<String, Object> courseAttributes) {
+    public void printCourseAttributes(HashMap<String, Object> courseAttributes) {
         for (String attr : courseAttributes.keySet()) {
             System.out.println(attr + ": " + courseAttributes.get(attr) + "     " +
                     courseAttributes.get(attr).getClass());

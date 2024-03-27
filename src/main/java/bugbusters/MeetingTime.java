@@ -83,10 +83,12 @@ public class MeetingTime implements Comparable<MeetingTime>{
         if (this.equals(meetingTime)) {
             return 0;
         }
-        if ((this.day.compareTo(meetingTime.getDay()) < 1) && (this.startTime.isBefore(meetingTime.getStartTime()))) {
-            return -1;
+
+        if ((this.day.compareTo(meetingTime.getDay()) == 0)) {
+            return this.startTime.compareTo(meetingTime.startTime);
+        } else {
+            return this.day.compareTo(meetingTime.getDay());
         }
-        return 1;
     }
 
 

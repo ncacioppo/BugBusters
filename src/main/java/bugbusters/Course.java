@@ -333,4 +333,26 @@ public class Course {
         return out;
     }
 
+    public String forPDf(Day day) {
+
+        String out = name + "\n" +
+                department + " " + code + " " + section + "\n" +
+                "Instructor: " + instructor + "\n";
+
+        MeetingTime meetingTime = null;
+        if (this.meetingTimes != null){
+            for (MeetingTime time : this.meetingTimes){
+                if (time.getDay().equals(day)){
+                    meetingTime = time;
+                }
+            }
+        }
+
+        if (meetingTime != null) {
+            out += "Meeting time: " + meetingTime + "\n";
+        }
+
+        return out;
+    }
+
 }

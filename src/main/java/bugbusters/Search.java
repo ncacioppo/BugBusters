@@ -20,6 +20,8 @@ public class Search {
     }
 
     public List<Course> getAllCoursesFromExcel() {
+        int idCount = 1;
+
         ArrayList<Course> out = new ArrayList<>();
 
         Queue<Course> courses2019 = new LinkedList<>();
@@ -27,7 +29,10 @@ public class Search {
         data2019.poll();
         while (data2019.peek() != null) {
             ArrayList<String> line = data2019.poll();
-            courses2019.add(new Course(line));
+            Course course = new Course(line);
+            course.setId(idCount);
+            idCount += 1;
+            courses2019.add(course);
         }
 
         Queue<Course> courses2020 = new LinkedList<>();
@@ -35,7 +40,10 @@ public class Search {
         data2020.poll();
         while (data2020.peek() != null) {
             ArrayList<String> line = data2020.poll();
-            courses2020.add(new Course(line));
+            Course course = new Course(line);
+            course.setId(idCount);
+            idCount += 1;
+            courses2020.add(course);
         }
 
         Queue<Course> courses2021 = new LinkedList<>();
@@ -43,7 +51,10 @@ public class Search {
         data2021.poll();
         while (data2021.peek() != null) {
             ArrayList<String> line = data2021.poll();
-            courses2021.add(new Course(line));
+            Course course = new Course(line);
+            course.setId(idCount);
+            idCount += 1;
+            courses2021.add(course);
         }
 
         out.addAll(courses2019);
@@ -133,7 +144,12 @@ public class Search {
 
     public List<Course> byTerm(List<Course> courses, String term) {
         ArrayList<Course> out = new ArrayList<>();
+
+        System.out.println(term);
+
         Term query = new Term(term);
+        System.out.println(query);
+
 
         for (Course course : courses){
             if (course.getTerm().equals(query)){
@@ -175,20 +191,24 @@ public class Search {
         List<Course> results = new ArrayList<>();
 
         for (Course course : courses) {
-            Set<MeetingTime> courseMeetingTimes = course.getMeetingTimes();
+            if (course.getMeetingTimes() == null){
+//                results.add(course);
+            } else {
+                Set<MeetingTime> courseMeetingTimes = course.getMeetingTimes();
 
-            boolean correctDay = false;
+                boolean correctDay = false;
 
-            for (MeetingTime time : courseMeetingTimes){
-                if (time.getDay().toString().toLowerCase().equals(day.toLowerCase())) {
-                    correctDay = true;
-                    break;
+                for (MeetingTime time : courseMeetingTimes) {
+                    if (time.getDay().toString().toLowerCase().equals(day.toLowerCase())) {
+                        correctDay = true;
+                        break;
+                    }
                 }
-            }
 
-            if (correctDay) {
-                if (!results.contains(course)) {
-                    results.add(course);
+                if (correctDay) {
+                    if (!results.contains(course)) {
+                        results.add(course);
+                    }
                 }
             }
         }
@@ -196,10 +216,16 @@ public class Search {
         return results;
     }
 
-    public List<Course> withinTime(List<Course> courses, String startTime, String endTime) {
+    public List<Course> withinTime(List<Course> courses, String query) {
         List<Course> results = new ArrayList<>(courses);
-        LocalTime startTimeRange = LocalTime.parse(startTime);
-        LocalTime endTimeRange = LocalTime.parse(endTime);
+
+        String[] input = query.split("-");
+        String startTime = input[0];
+        String endTime = input[1];
+
+        LocalTime startTimeRange = LocalTime.of(Integer.parseInt(startTime.split(":")[0]), Integer.parseInt(startTime.split(":")[1]), 0);
+
+        LocalTime endTimeRange = LocalTime.of(Integer.parseInt(endTime.split(":")[0]), Integer.parseInt(endTime.split(":")[1]), 0);
 
         for (Course course : courses) {
             Set<MeetingTime> courseMeetingTimes = course.getMeetingTimes();

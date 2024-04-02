@@ -38,7 +38,7 @@ public class Term implements Comparable<Term> {
             return false;
         }
         Term other = (Term) o;
-        return (this.season.equals(other.season)) && (this.year == other.year);
+        return (this.season.equalsIgnoreCase(other.season)) && (this.year == other.year);
     }
 
     @Override

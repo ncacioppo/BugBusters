@@ -1,0 +1,109 @@
+USE schemabugbuster;
+
+DROP TABLE IF EXISTS user_schedule;
+DROP TABLE IF EXISTS schedule;
+DROP TABLE IF EXISTS user_minors;
+DROP TABLE IF EXISTS minor;
+DROP TABLE IF EXISTS user_majors;
+DROP TABLE IF EXISTS major;
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS course;
+
+## Create tables in BugBuster scheduler database
+# Tables include:
+#	course
+#	user
+#   major
+#   minor
+# 	user_majors
+# 	user_minors
+#	schedule
+# 	user_schedule
+
+CREATE TABLE IF NOT EXISTS course(
+	CourseID INT(6) NOT NULL,
+    Year INT(4) NOT NULL,
+    Semester VARCHAR(15),
+    Dept VARCHAR(4) NOT NULL,
+    CourseCode INT(3),
+    Section VARCHAR(1),
+    CourseName VARCHAR(70) NOT NULL,
+    Hours INT(1) NOT NULL,
+    Capacity INT(3),
+    Enrolled INT(3),
+    Monday VARCHAR(1),
+    Tuesday VARCHAR(1),
+    Wednesday VARCHAR(1),
+    Thursday VARCHAR(1),
+    Friday VARCHAR(1),
+    StartTime TIME,
+    EndTime TIME,
+    LNameInstructor VARCHAR(20),
+    FNameInstructor VARCHAR(20),
+    PreferredFNameInstructor VARCHAR(20),
+    Comments VARCHAR(200),
+    -- Description VARCHAR(2000),
+    CONSTRAINT pk_course PRIMARY KEY(CourseID)
+);
+
+CREATE TABLE IF NOT EXISTS user(
+	UserID INT(6) NOT NULL,
+    FName VARCHAR(20),
+    LName VARCHAR(20),
+    GradYear INT(4),
+    GradMonth VARCHAR(10),
+    CONSTRAINT pk_user PRIMARY KEY(UserID)
+);
+
+CREATE TABLE IF NOT EXISTS major(
+	MajorID INT(6) NOT NULL,
+    ArtSci VARCHAR(20) NOT NULL,
+    Title VARCHAR(20) NOT NULL,
+    StartYear INT(4),	--
+    EndYear INT(4),
+    CONSTRAINT pk_major PRIMARY KEY(MajorID)
+);
+
+CREATE TABLE IF NOT EXISTS user_majors(
+	UserID INT(6) NOT NULL,
+    MajorID INT(3) NOT NULL,
+    ReqYear INT(4) NOT NULL,
+    CONSTRAINT pk_user_major PRIMARY KEY(UserID, MajorID),
+    CONSTRAINT fk_user_major_user FOREIGN KEY(UserID) REFERENCES user(UserID),
+    CONSTRAINT fk_user_major_major FOREIGN KEY(MajorID) REFERENCES major(MajorID)
+    );
+
+CREATE TABLE IF NOT EXISTS minor(
+	MinorID INT(6) NOT NULL,
+    Title VARCHAR(20) NOT NULL,
+    StartYear INT(4),	--
+    EndYear INT(4),
+    CONSTRAINT pk_minor PRIMARY KEY(MinorID)
+);
+
+CREATE TABLE IF NOT EXISTS user_minors(
+	UserID INT(6) NOT NULL,
+    MinorID INT(3) NOT NULL,
+    ReqYear INT(4) NOT NULL,
+    CONSTRAINT pk_user_minor PRIMARY KEY(UserID, MinorID),
+    CONSTRAINT fk_user_minor_user FOREIGN KEY(UserID) REFERENCES user(UserID),
+    CONSTRAINT fk_user_minor_minor FOREIGN KEY(MinorID) REFERENCES minor(MinorID)
+    );
+
+CREATE TABLE IF NOT EXISTS schedule(
+	ScheduleID INT(8) NOT NULL,
+    Name VARCHAR(50) NOT NULL,
+    Year INT(4) NOT NULL,
+    Semester VARCHAR(15) NOT NULL,
+    CONSTRAINT pk_schedule PRIMARY KEY(ScheduleID)
+);
+
+CREATE TABLE IF NOT EXISTS user_schedule(
+	UserID INT(6) NOT NULL,
+    ScheduleID INT(8) NOT NULL,
+    CourseID INT(6),
+    CONSTRAINT pk_user_schedule PRIMARY KEY(UserID, ScheduleID),
+    CONSTRAINT fk_user_schedule_user FOREIGN KEY(UserID) REFERENCES user(UserID),
+    CONSTRAINT fk_user_schedule_schedule FOREIGN KEY(ScheduleID) REFERENCES schedule(ScheduleID),
+    CONSTRAINT fk_user_schedule_course FOREIGN KEY(CourseID) REFERENCES course(CourseID)
+);

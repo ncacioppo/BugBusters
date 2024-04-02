@@ -127,7 +127,7 @@ public class Course {
             int endMinute = Integer.parseInt((endTime.split(":"))[1]);
             LocalTime end = LocalTime.of(endHour, endMinute);
 
-            for (int i = 10; i <= 14; i++) {
+            for (int i = 9; i <= 13; i++) {
                 if (data.get(i).length() > 0) {
                     times.add(new MeetingTime(toDay(data.get(i)), start, end));
                 }
@@ -146,7 +146,7 @@ public class Course {
         return id;
     }
 
-    private void setId(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -231,7 +231,7 @@ public class Course {
     private Day toDay(String dayChar){
         Day out;
 
-        switch (dayChar) {
+        switch (dayChar.toUpperCase()) {
             case "M":
                 out = Day.MONDAY;
                 break;
@@ -248,6 +248,7 @@ public class Course {
                 out = Day.FRIDAY;
                 break;
             default:
+                System.out.println(dayChar);
                 out = Day.NONE;
         }
 
@@ -328,6 +329,28 @@ public class Course {
                 "Meeting Times: " + meetingTimes + "\n" +
                 "Credits: " + credits + "\n" +
                 "Description: " + description + "\n";
+
+        return out;
+    }
+
+    public String forPDf(Day day) {
+
+        String out = name + "\n" +
+                department + " " + code + " " + section + "\n" +
+                "Instructor: " + instructor + "\n";
+
+        MeetingTime meetingTime = null;
+        if (this.meetingTimes != null){
+            for (MeetingTime time : this.meetingTimes){
+                if (time.getDay().equals(day)){
+                    meetingTime = time;
+                }
+            }
+        }
+
+        if (meetingTime != null) {
+            out += "Meeting time: " + meetingTime + "\n";
+        }
 
         return out;
     }

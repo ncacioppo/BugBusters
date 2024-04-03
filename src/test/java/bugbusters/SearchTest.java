@@ -3,13 +3,20 @@ package bugbusters;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class SearchTest {
     @Test
     void getAllCourses() {
+        Search search = new Search();
+
+        List<Course> courses = search.getAllCoursesFromExcel();
+
+        assertEquals(4526, courses.size());
 
     }
 
@@ -80,6 +87,22 @@ class SearchTest {
 
     @Test
     void byCode() {
+        Search search = new Search();
+
+        List<Course> courses = new ArrayList<>();
+
+        courses.add(new Course(1, "physics", "101", "PHYS", 38888, new Term("SPRING", 2024), 'A', "Brower", null, 4));
+        courses.add(new Course(1, "physics", "101", "PHYS", 38888, new Term("SPRING", 2024), 'A', "Brower", null, 4));
+        courses.add(new Course(2, "calc", "163", "MATH", 39000, new Term("FALL", 2024), 'A', "McIntyre", null, 4));
+        courses.add(new Course(2, "calc", "163", "MATH", 39500, new Term("SPRING", 2023), 'A', "McIntyre", null, 4));
+
+
+        assertEquals(4, search.byCode(courses, "38000-40000").size());
+        assertEquals(3, search.byCode(courses, "38000-39000").size());
+        assertEquals(4, search.byCode(courses, "38888-39500").size());
+        assertEquals(1, search.byCode(courses, "38889-39499").size());
+        assertEquals(1, search.byCode(courses, "39000-39000").size());
+        assertEquals(0, search.byCode(courses, "39600-40000").size());
     }
 
     @Test
@@ -124,7 +147,7 @@ class SearchTest {
         assertTrue(search.byProfessor(courses, "McIntyre").size() == 1);
         assertTrue(search.byProfessor(courses, "Brower").size() == 1);
         assertTrue(search.byProfessor(courses, "").size() == 2);
-        assertTrue(search.byDepartment(courses, "Z").size() == 0);
+        assertTrue(search.byProfessor(courses, "Z").size() == 0);
     }
 
     @Test
@@ -148,10 +171,63 @@ class SearchTest {
 
     @Test
     void byDay() {
+        Search search = new Search();
+
+        List<Course> courses = new ArrayList<>();
+
+        Set<MeetingTime> firstCourseTimes = new HashSet<>();
+        Set<MeetingTime> secondCourseTimes = new HashSet<>();
+
+        Term courseTerm = new Term("SPRING", 2024);
+
+        firstCourseTimes.add(new MeetingTime("MONDAY 10:00:00 to 10:50:00"));
+        firstCourseTimes.add(new MeetingTime("WEDNESDAY 10:00:00 to 10:50:00"));
+        firstCourseTimes.add(new MeetingTime("FRIDAY 10:00:00 to 10:50:00"));
+        secondCourseTimes.add(new MeetingTime("MONDAY 13:00:00 to 13:50:00"));
+        secondCourseTimes.add(new MeetingTime("TUESDAY 13:00:00 to 13:50:00"));
+        secondCourseTimes.add(new MeetingTime("WEDNESDAY 13:00:00 to 13:50:00"));
+        secondCourseTimes.add(new MeetingTime("FRIDAY 13:00:00 to 13:50:00"));
+
+        courses.add(new Course(1, "physics", "101", "PHYS", 38888, courseTerm, 'A', "Brower", firstCourseTimes, 4));
+        courses.add(new Course(2, "calc", "163", "MATH", 38889, courseTerm, 'A', "McIntyre", secondCourseTimes, 4));
+
+        assertTrue(search.byDay(courses, "Monday").size() == 2);
+        assertTrue(search.byDay(courses, "Tuesday").size() == 1);
+        assertTrue(search.byDay(courses, "Wednesday").size() == 2);
+        assertTrue(search.byDay(courses, "Thursday").size() == 0);
+        assertTrue(search.byDay(courses, "Friday").size() == 2);
+        assertTrue(search.byDay(courses, "").size() == 2);
+        assertTrue(search.byDay(courses, "Z").size() == 0);
     }
 
     @Test
     void withinTime() {
+        Search search = new Search();
+
+        List<Course> courses = new ArrayList<>();
+
+        Set<MeetingTime> firstCourseTimes = new HashSet<>();
+        Set<MeetingTime> secondCourseTimes = new HashSet<>();
+
+        Term courseTerm = new Term("SPRING", 2024);
+
+        firstCourseTimes.add(new MeetingTime("MONDAY 10:00:00 to 10:50:00"));
+        firstCourseTimes.add(new MeetingTime("WEDNESDAY 10:00:00 to 10:50:00"));
+        firstCourseTimes.add(new MeetingTime("FRIDAY 10:00:00 to 10:50:00"));
+        secondCourseTimes.add(new MeetingTime("MONDAY 13:00:00 to 13:50:00"));
+        secondCourseTimes.add(new MeetingTime("TUESDAY 13:00:00 to 13:50:00"));
+        secondCourseTimes.add(new MeetingTime("WEDNESDAY 13:00:00 to 13:50:00"));
+        secondCourseTimes.add(new MeetingTime("FRIDAY 13:00:00 to 13:50:00"));
+
+        courses.add(new Course(1, "physics", "101", "PHYS", 38888, courseTerm, 'A', "Brower", firstCourseTimes, 4));
+        courses.add(new Course(2, "calc", "163", "MATH", 38889, courseTerm, 'A', "McIntyre", secondCourseTimes, 4));
+
+        assertTrue(search.withinTime(courses, "10:00:00-15:00:00").size() == 2);
+        assertTrue(search.withinTime(courses, "10:00:00-10:50:00").size() == 1);
+        assertTrue(search.withinTime(courses, "10:00:00-10:30:00").size() == 0);
+        assertTrue(search.withinTime(courses, "10:30:00-13:50:00").size() == 1);
+        assertTrue(search.withinTime(courses, "13:00:00-13:50:00").size() == 1);
+        assertTrue(search.withinTime(courses, "13:00:00-13:01:00").size() == 0);
     }
 
     @Test

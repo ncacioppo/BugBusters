@@ -7,6 +7,26 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserTest {
 
     @Test
+    void getEmptyCollegeYear() {
+        User user = new User();
+        assertEquals(null,user.getCollegeYear());
+    }
+
+    @Test
+    void getCollegeYear() {
+        User user1 = new User();
+        user1.setCollegeYear(CollegeYear.JUNIOR);
+        assertEquals(CollegeYear.JUNIOR,user1.getCollegeYear());
+
+        user1.setCollegeYear(CollegeYear.SENIOR);
+        assertEquals("SENIOR",user1.getCollegeYear().toString());
+
+        User user2 = new User();
+        user2.setCollegeYear("freshman");
+        assertEquals(CollegeYear.FRESHMAN, user2.getCollegeYear());
+    }
+
+    @Test
     void addUserMajor() {
         //TODO: check duplicates
         User user1 = new User();

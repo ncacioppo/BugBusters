@@ -36,10 +36,10 @@ public class CalendarView {
     }
 
     public void printDaysOfTheWeek() {
-        System.out.format("%-15s","");             //15 spaces
+        System.out.format("%-18s","");             //15 spaces
         for(String day : this.daysOfTheWeek) {
             if(day.equals("MONDAY")) {
-                System.out.format("%-18s","Mon");       //System.out.format("%-10s","Mon");
+                System.out.format("%-19s","Mon");       //System.out.format("%-10s","Mon");
             }
             if(day.equals("TUESDAY")) {
                 System.out.format("%-18s","Tue");     //System.out.format("%6s","Tue");
@@ -77,7 +77,7 @@ public class CalendarView {
         return hours;
     }
 
-    /*
+
     public void printScheduleAsCalendar() {
         int hrCounter;                                 //acts as hour counter
         int halfHrCounter;                              //acts as 30 min counter
@@ -88,40 +88,49 @@ public class CalendarView {
             hrCounter = halfHr.getHour();
             halfHrCounter = halfHr.getMinute();
 
-            //Print hour-blocks on left of calendar view
-            if((hrCounter < 12) && (halfHrCounter == 0)) {
-                System.out.printf("%2d am", hrCounter);
-            } else if ((hrCounter == 12) && (halfHrCounter == 0)) {
-                System.out.printf("%2d pm", hrCounter);
-            } else if ((hrCounter > 12 ) && (halfHrCounter == 0)) {
-                System.out.printf("%2d pm", hrCounter - 12);
+            //Print half-hour blocks on left of calendar view
+
+            if (halfHrCounter == 0) {
+                if (hrCounter < 12) {
+                    System.out.printf("%2d:0%d am", hrCounter, halfHrCounter);
+                } else if (hrCounter == 12) {
+                    System.out.printf("%2d:0%d pm", hrCounter, halfHrCounter);
+                } else {
+                    System.out.printf("%2d:0%d pm", hrCounter - 12, halfHrCounter);
+                }
             } else {
-                System.out.format("%-5s","     ");
+                if (hrCounter < 12) {
+                    System.out.printf("%2d:%2d am", hrCounter, halfHrCounter);
+                } else if (hrCounter == 12) {
+                    System.out.printf("%2d:%2d pm", hrCounter, halfHrCounter);
+                } else {
+                    System.out.printf("%2d:%2d pm", hrCounter - 12, halfHrCounter);
+                }
             }
+
+            System.out.format("%-7s", "");
 
             //Print classes in calendar view
             for (String day : this.daysOfTheWeek) {
+                boolean printedAlready = false;
+
                 for (Course course : this.schedule.getCourses()) {
                     for (MeetingTime meetingTime : course.getMeetingTimes()) {
                         if (day.equals(meetingTime.getDay().toString())) {
-
-                            if ((halfHr.isAfter(meetingTime.getStartTime())
-                                    || halfHr.equals(meetingTime.getStartTime()))
+                            if ((halfHr.isAfter(meetingTime.getStartTime()) || halfHr.equals(meetingTime.getStartTime()))
                                     &&
-                                    ((halfHr.isBefore(meetingTime.getEndTime())
-                                            || halfHr.equals(meetingTime.getEndTime())))) {
-                                if (halfHr.isAfter(meetingTime.getStartTime())) {
-                                    System.out.format("%-15s","............");
-                                } else {
-                                    System.out.format("%-1s%1s %-1d%-1s", ". ",course.getDepartment(),course.getCode()," .");
-//                                    System.out.format("%9s %3d", course.getDepartment(), course.getCode());
-
+                                    ((halfHr.isBefore(meetingTime.getEndTime()) || halfHr.equals(meetingTime.getEndTime())))) {
+                                if (!printedAlready) {
+                                    System.out.format("%1s %-1d%-10s", course.getDepartment(),course.getCode(), "");
+                                    printedAlready = true;
                                 }
-                            } else {
-                                System.out.format("%-15s","            ");
                             }
                         }
                     }
+                }
+
+                if (!printedAlready) {
+                    System.out.format("%-19s","");
                 }
             }
             System.out.println();
@@ -130,42 +139,43 @@ public class CalendarView {
                 "-----------------");
     }
 
-     */
+
 
 /////////////////Working at hour-increments
-    public void printScheduleAsCalendar() {
-        int hrCounter;                                 //acts as hour counter
-        printDaysOfTheWeek();
 
-        for (LocalTime hour : this.hoursOfTheDay) {    //can replace with more granular time
-                                                        // or while loop at smaller increment
-            hrCounter = hour.getHour();
-            if(hrCounter < 12) {
-                System.out.printf("%2d am", hrCounter);
-            } else if (hrCounter == 12) {
-                System.out.printf("%2d pm", hrCounter);
-            }
-            else {
-                System.out.printf("%2d pm", hrCounter - 12);
-            }
-            for (String day : this.daysOfTheWeek) {
-//                System.out.format("%6s","-");   //if monday
-                for (Course course : this.schedule.getCourses()) {
-                    for (MeetingTime meetingTime : course.getMeetingTimes()) {
-                        if (day.equals(meetingTime.getDay().toString())) {
-                            int courseStartingHr = meetingTime.getStartTime().getHour();
-                            int courseEndingHr = meetingTime.getEndTime().getHour();
-                            if ((hrCounter >= courseStartingHr) && (hrCounter <= courseEndingHr)) {
-                                System.out.format("%9s %3d",course.getDepartment(),course.getCode());
-                            } else {
-                                System.out.format("%9s %3s","    ", "   ");
-                            }
-                        }
-                    }
-                }
-            }
-            System.out.println();
-        }
-    }
+//    public void printScheduleAsCalendar() {
+//        int hrCounter;                                 //acts as hour counter
+//        printDaysOfTheWeek();
+//
+//        for (LocalTime hour : this.hoursOfTheDay) {    //can replace with more granular time
+//                                                        // or while loop at smaller increment
+//            hrCounter = hour.getHour();
+//            if(hrCounter < 12) {
+//                System.out.printf("%2d am", hrCounter);
+//            } else if (hrCounter == 12) {
+//                System.out.printf("%2d pm", hrCounter);
+//            }
+//            else {
+//                System.out.printf("%2d pm", hrCounter - 12);
+//            }
+//            for (String day : this.daysOfTheWeek) {
+////                System.out.format("%6s","-");   //if monday
+//                for (Course course : this.schedule.getCourses()) {
+//                    for (MeetingTime meetingTime : course.getMeetingTimes()) {
+//                        if (day.equals(meetingTime.getDay().toString())) {
+//                            int courseStartingHr = meetingTime.getStartTime().getHour();
+//                            int courseEndingHr = meetingTime.getEndTime().getHour();
+//                            if ((hrCounter >= courseStartingHr) && (hrCounter <= courseEndingHr)) {
+//                                System.out.format("%9s %3d",course.getDepartment(),course.getCode());
+//                            } else {
+//                                System.out.format("%9s %3s","    ", "   ");
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            System.out.println();
+//        }
+//    }
 
 }

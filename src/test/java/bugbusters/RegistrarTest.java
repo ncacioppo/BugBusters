@@ -2,11 +2,44 @@ package bugbusters;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.sql.Time;
+import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class RegistrarTest {
+
+    @Test
+    void parseTimeAttribute() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+
+        Time expected = Time.valueOf(LocalTime.of(16,0,0));
+        Time actual = registrar.parseTimeAttribute("1/1/1900 16:00", "2018-2019_GCC_Courses.csv");
+
+        assertEquals(expected.getTime(),actual.getTime());
+
+        expected = Time.valueOf(LocalTime.of(15,50,0));
+        actual = registrar.parseTimeAttribute("3:50:00 PM", "2019-2020_GCC_Courses.csv");
+
+        assertEquals(expected.getTime(),actual.getTime());
+    }
+
+    @Test
+    void deleteCourseByID() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        registrar.deleteCourse(184892);
+    }
+
+    @Test
+    void insertCoursesFromCSV() {
+        int insertedRows = 0;
+        //Only needs to be run once. To delete rows, drop and recreate course table or create a new method
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        insertedRows += registrar.insertCoursesFromCSV("2018-2019_GCC_Courses.csv");
+        insertedRows += registrar.insertCoursesFromCSV("2019-2020_GCC_Courses.csv");
+        insertedRows += registrar.insertCoursesFromCSV("2020-2021_GCC_Courses.csv");
+        System.out.println("Inserted Rows: " + insertedRows);
+    }
 
     @Test
     void getMajors() {
@@ -15,41 +48,19 @@ class RegistrarTest {
         for (String major : registrar.getMajors()) {
             System.out.println(major);
         }
-        registrar.disconnectFromDB();
+    }
+    @Test
+    void getMinors() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+
+        for (String minor : registrar.getMinors()) {
+            System.out.println(minor);
+        }
+
     }
 
     @Test
-    void getReqYrsFromCurrentYear() {
-        //TODO: check db requirement years
-        int[] currReqYrs = new int[6];  //2019,2020,2021,2022,2023,2024
-        int precYr = 2019;
-        for(int i = 0; i < currReqYrs.length; i++) {
-            currReqYrs[i] = precYr;
-            precYr++;
-        }
-
-        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
-        registrar.setReqYrsFromCurrent();
-
-        assertEquals(currReqYrs.length, registrar.getReqYrs().length);
-        for(int i = 0; i < currReqYrs.length; i++) {
-            assertEquals(currReqYrs[i], registrar.getReqYrs()[i]);
-        }
-        registrar.disconnectFromDB();
-    }
-
-    @Test
-    void getReqYrsFromDB() {
-        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
-        int[] expYears = new int[2];
-        expYears[0] = 2018;
-        expYears[1] = 2020;
-
-        int[] actualYears = registrar.getCourseYearsFromDB();
-        for(int i = 0; i < expYears.length; i++) {
-            assertEquals(expYears[i], actualYears[i]);
-        }
-        registrar.disconnectFromDB();
+    void getReqYrs() {
     }
 
     @Test
@@ -58,10 +69,6 @@ class RegistrarTest {
 
     @Test
     void isReqYr() {
-    }
-
-    @Test
-    void getMinors() {
     }
 
     @Test

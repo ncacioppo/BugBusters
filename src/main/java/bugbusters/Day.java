@@ -1,6 +1,6 @@
 package bugbusters;
 
-public enum Day {
+public enum Day{
     SUNDAY("SUNDAY"),
     MONDAY("MONDAY"),
     TUESDAY("TUESDAY"),
@@ -15,5 +15,8 @@ public enum Day {
     Day(String name) {
         this.name = name.toUpperCase();
     }
+
+    @Override
     public String toString() { return name;}
+
 }

@@ -25,6 +25,7 @@ public class Registrar {
             setMajorsFromDB();
             setMinorsFromDB();
             courses = new ArrayList<>();
+            disconnectFromDB();
         }
     }
 
@@ -203,6 +204,7 @@ public class Registrar {
             System.out.println("Unable to connect to database");
         } else {
             rows = parseFileWithCourses(filename);
+            disconnectFromDB();
         }
 
         return rows;
@@ -387,6 +389,12 @@ public class Registrar {
         }
         return Time.valueOf(LocalTime.of(hour, minute, second));
     }
+
+    /**
+     * delete row from course table in database
+     * @param courseID
+     * @return true if delete was successful
+     */
     public boolean deleteCourse(int courseID) {
         try {
             PreparedStatement ps = conn.prepareStatement("" +
@@ -403,6 +411,8 @@ public class Registrar {
         }
         return false;
     }
+
+    //TODO: delete after testing
     public void printCourseAttributes(HashMap<String, Object> courseAttributes) {
         for (String attr : courseAttributes.keySet()) {
             System.out.println(attr + ": " + courseAttributes.get(attr) + "     " +

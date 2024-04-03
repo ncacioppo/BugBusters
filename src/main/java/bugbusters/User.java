@@ -2,6 +2,8 @@ package bugbusters;
 
 import com.mysql.cj.jdbc.jmx.LoadBalanceConnectionGroupManager;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,6 +18,7 @@ public class User {
     private ArrayList<Major> majors;
     private ArrayList<Minor> minors;
     private Registrar registrar;
+    private boolean inDatabase;
 
     private final int MAJOR_LIMIT = 2;   //limit to number of majors a user may have in software
     
@@ -26,6 +29,17 @@ public class User {
         this.minors = new ArrayList<Minor>();
         //TODO: note that this is hard-coded for u222222
         this.registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        this.inDatabase = addUserToDatabase();
+        registrar.disconnectFromDB();       //TODO: all disconnects from DB should happen when user leaves app
+    }
+
+    private boolean addUserToDatabase() {
+//        try {
+//
+//        } catch(SQLException e) {
+//            System.out.println(e.getMessage());
+//        }
+        return false;
     }
 
     private void setFirstName(String firstName){
@@ -108,13 +122,12 @@ public class User {
 
     private void setMinors(List<Minor> minors){
     }
-
     public List<Minor> getMinors(){
         return null;
     }
-
-    public static void main(String[] args) {
-        User user1 = new User();
-
+    public boolean isInDatabase() {
+        return inDatabase;
     }
+
+
 }

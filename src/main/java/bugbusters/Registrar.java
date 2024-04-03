@@ -183,12 +183,20 @@ public class Registrar {
         return minors;
     }
 
+    /**
+     * Pull all courses from database and set to Registrar's ArrayList of courses
+     */
+    public void setCourses() {
+    }
+
+    /**
+     * @return ArrayList of Course objects from the database
+     */
     public ArrayList<Course> getCourses() {
         return courses;
     }
 
     public int insertCoursesFromCSV(String filename) {
-        //TODO: implement method; rows var for testing purposes
         int rows = 0;
 
         if(!connectToDB("schemaBugBuster","u222222","p222222")) {
@@ -196,7 +204,21 @@ public class Registrar {
         } else {
             rows = parseFileWithCourses(filename);
         }
+
         return rows;
+    }
+
+    public boolean generateIdAttribute(String tableName) {
+        try {
+            PreparedStatement ps = conn.prepareStatement("" +
+                    "ALTER TABLE " + tableName + " ADD CourseID INT(6) " +
+                        "PRIMARY KEY AUTO_INCREMENT;");
+            ps.execute();
+            return true;
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return false;
     }
 
     public int parseFileWithCourses(String filename) {
@@ -229,7 +251,7 @@ public class Registrar {
     private HashMap<String, Object> readCourseFromCSV(Scanner rowScanner) {
         HashMap<String, Object> courseAttributes = new HashMap<>();
 
-        if (rowScanner.hasNext()) {courseAttributes.put("CourseID",rowScanner.nextInt());}
+//        if (rowScanner.hasNext()) {courseAttributes.put("CourseID",rowScanner.nextInt());}
         if (rowScanner.hasNext()) {courseAttributes.put("Year",rowScanner.nextInt());}
         if (rowScanner.hasNext()) {courseAttributes.put("Semester",rowScanner.next());}
         if (rowScanner.hasNext()) {courseAttributes.put("Dept",rowScanner.next());}
@@ -256,9 +278,8 @@ public class Registrar {
     }
 
     private int insertCourse(HashMap<String, Object> courseAttributes,String filename) {    //will take all args;return 1 if successful
-        //TODO: parse attributes
         try {
-            int courseID = (int) courseAttributes.get("CourseID");   //TODO: generate courseID
+//            int courseID = (int) courseAttributes.get("CourseID");
             int year = (int) courseAttributes.get("Year");
             String semester = "";
             if (courseAttributes.get("Semester").equals("10")) {
@@ -289,35 +310,34 @@ public class Registrar {
 
             PreparedStatement ps = conn.prepareStatement("" +
                     "INSERT INTO course VALUES" +
-                    "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                        "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
             //Pass in parameters
-            ps.setInt(1,courseID);
-            ps.setInt(2,year);
-            ps.setString(3,semester);
-            ps.setString(4,dept);
-            ps.setInt(5,code);
-            ps.setString(6,section);
-            ps.setString(7,courseName);
-            ps.setInt(8,hours);
-            ps.setInt(9,capacity);
-            ps.setInt(10,enrolled);
-            ps.setString(11,monday);
-            ps.setString(12,tuesday);
-            ps.setString(13,wednesday);
-            ps.setString(14,thursday);
-            ps.setString(15,friday);
-            if (startTime.equals(Time.valueOf("00:00:00"))) {ps.setTime(16, null);}
-            else {ps.setTime(16,startTime);}
-            if (endTime.equals(Time.valueOf("00:00:00"))) {ps.setTime(17, null);}
-            else {ps.setTime(17,endTime);}
-            ps.setString(18,lNameInstructor);
-            ps.setString(19,fNameInstructor);
-            ps.setString(20,prefNameInstructor);
-            ps.setString(21,comment);
+//            ps.setInt(1,courseID);
+            ps.setInt(1,year);
+            ps.setString(2,semester);
+            ps.setString(3,dept);
+            ps.setInt(4,code);
+            ps.setString(5,section);
+            ps.setString(6,courseName);
+            ps.setInt(7,hours);
+            ps.setInt(8,capacity);
+            ps.setInt(9,enrolled);
+            ps.setString(10,monday);
+            ps.setString(11,tuesday);
+            ps.setString(12,wednesday);
+            ps.setString(13,thursday);
+            ps.setString(14,friday);
+            if (startTime.equals(Time.valueOf("00:00:00"))) {ps.setTime(15, null);}
+            else {ps.setTime(15,startTime);}
+            if (endTime.equals(Time.valueOf("00:00:00"))) {ps.setTime(16, null);}
+            else {ps.setTime(16,endTime);}
+            ps.setString(17,lNameInstructor);
+            ps.setString(18,fNameInstructor);
+            ps.setString(19,prefNameInstructor);
+            ps.setString(20,comment);
 
             //Execute prepared statement
-            //TODO: adjust for replication
             int rows = ps.executeUpdate();
             return rows;
         } catch(SQLException e){

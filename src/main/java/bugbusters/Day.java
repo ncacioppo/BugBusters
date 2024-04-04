@@ -37,5 +37,4 @@ public enum Day{
             return "U";
         }
     }
-
 }

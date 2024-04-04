@@ -58,10 +58,10 @@ public class User {
 
     public void setFirstName(String firstName){
         this.firstName = firstName;
-        int rows = updateUserFirstName(this.userID,firstName);
+        int updatedRows = updateUserFirstName(firstName);
     }
 
-    private int updateUserFirstName(int userID, String firstName) {
+    private int updateUserFirstName(String firstName) {
         int rows = 0;
 
         try {
@@ -84,7 +84,25 @@ public class User {
 
     public void setLastName(String lastName){
         this.lastName = lastName;
+        int updatedRows = updateUserLastName(lastName);
     }
+    private int updateUserLastName(String lastName) {
+        int rows = 0;
+
+        try {
+            PreparedStatement ps = registrar.getConn().prepareStatement("" +
+                    "UPDATE user SET LName = ? WHERE UserID = ?");
+            ps.setString(1, lastName);
+            ps.setInt(2, userID);
+
+            rows = ps.executeUpdate();
+
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return rows;
+    }
+
     public String getLastName(){
         return lastName;
     }
@@ -92,6 +110,7 @@ public class User {
     public void setCollegeYear(CollegeYear collegeYear){
         this.collegeYear = collegeYear;
     }
+
     public void setCollegeYear(String collegeYearInput){
         String input = collegeYearInput.toUpperCase();
         switch (input) {

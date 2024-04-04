@@ -10,6 +10,7 @@ class UserTest {
     void addUserToDB() {
         User user = new User();
         user.setFirstName("Jane");
+        user.setLastName("Doe");
         user.getRegistrar().disconnectFromDB();
     }
 

@@ -112,8 +112,9 @@ public class User {
 
     public void removeUserMajor(String majorName) {
         for(Major major : this.majors) {
-            if(major.getMajorName().equals(majorName)) {
+            if(major.getMajorName().equalsIgnoreCase(majorName)) {
                 this.majors.remove(major);
+                break;
             }
         }
     }
@@ -195,8 +196,9 @@ public class User {
 
     public void removeUserMinor(String minorName) {
         for(Minor minor : this.minors) {
-            if(minor.getMinorName().equals(minorName)) {
+            if(minor.getMinorName().equalsIgnoreCase(minorName)) {
                 this.minors.remove(minor);
+                break;
             }
         }
     }

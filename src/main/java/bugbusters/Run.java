@@ -40,8 +40,19 @@ public class Run {
                 case "EXIT":
                     System.exit(0);
                     break;
+                case "HELP":
+                    System.out.println("Usage:\n" +
+                            "SEARCH                                -> To search for courses\n" +
+                            "SCHECULE                              -> To view and edit schedules\n" +
+                            "USER                                  -> To view user information\n" +
+                            "USER MAJOR majorname requirementsyear -> To add a major to user account 'majorname' can be multiple words\n" +
+                            "USER MINOR minorname requirementsyear -> To add a minor to user account 'minorname' can be multiple words\n" +
+                            "USER REMOVE MAJOR                     -> To remove a major from user account\n" +
+                            "USER REMOVE MINOR                     -> To remove a minor from user account\n" +
+                            "EXIT                                  -> To exit the application");
+                    break;
                 default:
-                    System.out.println("'" + query + "' is not a recognized command.");
+                    System.out.println("'" + query + "' is not a recognized command. Try command HELP");
             }
         }
     }
@@ -76,6 +87,7 @@ public class Run {
                         lastName = tempLastName;
                         resolved = true;
                     } else if (response.equalsIgnoreCase("q")){
+                        System.out.println(user);
                         return;
                     }
                 }
@@ -118,6 +130,7 @@ public class Run {
                             resolved = true;
                             break;
                         case "q":
+                            System.out.println(user);
                             return;
                         default:
                             System.out.println(num + " is not a valid input, note you can enter 'q' to end user setup");
@@ -131,23 +144,37 @@ public class Run {
             switch (query) {
                 case "MAJOR":
                     String[] tempMajor = Arrays.copyOfRange(input, 2, input.length-1);
-                    String majorYear = input[input.length-1];
+                    int majorYear;
+                    try {
+                        majorYear = Integer.parseInt(input[input.length - 1]);
+                    } catch (Exception e){
+                        System.out.println("Usage of USER MAJOR:\n" +
+                                "\"USER MAJOR majorname requirementsyear -> to add a major to user account 'majorname' can be multiple words");
+                        break;
+                    }
                     String actualMajor = "";
                     for (String string : tempMajor){
                         actualMajor += string + " ";
                     }
                     actualMajor = actualMajor.trim();
-                    user.addUserMajor(actualMajor, Integer.parseInt(majorYear));
+                    user.addUserMajor(actualMajor, majorYear);
                     break;
                 case "MINOR":
                     String[] tempMinor = Arrays.copyOfRange(input, 2, input.length-1);
-                    String minorYear = input[input.length-1];
+                    int minorYear = 2;
+                    try {
+                        minorYear = Integer.parseInt(input[input.length - 1]);
+                    } catch (Exception e){
+                        System.out.println("Usage of USER MINOR:\n" +
+                                "USER MINOR minorname requirementsyear -> to add a minor to user account 'minorname' can be multiple words");
+                        break;
+                    }
                     String actualMinor = "";
                     for (String string : tempMinor){
                         actualMinor += string + " ";
                     }
                     actualMinor = actualMinor.trim();
-                    user.addUserMinor(actualMinor, Integer.parseInt(minorYear));
+                    user.addUserMinor(actualMinor, minorYear);
                     break;
                 case "REMOVE":
                     if (input[2].equalsIgnoreCase("MAJOR")){
@@ -155,7 +182,7 @@ public class Run {
                     } else if (input[2].equalsIgnoreCase("MINOR")){
                         runRemoveMinor();
                     } else {
-
+                        System.out.println("Argument after REMOVE van only be MAJOR or MINOR");
                     }
                     break;
                 default:
@@ -166,23 +193,26 @@ public class Run {
 
     private static void runRemoveMajor(){
         if (user.getUserMajors().size() >0){
-            System.out.println("Here are your listed majors(s), please respond with the number of the major you would like to delete: ");
+            System.out.println("Here are your listed majors(s), please respond with the number of the major you would like to delete or enter q to cancel: ");
             int count = 1;
             for (Major major : user.getUserMajors()){
-                System.out.println(major);
+                System.out.println(count + ". " + major.getMajorName());
                 count += 1;
             }
             String numString = scanner.nextLine();
+            if (numString.equalsIgnoreCase("q")){
+                return;
+            }
             try{
                 int num = Integer.parseInt(numString);
                 if ((num < 1)||(num > user.getUserMajors().size())){
-                    System.out.println("Error");
+                    System.out.println("Invalid number");
                 } else {
                     user.removeUserMajor(user.getUserMajors().get(num-1).getMajorName());
                     System.out.println("Successfully deleted major");
                 }
             } catch(Exception e){
-                System.out.println("Error");
+                System.out.println("Error deleting major");
             }
         } else {
             System.out.println("No majors are listed");
@@ -191,23 +221,26 @@ public class Run {
 
     private static void runRemoveMinor(){
         if (user.getUserMajors().size() >0){
-            System.out.println("Here are your listed minor(s), please respond with the number of the minor you would like to delete: ");
+            System.out.println("Here are your listed minor(s), please respond with the number of the minor you would like to delete or enter q to cancel: ");
             int count = 1;
             for (Minor minor : user.getUserMinors()){
-                System.out.println(minor);
+                System.out.println(count + ". " + minor.getMinorName());
                 count += 1;
             }
             String numString = scanner.nextLine();
+            if (numString.equalsIgnoreCase("q")){
+                return;
+            }
             try{
                 int num = Integer.parseInt(numString);
                 if ((num < 1)||(num > user.getUserMinors().size())){
-                    System.out.println("Error");
+                    System.out.println("Invalid number");
                 } else {
                     user.removeUserMinor(user.getUserMinors().get(num-1).getMinorName());
                     System.out.println("Successfully deleted minor");
                 }
             } catch(Exception e){
-                System.out.println("Error");
+                System.out.println("Error deleting minor");
             }
         } else {
             System.out.println("No minors are listed");
@@ -223,26 +256,43 @@ public class Run {
 
             switch (input[0]){
                 case "CREATE":
-                    schedules.add(new Schedule(input[1], new Term(input[2] + " " + input[3]), new ArrayList<>()));
+                    try {
+                        Term createTerm = new Term(input[2] + " " + input[3]);
+                        schedules.add(new Schedule(input[1], createTerm, new ArrayList<>()));
+                    } catch (Exception e){
+                        System.out.println("Incorrect usage of CREATE, usage Example:\n" + terminalString + "Schedule -> CREATE schedulename spring 2021");
+                    }
                     break;
                 case "DELETE":
                     runDeleteSchedule();
                     break;
                 case "VIEW":
-                    runScheduleView(input[1], input[2]);
+                    try {
+                        runScheduleView(input[1], input[2]);
+                    } catch (Exception e){
+                        System.out.println("Incorrect usage of VIEW; usage example:\n" + terminalString + "Schedule -> VIEW schedulename LIST\nNOTE** the last argument should only be LIST or CALENDAR");
+                    }
                     break;
                 case "ADD":
-                    if (runAddCourse(input[1], input[2])){
-                        System.out.println("Course successfully added to schedule '" + input[1] + "'");
-                    } else {
-                        System.out.println("An error occurred and the course could not be added to schedule '" + input[1] + "'");
+                    try {
+                        if (runAddCourse(input[1], input[2])) {
+                            System.out.println("Course successfully added to schedule '" + input[1] + "'");
+                        } else {
+                            System.out.println("An error occurred and the course could not be added to schedule '" + input[1] + "'");
+                        }
+                    } catch (Exception e){
+                        System.out.println("Incorrect usage of ADD; usage example:\n" + terminalString + "Schedule -> ADD schedulename courseID");
                     }
                     break;
                 case "REMOVE":
-                    if (runRemoveCourse(input[1], input[2])){
-                        System.out.println("Course successfully removed from schedule '" + input[1] + "'");
-                    } else {
-                        System.out.println("An error occurred and the course could not be removed from schedule '" + input[1] + "'");
+                    try {
+                        if (runRemoveCourse(input[1], input[2])) {
+                            System.out.println("Course successfully removed from schedule '" + input[1] + "'");
+                        } else {
+                            System.out.println("An error occurred and the course could not be removed from schedule '" + input[1] + "'");
+                        }
+                    } catch (Exception e){
+                        System.out.println("Incorrect usage of REMOVE; usage example:\n" + terminalString + "Schedule -> REMOVE schedulename courseID");
                     }
                     break;
                 case "ALL":
@@ -254,10 +304,20 @@ public class Run {
                         System.out.println("-----There are currently no schedules saved-----");
                     }
                     break;
+                case "HELP":
+                    System.out.println("Usage:\n" +
+                            "CREATE scheduleName season year -> To create a new schedule\n" +
+                            "DELETE                          -> To delete an existing schedule\n" +
+                            "VIEW scheduleName viewType      -> To view an existing schedule in a specific view type. NOTE view type is either LIST or CALENDAR\n" +
+                            "ADD scheduleName courseID       -> To add a specific course to an existing schedule\n" +
+                            "REMOVE scheduleName courseID    -> To remove a course from an existing course\n" +
+                            "ALL                             -> To see a list of all schedules\n" +
+                            "BACK                            -> To go back to opening screen");
+                    break;
                 case "BACK":
                     return;
                 default:
-                    System.out.println("Default");
+                    System.out.println("'" + input[0] + "' is not a recognized command. Try command HELP");
             }
         }
 
@@ -301,6 +361,10 @@ public class Run {
         }
 
         if (viewType.equalsIgnoreCase("CALENDAR")){
+            /**
+             * TODO
+             * add calendar view once it works and is in master
+             */
 //            CalendarView view = new CalendarView(currentSchedule);
 //            view.printScheduleAsCalendar();
         } else if (viewType.equalsIgnoreCase("LIST")){
@@ -388,9 +452,24 @@ public class Run {
 
             String[] input = (scanner.nextLine().toUpperCase()).split(" ");
 
-            if ((input.length < 2) && (!input[0].equalsIgnoreCase("BACK")) && (!input[0].equalsIgnoreCase("CLEAR")) && (!input[0].equalsIgnoreCase("COURSES"))){
+            if ((input.length < 2) && (!input[0].equalsIgnoreCase("BACK")) && (!input[0].equalsIgnoreCase("CLEAR")) && (!input[0].equalsIgnoreCase("COURSES")) && (!input[0].equalsIgnoreCase("HELP"))) {
                 System.out.println("A filter and a value has to be entered for Search\n");
                 System.out.println("Usage: ");
+            } else if (input[0].equalsIgnoreCase("HELP")){
+                System.out.println("Usage:\n" +
+                        "BACK                      -> To return to the opening screen\n" +
+                        "CLEAR                     -> To clear all previous searches and change current course list to all courses\n" +
+                        "COURSES                   -> To view current course list\n" +
+                        "KEYWORD query             -> To search for courses in current list that contain the keyword 'query'\n" +
+                        "NAME query                -> To search for courses in current list that have the name 'query'\n" +
+                        "DEPARTMENT query          -> To search for courses in current list that are for the department 'query'\n" +
+                        "CODE query                -> To search for courses in current list with a course code in a certain range. Format of query is 'min-max' where min and max are integers\n" +
+                        "TERM query                -> To search for courses in current list for a specific term. The format for query is: season-year ex. spring-2020\n" +
+                        "PROFESSOR query           -> To search for courses in current list that are have the professor 'query'\n" +
+                        "ID query                  -> To search for courses in current list that have the ID 'query'\n" +
+                        "DAY query                 -> To search for courses that meet on a specific day ex. DAY monday\n" +
+                        "TIME query                -> To search for courses in current list that meet withing a specific time. The format for query is: startTime-endTime ex. 09:00-16:00\n" +
+                        "ADD scheduleName courseID -> To add a specific course to an existing schedule");
             } else if (input[0].equalsIgnoreCase("BACK")) {
                 return;
             } else if (input[0].equalsIgnoreCase("CLEAR")) {
@@ -452,7 +531,7 @@ public class Run {
                         runAddCourse(query.get(0), query.get(1));
                         break;
                     default:
-                        System.out.println("Searching by " + filter + " is not currently supported.");
+                        System.out.println("Searching by " + filter + " is not currently supported. Try command HELP");
                 }
             }
 

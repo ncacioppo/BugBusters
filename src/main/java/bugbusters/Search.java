@@ -194,7 +194,7 @@ public class Search {
             if (course.getMeetingTimes() == null){
 //                results.add(course);
             } else {
-                Set<MeetingTime> courseMeetingTimes = course.getMeetingTimes();
+                ArrayList<MeetingTime> courseMeetingTimes = course.getMeetingTimes();
 
                 boolean correctDay = false;
 
@@ -228,7 +228,7 @@ public class Search {
         LocalTime endTimeRange = LocalTime.of(Integer.parseInt(endTime.split(":")[0]), Integer.parseInt(endTime.split(":")[1]), 0);
 
         for (Course course : courses) {
-            Set<MeetingTime> courseMeetingTimes = course.getMeetingTimes();
+            ArrayList<MeetingTime> courseMeetingTimes = course.getMeetingTimes();
 
             for (MeetingTime time : courseMeetingTimes) {
                 if (time.getStartTime().compareTo(startTimeRange) < 0) {

@@ -8,20 +8,25 @@ public class Schedule {
     String name;
     Term term;
     List<Course> courses;
+    int scheduleID;
+    int userID;
 
     public Schedule(String name, Term term, List<Course> courses){
         setName(name);
         setTerm(term);
         setCourses(courses);
+        //setUserID(user.getID())
     }
 
     public Schedule(Schedule schedule) {
         setName(schedule.getName());
         setTerm(schedule.getTerm());
         setCourses(schedule.getCourses());
+        setUserID(schedule.getUserID());
+        setScheduleID(schedule.getScheduleID());
     }
 
-    private void setName(String name) { this.name = name; }
+    private void setName(String name) {this.name = name; }
 
     public String getName(){
         return name;
@@ -43,15 +48,31 @@ public class Schedule {
         return courses;
     }
 
+    private void setUserID(int userID) {
+        this.userID = 0;
+   }
+
+    public int getUserID() {
+        return userID;
+    }
+
+    public void setScheduleID(int scheduleID) {
+        this.scheduleID = scheduleID;
+    }
+
+    public int getScheduleID() {
+        return scheduleID;
+    }
+
     public boolean isValid(){
         // loop through our courses
         for (Course course1 : courses) {
-            Set<MeetingTime> course1Times = course1.getMeetingTimes();
+            ArrayList<MeetingTime> course1Times = course1.getMeetingTimes();
             // loop through every course for every course
             for (Course course2 : courses) {
                 // if the courses are different
                 if (!course1.equals(course2)) {
-                    Set<MeetingTime> course2Times = course2.getMeetingTimes();
+                    ArrayList<MeetingTime> course2Times = course2.getMeetingTimes();
                     // for the meeting times of course 1
                     for (MeetingTime course1MT : course1Times) {
                         // compare to the meeting times of course 2
@@ -141,11 +162,38 @@ public class Schedule {
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
-        sb.append(name).append("\n").append(term).append("\n");
+        sb.append(name).append("\n").append(term).append("\n").append("\n");
         for (Course course : courses) {
-            sb.append(course.toString()).append("\n");
+            sb.append(course.shortToString()).append("\n").append("\n");
         }
         sb.append("\n");
+        return sb.toString();
+    }
+
+    public static String compareView(Schedule scheduleA, Schedule scheduleB) {
+        StringBuilder sb = new StringBuilder();
+        String formatString = "%-40s %-40s\n";
+        sb.append(String.format(formatString, scheduleA.getName(), scheduleB.getName()));
+        sb.append(String.format(formatString, scheduleA.getTerm(), scheduleB.getTerm()));
+        int loopLength = scheduleA.getCourses().size();
+        if (scheduleB.getCourses().size() > loopLength) {
+            loopLength = scheduleB.getCourses().size();
+        }
+        sb.append("\n");
+        for (int i = 0; i < loopLength; i++) {
+            sb.append(String.format(formatString,
+                    scheduleA.getCourses().get(i).getDepartment() + " " + scheduleA.getCourses().get(i).getCode() + " " + scheduleA.getCourses().get(i).getSection(),
+                    scheduleB.getCourses().get(i).getDepartment() + " " + scheduleB.getCourses().get(i).getCode() + " " + scheduleB.getCourses().get(i).getSection()));
+            sb.append(String.format(formatString,
+                    scheduleA.getCourses().get(i).getName(),
+                    scheduleB.getCourses().get(i).getName()
+                    ));
+            sb.append(String.format(formatString,
+                    scheduleA.getCourses().get(i).meetingTimesToString(),
+                    scheduleB.getCourses().get(i).meetingTimesToString()
+                    ));
+            sb.append("\n");
+        }
         return sb.toString();
     }
 }

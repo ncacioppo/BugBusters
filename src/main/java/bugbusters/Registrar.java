@@ -390,4 +390,79 @@ public class Registrar {
         }
     }
 
+    // We'll see
+    /* public static int checkName(String name) {
+        try {
+            PreparedStatement nameCheck = conn.prepareStatement("SELECT * FROM Schedule WHERE Name = ?");
+            nameCheck.setString(1, name);
+            return nameCheck.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("SQL Error: " + e.getMessage());
+        }
+        return -1;
+    }*/
+
+    public boolean saveSchedule(Schedule schedule) {
+        try {
+            // insert into schedule first, where we save the schedule object itself
+            PreparedStatement insertSchedule = conn.prepareStatement("INSERT INTO schedule VALUES " +
+                    "(?,?,?)");
+            insertSchedule.setString(1, schedule.getName());
+            insertSchedule.setInt(2, schedule.getTerm().getYear());
+            insertSchedule.setString(3, schedule.getTerm().getSeason());
+
+            int scheduleRows = insertSchedule.executeUpdate();
+
+            // get the scheduleID we just created by saving the schedule
+            PreparedStatement getID = conn.prepareStatement("SELECT SCOPE_IDENTITY() AS [ScheduleID]");
+            ResultSet results = getID.executeQuery();
+            int scheduleID = results.getInt(1);
+            schedule.setScheduleID(scheduleID);
+
+            // now insert into user_schedule for each course in the schedule, where we save all the course objects
+            int courseRows = 1;
+            for (Course course : schedule.getCourses()) {
+                PreparedStatement insertScheduleEntry = conn.prepareStatement("INSERT INTO schedule_course VALUES " +
+                        "(?,?,?)");
+                insertScheduleEntry.setInt(1, schedule.getUserID());
+                insertScheduleEntry.setInt(2, schedule.getScheduleID());
+                insertScheduleEntry.setInt(3, course.getId());
+                if (insertScheduleEntry.executeUpdate() == 0) {
+                    courseRows = 0;
+                }
+            }
+
+            if (scheduleRows > 0 && courseRows > 0) {
+                return true;
+            }
+        } catch(SQLException e) {
+            System.out.println("Failed to save schedule, Exception: " + e.getMessage());
+            return false;
+        }
+        return false;
+    }
+
+    public boolean deleteSchedule(int scheduleID) {
+        try {
+            PreparedStatement ps1 = conn.prepareStatement("" +
+                    "DELETE FROM schedule WHERE scheduleID = ?");
+            ps1.setInt(1, scheduleID);
+
+            PreparedStatement ps2 = conn.prepareStatement("" +
+                    "DELETE FROM user_schedule WHERE scheduleID = ?");
+            ps2.setInt(1, scheduleID);
+
+            int rows1 = ps1.executeUpdate();
+            int rows2 = ps2.executeUpdate();
+
+            if(rows1 > 0 && rows2 > 0) {
+                return true;
+            }
+        } catch(SQLException e) {
+            System.out.println("Failed to delete, Exception:  " + e.getMessage());
+            return false;
+        }
+        return false;
+    }
+
 }

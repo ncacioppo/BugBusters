@@ -255,6 +255,7 @@ public class Registrar {
         return courseAttributes;
     }
 
+
     private int insertCourse(HashMap<String, Object> courseAttributes,String filename) {    //will take all args;return 1 if successful
         //TODO: parse attributes
         try {

@@ -3,6 +3,7 @@ package bugbusters;
 import com.mysql.cj.jdbc.jmx.LoadBalanceConnectionGroupManager;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Year;
 import java.util.ArrayList;
@@ -18,8 +19,7 @@ public class User {
     private ArrayList<Major> majors;
     private ArrayList<Minor> minors;
     private Registrar registrar;
-    private boolean inDatabase;
-
+    private int userID;
     private final int MAJOR_LIMIT = 2;   //limit to number of majors a user may have in software
     
     public User() {
@@ -29,22 +29,63 @@ public class User {
         this.minors = new ArrayList<Minor>();
         //TODO: note that this is hard-coded for u222222
         this.registrar = new Registrar("schemaBugBuster","u222222","p222222");
-        this.inDatabase = addUserToDatabase();
+        this.userID = addUserToDatabase();
         registrar.disconnectFromDB();       //TODO: all disconnects from DB should happen when user leaves app
     }
 
-    private boolean addUserToDatabase() {
-//        try {
-//
-//        } catch(SQLException e) {
-//            System.out.println(e.getMessage());
-//        }
-        return false;
+    private int addUserToDatabase() {
+        int rows = 0;
+        int id = 0;
+
+        try {
+            PreparedStatement ps = registrar.getConn().prepareStatement("" +
+                    "INSERT INTO user() VALUES();");
+            rows = ps.executeUpdate();
+
+            ps = registrar.getConn().prepareStatement("" +
+                    "SELECT LAST_INSERT_ID();");
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()) {
+                id = rs.getInt(1);
+            }
+
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return id;
     }
 
     private void setFirstName(String firstName){
         this.firstName = firstName;
+        int rows = updateUserFirstName(this.userID,firstName);
     }
+
+    private int updateUserFirstName(int userID, String firstName) {
+        //TODO: implement method
+//        int rows = 0;
+//        int id = 0;
+//
+//        try {
+//            PreparedStatement ps = registrar.getConn().prepareStatement("" +
+//                    "INSERT INTO user() VALUES();");
+//            rows = ps.executeUpdate();
+//
+//            ps = registrar.getConn().prepareStatement("" +
+//                    "SELECT LAST_INSERT_ID();");
+//            ResultSet rs = ps.executeQuery();
+//
+//            while(rs.next()) {
+//                id = rs.getInt(1);
+//            }
+//
+//        } catch(SQLException e) {
+//            System.out.println(e.getMessage());
+//        }
+//        return id;
+        return 0;
+    }
+
     public String getFirstName(){
         return firstName;
     }

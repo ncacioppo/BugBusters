@@ -28,6 +28,7 @@ class UserTest {
 
     @Test
     void addUserMajor() {
+        //TODO: check duplicates
         User user1 = new User();
         String majorName = "B.S. in Computer Science";
         int reqYr = 2022;

@@ -149,9 +149,68 @@ public class Run {
                     actualMinor = actualMinor.trim();
                     user.addUserMinor(actualMinor, Integer.parseInt(minorYear));
                     break;
+                case "REMOVE":
+                    if (input[2].equalsIgnoreCase("MAJOR")){
+                        runRemoveMajor();
+                    } else if (input[2].equalsIgnoreCase("MINOR")){
+                        runRemoveMinor();
+                    } else {
+
+                    }
+                    break;
                 default:
                     System.out.println("Default");
             }
+        }
+    }
+
+    private static void runRemoveMajor(){
+        if (user.getUserMajors().size() >0){
+            System.out.println("Here are your listed majors(s), please respond with the number of the major you would like to delete: ");
+            int count = 1;
+            for (Major major : user.getUserMajors()){
+                System.out.println(major);
+                count += 1;
+            }
+            String numString = scanner.nextLine();
+            try{
+                int num = Integer.parseInt(numString);
+                if ((num < 1)||(num > user.getUserMajors().size())){
+                    System.out.println("Error");
+                } else {
+                    user.removeUserMajor(user.getUserMajors().get(num-1).getMajorName());
+                    System.out.println("Successfully deleted major");
+                }
+            } catch(Exception e){
+                System.out.println("Error");
+            }
+        } else {
+            System.out.println("No majors are listed");
+        }
+    }
+
+    private static void runRemoveMinor(){
+        if (user.getUserMajors().size() >0){
+            System.out.println("Here are your listed minor(s), please respond with the number of the minor you would like to delete: ");
+            int count = 1;
+            for (Minor minor : user.getUserMinors()){
+                System.out.println(minor);
+                count += 1;
+            }
+            String numString = scanner.nextLine();
+            try{
+                int num = Integer.parseInt(numString);
+                if ((num < 1)||(num > user.getUserMinors().size())){
+                    System.out.println("Error");
+                } else {
+                    user.removeUserMinor(user.getUserMinors().get(num-1).getMinorName());
+                    System.out.println("Successfully deleted minor");
+                }
+            } catch(Exception e){
+                System.out.println("Error");
+            }
+        } else {
+            System.out.println("No minors are listed");
         }
     }
 
@@ -205,10 +264,11 @@ public class Run {
     }
 
     private static void runDeleteSchedule(){
-        System.out.println("Here sre all your schedules, please respond with the number of the schedule you would like to delete: ");
+        System.out.println("Here are all your schedules, please respond with the number of the schedule you would like to delete: ");
         int count = 1;
         for (Schedule schedule : schedules){
             System.out.println(count + ". " + schedule.name + " - " + schedule.term);
+            count += 1;
         }
         String numString = scanner.nextLine();
         try{

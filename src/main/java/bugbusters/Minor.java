@@ -6,11 +6,19 @@ public class Minor {
 
 //    private List<Course> courses;
 
+    /**
+     * Constructor for Minor
+     * @param minorName
+     * @param reqYr
+     */
     public Minor(String minorName, int reqYr){
         this.minorName = minorName;
         this.reqYr = reqYr;
     }
 
+    /**
+     * @return name of minor as String
+     */
     public String getMinorName() {
         return minorName;
     }

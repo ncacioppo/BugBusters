@@ -2,6 +2,9 @@ package bugbusters;
 
 import com.mysql.cj.jdbc.jmx.LoadBalanceConnectionGroupManager;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,6 +19,7 @@ public class User {
     private ArrayList<Major> majors;
     private ArrayList<Minor> minors;
     private Registrar registrar;
+    private final int userID;
     private final int MAJOR_LIMIT = 2;   //limit to number of majors a user may have in software
     private final int MINOR_LIMIT = 4;   //limit to number of majors a user may have in software
     public User() {
@@ -25,19 +29,80 @@ public class User {
         this.minors = new ArrayList<Minor>();
         //TODO: note that this is hard-coded for u222222
         this.registrar = new Registrar("schemaBugBuster","u222222","p222222");
-        registrar.disconnectFromDB();
+        this.userID = addUserToDatabase();
+//        registrar.disconnectFromDB();       //TODO: all disconnects from DB should happen when user leaves app
+    }
+
+    private int addUserToDatabase() {
+        int rows = 0;
+        int id = 0;
+
+        try {
+            PreparedStatement ps = registrar.getConn().prepareStatement("" +
+                    "INSERT INTO user() VALUES();");
+            rows = ps.executeUpdate();
+
+            ps = registrar.getConn().prepareStatement("" +
+                    "SELECT LAST_INSERT_ID();");
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()) {
+                id = rs.getInt(1);
+            }
+
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return id;
     }
 
     public void setFirstName(String firstName){
         this.firstName = firstName;
+        int updatedRows = updateUserFirstName(firstName);
     }
+
+    private int updateUserFirstName(String firstName) {
+        int rows = 0;
+
+        try {
+            PreparedStatement ps = registrar.getConn().prepareStatement("" +
+                    "UPDATE user SET FName = ? WHERE UserID = ?");
+            ps.setString(1, firstName);
+            ps.setInt(2, userID);
+
+            rows = ps.executeUpdate();
+
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return rows;
+    }
+
     public String getFirstName(){
         return firstName;
     }
 
     public void setLastName(String lastName){
         this.lastName = lastName;
+        int updatedRows = updateUserLastName(lastName);
     }
+    private int updateUserLastName(String lastName) {
+        int rows = 0;
+
+        try {
+            PreparedStatement ps = registrar.getConn().prepareStatement("" +
+                    "UPDATE user SET LName = ? WHERE UserID = ?");
+            ps.setString(1, lastName);
+            ps.setInt(2, userID);
+
+            rows = ps.executeUpdate();
+
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return rows;
+    }
+
     public String getLastName(){
         return lastName;
     }
@@ -45,6 +110,7 @@ public class User {
     public void setCollegeYear(CollegeYear collegeYear){
         this.collegeYear = collegeYear;
     }
+
     public void setCollegeYear(String collegeYearInput){
         String input = collegeYearInput.toUpperCase();
         switch (input) {
@@ -192,7 +258,13 @@ public class User {
     private void addUserMinor(Minor minor) {
         this.minors.add(minor);
     }
+    public boolean isInDatabase() {
+        return userID > 0;
+    }
 
+    public int getUserID() {
+        return userID;
+    }
     public void removeUserMinor(String minorName) {
         for(Minor minor : this.minors) {
             if(minor.getMinorName().equals(minorName)) {
@@ -201,8 +273,12 @@ public class User {
         }
     }
 
-    public List<Minor> getUserMinors(){
+    public List<Minor> getUserMinors() {
         return minors;
+    }
+
+    public Registrar getRegistrar() {
+        return registrar;
     }
 
 }

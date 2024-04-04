@@ -202,6 +202,61 @@ public class Registrar {
         return courses;
     }
 
+    private static void insertCourses(String filepath) {
+        int rows = 0;
+
+        //read values from csv and insert as args below
+        rows += insertCourse();
+    }
+
+    private static boolean deleteCourse(int courseID) {
+        try {
+            PreparedStatement ps = conn.prepareStatement("" +
+                    "DELETE FROM course WHERE courseID = ?");
+            ps.setInt(1, courseID);
+
+            int rows = ps.executeUpdate();
+            if(rows > 0) {
+                return true;
+            }
+        } catch(SQLException e) {
+            System.out.println("Failed to delete exception is " + e.getMessage());
+            return false;
+        }
+        return false;
+    }
+
+    private static int insertCourse() {    //will take all args;return 1 if successful
+        //dummy data, assume type casting
+        int courseID = 289410;   //TODO: we need to scrape refNums or create sql function
+        int year = 2020;
+        String semester = "Spring";
+        String dept = "ACCT";
+        int code = 201;
+        String section = "A";
+        String courseName = "PRINCIPLES OF ACCOUNTING I";
+        int hours = 3;
+        int capacity = 30;
+        int enrolled = 30;
+        String monday = "M";
+        String tuesday = "";
+        String wednesday = "W";
+        String thursday = "";
+        String friday = "F";
+        Time startTime = new Time(9,0,0);
+        Time endTime = new Time(9,50,0);
+        String lNameInstructor = "Stone";
+        String fNameInstructor = "Jennifer";
+        String prefNameInstructor = "Nicole";
+        String comment = "Online materials fee";
+        ////
+
+        try{
+            //TODO: remove hard-coded username and password
+            connectToDB("schemaBugBuster", "u222222", "p222222");
+            PreparedStatement ps = conn.prepareStatement("" +
+                    "INSERT INTO course VALUES" +
+                    "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");    //TODO: ADD ????
     public int insertCoursesFromCSV(String filename) {
         //TODO: implement method; rows var for testing purposes
         int rows = 0;
@@ -335,6 +390,7 @@ public class Registrar {
             //Execute prepared statement
             //TODO: adjust for replication
             int rows = ps.executeUpdate();
+
             return rows;
         } catch(SQLException e){
             System.out.println(e.getMessage());

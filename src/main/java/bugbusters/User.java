@@ -273,7 +273,7 @@ public class User {
         }
     }
 
-    public List<Minor> getUserMinors(){
+    public List<Minor> getUserMinors() {
         return minors;
     }
 

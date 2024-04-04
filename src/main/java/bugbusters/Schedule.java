@@ -1,18 +1,11 @@
 package bugbusters;
 
-import com.mysql.cj.util.StringUtils;
-import org.apache.poi.util.StringUtil;
-
-import java.lang.reflect.Array;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class Schedule {
     String name;
-
     Term term;
     List<Course> courses;
     int scheduleID;
@@ -152,23 +145,6 @@ public class Schedule {
             }
         }
         return null;
-    }
-
-    /**
-     * @return ending hour of latest course in schedule (military time)
-     */
-    public int getLatestHour() {
-        int latestHour = 7;
-
-        for (Course course : this.courses) {
-            for (MeetingTime meetingTime : course.getMeetingTimes()) {
-                int currHour = meetingTime.getEndTime().getHour();
-                if (latestHour < currHour) {
-                    latestHour = currHour;
-                }
-            }
-        }
-        return latestHour;
     }
 
     @Override

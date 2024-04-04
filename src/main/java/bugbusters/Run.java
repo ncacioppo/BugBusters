@@ -131,16 +131,23 @@ public class Run {
             switch (query) {
                 case "MAJOR":
                     String[] tempMajor = Arrays.copyOfRange(input, 2, input.length-1);
-                    String year = input[input.length-1];
+                    String majorYear = input[input.length-1];
                     String actualMajor = "";
                     for (String string : tempMajor){
                         actualMajor += string + " ";
                     }
                     actualMajor = actualMajor.trim();
-                    user.addUserMajor(actualMajor, Integer.parseInt(year));
+                    user.addUserMajor(actualMajor, Integer.parseInt(majorYear));
                     break;
                 case "MINOR":
-                    user.addUserMinor(input[2], Integer.parseInt(input[3]));
+                    String[] tempMinor = Arrays.copyOfRange(input, 2, input.length-1);
+                    String minorYear = input[input.length-1];
+                    String actualMinor = "";
+                    for (String string : tempMinor){
+                        actualMinor += string + " ";
+                    }
+                    actualMinor = actualMinor.trim();
+                    user.addUserMinor(actualMinor, Integer.parseInt(minorYear));
                     break;
                 default:
                     System.out.println("Default");
@@ -158,6 +165,9 @@ public class Run {
             switch (input[0]){
                 case "CREATE":
                     schedules.add(new Schedule(input[1], new Term(input[2] + " " + input[3]), new ArrayList<>()));
+                    break;
+                case "DELETE":
+                    runDeleteSchedule();
                     break;
                 case "VIEW":
                     runScheduleView(input[1], input[2]);
@@ -194,6 +204,26 @@ public class Run {
 
     }
 
+    private static void runDeleteSchedule(){
+        System.out.println("Here sre all your schedules, please respond with the number of the schedule you would like to delete: ");
+        int count = 1;
+        for (Schedule schedule : schedules){
+            System.out.println(count + ". " + schedule.name + " - " + schedule.term);
+        }
+        String numString = scanner.nextLine();
+        try{
+            int num = Integer.parseInt(numString);
+            if ((num < 1)||(num > schedules.size())){
+                System.out.println("Error");
+            } else {
+                Schedule removed = schedules.remove(num-1);
+                System.out.println("Successfully deleted " + removed.name + " - " + removed.term);
+            }
+        } catch(Exception e){
+            System.out.println("Error");
+        }
+    }
+
     private static void runScheduleView(String scheduleName, String viewType){
 
         Schedule currentSchedule = null;
@@ -211,11 +241,8 @@ public class Run {
         }
 
         if (viewType.equalsIgnoreCase("CALENDAR")){
-            /**
-             * TODO
-             * use view in calendar format when it is added to master
-             */
-            System.out.println("Calendar view of " + currentSchedule.name + " - " + currentSchedule.term);
+//            CalendarView view = new CalendarView(currentSchedule);
+//            view.printScheduleAsCalendar();
         } else if (viewType.equalsIgnoreCase("LIST")){
             System.out.println(currentSchedule.toString());
         } else {
@@ -254,7 +281,11 @@ public class Run {
 
         Course removedCourse = currentSchedule.removeCourse(currentCourse);
 
-        return false;
+        if (removedCourse == null){
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private static Boolean runAddCourse(String scheduleName, String courseID){

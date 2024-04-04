@@ -8,13 +8,13 @@ public class Major {
 
 //    private List<Course> courses;
 
-    public String getMajorName() {
-        return majorName;
-    }
-
     public Major(String majorName, int reqYr){
         this.majorName = majorName;
         this.reqYr = reqYr;
+    }
+
+    public String getMajorName() {
+        return majorName;
     }
 //
 //

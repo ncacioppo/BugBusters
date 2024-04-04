@@ -7,7 +7,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class ScheduleTest {
@@ -107,5 +106,4 @@ class ScheduleTest {
 
         return schedule;
     }
-
 }

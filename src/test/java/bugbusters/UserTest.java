@@ -7,6 +7,15 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserTest {
 
     @Test
+    void addUserToDB() {
+        User user = new User();
+        user.setFirstName("Jane");
+        user.setLastName("Doe");
+        user.getRegistrar().disconnectFromDB();
+    }
+
+
+    @Test
     void getEmptyCollegeYear() {
         User user = new User();
         assertEquals(null,user.getCollegeYear());
@@ -46,6 +55,36 @@ class UserTest {
 
         user1.addUserMajor("B.S. in Biology",2022);
         assertEquals(2,user1.getUserMajors().size());
+    }
+
+    @Test
+    void addUserMinor() {
+        User user1 = new User();
+        String minorName = "Computer Science";
+        int reqYr = 2018;
+
+        user1.addUserMinor(minorName,reqYr);
+        assertEquals(1, user1.getUserMinors().size());
+
+        minorName = "Philosophy";
+        reqYr = 2025;
+        user1.addUserMinor(minorName,reqYr);
+        assertEquals(1, user1.getUserMinors().size());
+
+        user1.addUserMinor("Philosophy", 2019);
+        assertEquals(2,user1.getUserMinors().size());
+
+        user1.addUserMinor("Cybersecurity",2020);
+        assertEquals(3,user1.getUserMinors().size());
+
+        user1.addUserMinor("Cybersecurity",2020);
+        assertEquals(3,user1.getUserMinors().size());
+
+        user1.addUserMinor("Pre-Law",2018);
+        assertEquals(4,user1.getUserMinors().size());
+
+        user1.addUserMinor("Psychology",2019);
+        assertEquals(4,user1.getUserMinors().size());
     }
 
     @Test

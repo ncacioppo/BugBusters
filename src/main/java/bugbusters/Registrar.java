@@ -25,6 +25,7 @@ public class Registrar {
             setMajorsFromDB();
             setMinorsFromDB();
             courses = new ArrayList<>();
+//            disconnectFromDB();
         }
     }
 
@@ -46,6 +47,12 @@ public class Registrar {
         sampleMinors.add("Pre-Law");
 
         return sampleMinors;
+    }
+
+    public void printReqYears(){
+        for (int req : this.getReqYrs()){
+            System.out.println(req);
+        }
     }
 
     private boolean connectToDB(String schema, String username, String password) {
@@ -121,6 +128,15 @@ public class Registrar {
         }
     }
 
+    public Boolean isMinor(String potMinor){
+        for (String minor : minors){
+            if (minor.equalsIgnoreCase(potMinor)){
+                return  true;
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Calls connectToDB() and pulls minor titles into an ArrayList
@@ -159,7 +175,7 @@ public class Registrar {
 
     public boolean isMajor(String newMajor) {
         for(String major : majors) {
-            if(major.equals(newMajor)) {
+            if(major.equalsIgnoreCase(newMajor)) {
                 return true;
             }
         }
@@ -183,20 +199,43 @@ public class Registrar {
         return minors;
     }
 
+    /**
+     * Pull all courses from database and set to Registrar's ArrayList of courses
+     */
+    public void setCourses() {
+    }
+
+    /**
+     * @return ArrayList of Course objects from the database
+     */
     public ArrayList<Course> getCourses() {
         return courses;
     }
 
     public int insertCoursesFromCSV(String filename) {
-        //TODO: implement method; rows var for testing purposes
         int rows = 0;
 
         if(!connectToDB("schemaBugBuster","u222222","p222222")) {
             System.out.println("Unable to connect to database");
         } else {
             rows = parseFileWithCourses(filename);
+            disconnectFromDB();
         }
+
         return rows;
+    }
+
+    public boolean generateIdAttribute(String tableName) {
+        try {
+            PreparedStatement ps = conn.prepareStatement("" +
+                    "ALTER TABLE " + tableName + " ADD CourseID INT(6) " +
+                        "PRIMARY KEY AUTO_INCREMENT;");
+            ps.execute();
+            return true;
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return false;
     }
 
     public int parseFileWithCourses(String filename) {
@@ -229,7 +268,7 @@ public class Registrar {
     private HashMap<String, Object> readCourseFromCSV(Scanner rowScanner) {
         HashMap<String, Object> courseAttributes = new HashMap<>();
 
-        if (rowScanner.hasNext()) {courseAttributes.put("CourseID",rowScanner.nextInt());}
+//        if (rowScanner.hasNext()) {courseAttributes.put("CourseID",rowScanner.nextInt());}
         if (rowScanner.hasNext()) {courseAttributes.put("Year",rowScanner.nextInt());}
         if (rowScanner.hasNext()) {courseAttributes.put("Semester",rowScanner.next());}
         if (rowScanner.hasNext()) {courseAttributes.put("Dept",rowScanner.next());}
@@ -255,10 +294,10 @@ public class Registrar {
         return courseAttributes;
     }
 
+
     private int insertCourse(HashMap<String, Object> courseAttributes,String filename) {    //will take all args;return 1 if successful
-        //TODO: parse attributes
         try {
-            int courseID = (int) courseAttributes.get("CourseID");   //TODO: generate courseID
+//            int courseID = (int) courseAttributes.get("CourseID");
             int year = (int) courseAttributes.get("Year");
             String semester = "";
             if (courseAttributes.get("Semester").equals("10")) {
@@ -289,35 +328,34 @@ public class Registrar {
 
             PreparedStatement ps = conn.prepareStatement("" +
                     "INSERT INTO course VALUES" +
-                    "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                        "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
             //Pass in parameters
-            ps.setInt(1,courseID);
-            ps.setInt(2,year);
-            ps.setString(3,semester);
-            ps.setString(4,dept);
-            ps.setInt(5,code);
-            ps.setString(6,section);
-            ps.setString(7,courseName);
-            ps.setInt(8,hours);
-            ps.setInt(9,capacity);
-            ps.setInt(10,enrolled);
-            ps.setString(11,monday);
-            ps.setString(12,tuesday);
-            ps.setString(13,wednesday);
-            ps.setString(14,thursday);
-            ps.setString(15,friday);
-            if (startTime.equals(Time.valueOf("00:00:00"))) {ps.setTime(16, null);}
-            else {ps.setTime(16,startTime);}
-            if (endTime.equals(Time.valueOf("00:00:00"))) {ps.setTime(17, null);}
-            else {ps.setTime(17,endTime);}
-            ps.setString(18,lNameInstructor);
-            ps.setString(19,fNameInstructor);
-            ps.setString(20,prefNameInstructor);
-            ps.setString(21,comment);
+//            ps.setInt(1,courseID);
+            ps.setInt(1,year);
+            ps.setString(2,semester);
+            ps.setString(3,dept);
+            ps.setInt(4,code);
+            ps.setString(5,section);
+            ps.setString(6,courseName);
+            ps.setInt(7,hours);
+            ps.setInt(8,capacity);
+            ps.setInt(9,enrolled);
+            ps.setString(10,monday);
+            ps.setString(11,tuesday);
+            ps.setString(12,wednesday);
+            ps.setString(13,thursday);
+            ps.setString(14,friday);
+            if (startTime.equals(Time.valueOf("00:00:00"))) {ps.setTime(15, null);}
+            else {ps.setTime(15,startTime);}
+            if (endTime.equals(Time.valueOf("00:00:00"))) {ps.setTime(16, null);}
+            else {ps.setTime(16,endTime);}
+            ps.setString(17,lNameInstructor);
+            ps.setString(18,fNameInstructor);
+            ps.setString(19,prefNameInstructor);
+            ps.setString(20,comment);
 
             //Execute prepared statement
-            //TODO: adjust for replication
             int rows = ps.executeUpdate();
             return rows;
         } catch(SQLException e){
@@ -367,6 +405,12 @@ public class Registrar {
         }
         return Time.valueOf(LocalTime.of(hour, minute, second));
     }
+
+    /**
+     * delete row from course table in database
+     * @param courseID
+     * @return true if delete was successful
+     */
     public boolean deleteCourse(int courseID) {
         try {
             PreparedStatement ps = conn.prepareStatement("" +
@@ -383,11 +427,91 @@ public class Registrar {
         }
         return false;
     }
+
+    //TODO: delete after testing
     public void printCourseAttributes(HashMap<String, Object> courseAttributes) {
         for (String attr : courseAttributes.keySet()) {
             System.out.println(attr + ": " + courseAttributes.get(attr) + "     " +
                     courseAttributes.get(attr).getClass());
         }
+    }
+
+    public Connection getConn() {
+        return conn;
+    }
+    // We'll see
+    /* public static int checkName(String name) {
+        try {
+            PreparedStatement nameCheck = conn.prepareStatement("SELECT * FROM Schedule WHERE Name = ?");
+            nameCheck.setString(1, name);
+            return nameCheck.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("SQL Error: " + e.getMessage());
+        }
+        return -1;
+    }*/
+
+    public boolean saveSchedule(Schedule schedule) {
+        try {
+            // insert into schedule first, where we save the schedule object itself
+            PreparedStatement insertSchedule = conn.prepareStatement("INSERT INTO schedule VALUES " +
+                    "(?,?,?)");
+            insertSchedule.setString(1, schedule.getName());
+            insertSchedule.setInt(2, schedule.getTerm().getYear());
+            insertSchedule.setString(3, schedule.getTerm().getSeason());
+
+            int scheduleRows = insertSchedule.executeUpdate();
+
+            // get the scheduleID we just created by saving the schedule
+            PreparedStatement getID = conn.prepareStatement("SELECT SCOPE_IDENTITY() AS [ScheduleID]");
+            ResultSet results = getID.executeQuery();
+            int scheduleID = results.getInt(1);
+            schedule.setScheduleID(scheduleID);
+
+            // now insert into user_schedule for each course in the schedule, where we save all the course objects
+            int courseRows = 1;
+            for (Course course : schedule.getCourses()) {
+                PreparedStatement insertScheduleEntry = conn.prepareStatement("INSERT INTO schedule_course VALUES " +
+                        "(?,?,?)");
+                insertScheduleEntry.setInt(1, schedule.getUserID());
+                insertScheduleEntry.setInt(2, schedule.getScheduleID());
+                insertScheduleEntry.setInt(3, course.getId());
+                if (insertScheduleEntry.executeUpdate() == 0) {
+                    courseRows = 0;
+                }
+            }
+
+            if (scheduleRows > 0 && courseRows > 0) {
+                return true;
+            }
+        } catch(SQLException e) {
+            System.out.println("Failed to save schedule, Exception: " + e.getMessage());
+            return false;
+        }
+        return false;
+    }
+
+    public boolean deleteSchedule(int scheduleID) {
+        try {
+            PreparedStatement ps1 = conn.prepareStatement("" +
+                    "DELETE FROM schedule WHERE scheduleID = ?");
+            ps1.setInt(1, scheduleID);
+
+            PreparedStatement ps2 = conn.prepareStatement("" +
+                    "DELETE FROM user_schedule WHERE scheduleID = ?");
+            ps2.setInt(1, scheduleID);
+
+            int rows1 = ps1.executeUpdate();
+            int rows2 = ps2.executeUpdate();
+
+            if(rows1 > 0 && rows2 > 0) {
+                return true;
+            }
+        } catch(SQLException e) {
+            System.out.println("Failed to delete, Exception:  " + e.getMessage());
+            return false;
+        }
+        return false;
     }
 
 }

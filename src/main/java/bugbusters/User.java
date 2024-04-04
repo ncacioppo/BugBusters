@@ -95,7 +95,7 @@ public class User {
 
     private boolean userHasMajor(String input) {
         for (Major major : majors) {
-            if (major.getMajorName().equals(input)) {
+            if (major.getMajorName().equalsIgnoreCase(input)) {
                 return true;
             }
         }
@@ -160,9 +160,24 @@ public class User {
 
     @Override
     public String toString(){
+        String majorString = "";
+        for (Major major : majors){
+            majorString += major.getMajorName() + ", ";
+        }
+        majorString.trim();
+        //majorString = majorString.substring(0, majorString.length()-3);
+
+        String minorString = "";
+        for (Minor minor : minors){
+            minorString += minor.getMinorName() + " ";
+        }
+        minorString = minorString.trim();
+        //minorString = minorString.substring(0, minorString.length()-3);
+
+
         return (firstName + " " + lastName + " - " + collegeYear + "\n" +
-                "Major(s): " + majors + "\n" +
-                "Minor(s):" + minors);
+                "Major(s): " + majorString + "\n" +
+                "Minor(s):" + minorString);
     }
 
 //    public static void main(String[] args) {

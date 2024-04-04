@@ -48,6 +48,12 @@ public class Registrar {
         return sampleMinors;
     }
 
+    public void printReqYears(){
+        for (int req : this.getReqYrs()){
+            System.out.println(req);
+        }
+    }
+
     private boolean connectToDB(String schema, String username, String password) {
         try {
             //Get a properties variable so that we can pass the username and password to
@@ -121,6 +127,15 @@ public class Registrar {
         }
     }
 
+    public Boolean isMinor(String potMinor){
+        for (String minor : minors){
+            if (minor.equalsIgnoreCase(potMinor)){
+                return  true;
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Calls connectToDB() and pulls minor titles into an ArrayList
@@ -159,7 +174,7 @@ public class Registrar {
 
     public boolean isMajor(String newMajor) {
         for(String major : majors) {
-            if(major.equals(newMajor)) {
+            if(major.equalsIgnoreCase(newMajor)) {
                 return true;
             }
         }

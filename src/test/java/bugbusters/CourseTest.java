@@ -16,7 +16,7 @@ class  CourseTest {
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
-                'A', "instructor", meetingTimes, 3);
+                'A', "instructor", new ArrayList<>(meetingTimes), 3);
 
         assertEquals(0, course.getId());
     }
@@ -28,7 +28,7 @@ class  CourseTest {
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
-                'A', "instructor", meetingTimes, 3);
+                'A', "instructor", new ArrayList<>(meetingTimes), 3);
 
         assertEquals("name", course.getName());
     }
@@ -40,7 +40,7 @@ class  CourseTest {
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
-                'A', "instructor", meetingTimes, 3);
+                'A', "instructor", new ArrayList<>(meetingTimes), 3);
 
         assertEquals("description", course.getDescription());
     }
@@ -52,7 +52,7 @@ class  CourseTest {
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
-                'A', "instructor", meetingTimes, 3);
+                'A', "instructor", new ArrayList<>(meetingTimes), 3);
 
         assertEquals("department", course.getDepartment());
     }
@@ -64,7 +64,7 @@ class  CourseTest {
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
-                'A', "instructor", meetingTimes, 3);
+                'A', "instructor", new ArrayList<>(meetingTimes), 3);
 
         assertEquals(10, course.getCode());
     }
@@ -76,7 +76,7 @@ class  CourseTest {
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
-                'A', "instructor", meetingTimes, 3);
+                'A', "instructor", new ArrayList<>(meetingTimes), 3);
 
 
         assertEquals("Fall", course.getTerm().getSeason());
@@ -90,7 +90,7 @@ class  CourseTest {
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
-                'A', "instructor", meetingTimes, 3);
+                'A', "instructor", new ArrayList<>(meetingTimes), 3);
 
         assertEquals('A', course.getSection());
     }
@@ -102,7 +102,7 @@ class  CourseTest {
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
-                'A', "instructor", meetingTimes, 3);
+                'A', "instructor", new ArrayList<>(meetingTimes), 3);
 
         assertEquals("instructor", course.getInstructor());
     }
@@ -116,7 +116,7 @@ class  CourseTest {
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
-                'A', "instructor", meetingTimes, 3);
+                'A', "instructor", new ArrayList<>(meetingTimes), 3);
 
         assertEquals(meetingTimes, course.getMeetingTimes());
     }
@@ -128,7 +128,7 @@ class  CourseTest {
         meetingTimes.add(new MeetingTime(Day.WEDNESDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         meetingTimes.add(new MeetingTime(Day.THURSDAY, LocalTime.of(10, 00), LocalTime.of(10, 50)));
         Course course = new Course(0, "name", "description", "department", 10, new Term("Fall", 2018),
-                'A', "instructor", meetingTimes, 3);
+                'A', "instructor", new ArrayList<>(meetingTimes), 3);
 
         assertEquals(3, course.getCredits());
     }

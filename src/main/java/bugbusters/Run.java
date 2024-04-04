@@ -130,14 +130,17 @@ public class Run {
             String query = input[1];
             switch (query) {
                 case "MAJOR":
-                    user.addUserMajor(input[2], Integer.parseInt(input[3]));
+                    String[] tempMajor = Arrays.copyOfRange(input, 2, input.length-1);
+                    String year = input[input.length-1];
+                    String actualMajor = "";
+                    for (String string : tempMajor){
+                        actualMajor += string + " ";
+                    }
+                    actualMajor = actualMajor.trim();
+                    user.addUserMajor(actualMajor, Integer.parseInt(year));
                     break;
                 case "MINOR":
-                    /**
-                     * TODO
-                     * Add minor when added to master
-                     */
-                    System.out.println("Adds minor");
+                    user.addUserMinor(input[2], Integer.parseInt(input[3]));
                     break;
                 default:
                     System.out.println("Default");
@@ -251,7 +254,7 @@ public class Run {
 
         Course removedCourse = currentSchedule.removeCourse(currentCourse);
 
-
+        return false;
     }
 
     private static Boolean runAddCourse(String scheduleName, String courseID){

@@ -188,8 +188,8 @@ class SearchTest {
         secondCourseTimes.add(new MeetingTime("WEDNESDAY 13:00:00 to 13:50:00"));
         secondCourseTimes.add(new MeetingTime("FRIDAY 13:00:00 to 13:50:00"));
 
-        courses.add(new Course(1, "physics", "101", "PHYS", 38888, courseTerm, 'A', "Brower", firstCourseTimes, 4));
-        courses.add(new Course(2, "calc", "163", "MATH", 38889, courseTerm, 'A', "McIntyre", secondCourseTimes, 4));
+        courses.add(new Course(1, "physics", "101", "PHYS", 38888, courseTerm, 'A', "Brower", new ArrayList<>(firstCourseTimes), 4));
+        courses.add(new Course(2, "calc", "163", "MATH", 38889, courseTerm, 'A', "McIntyre", new ArrayList<>(secondCourseTimes), 4));
 
         assertTrue(search.byDay(courses, "Monday").size() == 2);
         assertTrue(search.byDay(courses, "Tuesday").size() == 1);
@@ -219,8 +219,8 @@ class SearchTest {
         secondCourseTimes.add(new MeetingTime("WEDNESDAY 13:00:00 to 13:50:00"));
         secondCourseTimes.add(new MeetingTime("FRIDAY 13:00:00 to 13:50:00"));
 
-        courses.add(new Course(1, "physics", "101", "PHYS", 38888, courseTerm, 'A', "Brower", firstCourseTimes, 4));
-        courses.add(new Course(2, "calc", "163", "MATH", 38889, courseTerm, 'A', "McIntyre", secondCourseTimes, 4));
+        courses.add(new Course(1, "physics", "101", "PHYS", 38888, courseTerm, 'A', "Brower", new ArrayList<>(firstCourseTimes), 4));
+        courses.add(new Course(2, "calc", "163", "MATH", 38889, courseTerm, 'A', "McIntyre", new ArrayList<>(secondCourseTimes), 4));
 
         assertTrue(search.withinTime(courses, "10:00:00-15:00:00").size() == 2);
         assertTrue(search.withinTime(courses, "10:00:00-10:50:00").size() == 1);

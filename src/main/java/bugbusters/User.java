@@ -19,7 +19,7 @@ public class User {
     private ArrayList<Major> majors;
     private ArrayList<Minor> minors;
     private Registrar registrar;
-    private int userID;
+    private final int userID;
     private final int MAJOR_LIMIT = 2;   //limit to number of majors a user may have in software
     
     public User() {
@@ -30,7 +30,7 @@ public class User {
         //TODO: note that this is hard-coded for u222222
         this.registrar = new Registrar("schemaBugBuster","u222222","p222222");
         this.userID = addUserToDatabase();
-        registrar.disconnectFromDB();       //TODO: all disconnects from DB should happen when user leaves app
+//        registrar.disconnectFromDB();       //TODO: all disconnects from DB should happen when user leaves app
     }
 
     private int addUserToDatabase() {
@@ -56,41 +56,33 @@ public class User {
         return id;
     }
 
-    private void setFirstName(String firstName){
+    public void setFirstName(String firstName){
         this.firstName = firstName;
         int rows = updateUserFirstName(this.userID,firstName);
     }
 
     private int updateUserFirstName(int userID, String firstName) {
-        //TODO: implement method
-//        int rows = 0;
-//        int id = 0;
-//
-//        try {
-//            PreparedStatement ps = registrar.getConn().prepareStatement("" +
-//                    "INSERT INTO user() VALUES();");
-//            rows = ps.executeUpdate();
-//
-//            ps = registrar.getConn().prepareStatement("" +
-//                    "SELECT LAST_INSERT_ID();");
-//            ResultSet rs = ps.executeQuery();
-//
-//            while(rs.next()) {
-//                id = rs.getInt(1);
-//            }
-//
-//        } catch(SQLException e) {
-//            System.out.println(e.getMessage());
-//        }
-//        return id;
-        return 0;
+        int rows = 0;
+
+        try {
+            PreparedStatement ps = registrar.getConn().prepareStatement("" +
+                    "UPDATE user SET FName = ? WHERE UserID = ?");
+            ps.setString(1, firstName);
+            ps.setInt(2, userID);
+
+            rows = ps.executeUpdate();
+
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return rows;
     }
 
     public String getFirstName(){
         return firstName;
     }
 
-    private void setLastName(String lastName){
+    public void setLastName(String lastName){
         this.lastName = lastName;
     }
     public String getLastName(){
@@ -167,8 +159,15 @@ public class User {
         return null;
     }
     public boolean isInDatabase() {
-        return inDatabase;
+        return userID > 0;
     }
 
+    public int getUserID() {
+        return userID;
+    }
+
+    public Registrar getRegistrar() {
+        return registrar;
+    }
 
 }

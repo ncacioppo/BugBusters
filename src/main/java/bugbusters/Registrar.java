@@ -11,11 +11,6 @@ public class Registrar {
     private ArrayList<String> majors;  //may want to use list indexing if more efficient
     private ArrayList<String> minors;
     private ArrayList<Course> courses;  //we do not currently create course objects from all courses in database
-
-    public Connection getConn() {
-        return conn;
-    }
-
     private Connection conn;
 
     public Registrar(String schema, String username, String password) {
@@ -30,7 +25,7 @@ public class Registrar {
             setMajorsFromDB();
             setMinorsFromDB();
             courses = new ArrayList<>();
-            disconnectFromDB();
+//            disconnectFromDB();
         }
     }
 
@@ -425,4 +420,7 @@ public class Registrar {
         }
     }
 
+    public Connection getConn() {
+        return conn;
+    }
 }

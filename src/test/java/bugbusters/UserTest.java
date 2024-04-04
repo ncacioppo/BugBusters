@@ -7,6 +7,15 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserTest {
 
     @Test
+    void addUserToDB() {
+        User user = new User();
+        user.setFirstName("Jane");
+        user.setLastName("Doe");
+        user.getRegistrar().disconnectFromDB();
+    }
+
+
+    @Test
     void getEmptyCollegeYear() {
         User user = new User();
         assertEquals(null,user.getCollegeYear());

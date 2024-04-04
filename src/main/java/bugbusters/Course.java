@@ -12,11 +12,11 @@ public class Course {
     private Term term;
     private char section;
     private String instructor;
-    private Set<MeetingTime> meetingTimes;
+    private ArrayList<MeetingTime> meetingTimes;
     private int credits;
 
     public Course(int id, String name, String description, String department, int code, Term term,
-                   char section, String instructor, Set<MeetingTime> meetingTimes,
+                   char section, String instructor, ArrayList<MeetingTime> meetingTimes,
                    int credits) {
         setId(id);
         setName(name);
@@ -81,7 +81,7 @@ public class Course {
         //The instructors last name is in the 17th column of the Excel file
         setInstructor(firstName + " " + data.get(16));
 
-        Set<MeetingTime> times = new HashSet<>();
+        ArrayList<MeetingTime> times = new ArrayList<>();
 
         //Some courses do not have meeting times. This checks if they do before it tries to add any.
         if ((data.get(14).length() > 0)&&(data.get(15).length() > 0)) {
@@ -206,11 +206,11 @@ public class Course {
         this.instructor = instructor;
     }
 
-    public Set<MeetingTime> getMeetingTimes() {
+    public ArrayList<MeetingTime> getMeetingTimes() {
         return meetingTimes;
     }
 
-    private void setMeetingTimes(Set<MeetingTime> meetingTimes) {
+    private void setMeetingTimes(ArrayList<MeetingTime> meetingTimes) {
         this.meetingTimes = meetingTimes;
     }
 
@@ -315,7 +315,7 @@ public class Course {
     }
 
     /**
-     * This depends heavily on the toString method of MeetinfTime
+     *
      * @return A string representation of a course.
      */
     public String toString() {
@@ -331,6 +331,40 @@ public class Course {
                 "Description: " + description + "\n";
 
         return out;
+    }
+
+    // a shorter version of the course toString
+    // COMP 350 B
+    // Software Engineering
+    // MWF 3:00-3:50
+    public String shortToString() {
+        String out = department + " " + code + " " + section + "\n" +
+                name + " \n" +
+                meetingTimesToString();
+        return out;
+    }
+
+    // displays the meeting times for a course in a more readable format
+    // Ex. MWF 8:00-8:50
+    // Ex. MWF 1:00-1:50, R 1:30-2:20
+    public String meetingTimesToString() {
+        StringBuilder dayAbbrev = new StringBuilder();
+        LocalTime normalTime = meetingTimes.getFirst().getStartTime();
+        StringBuilder irregular = new StringBuilder();
+        irregular.append(",");
+        for (MeetingTime mt : meetingTimes) {
+            if (mt.getStartTime().equals(normalTime)) {
+                dayAbbrev.append(mt.getDay().getAbbrev());
+            }
+            if (!mt.getStartTime().equals(normalTime)) {
+                irregular.append(" ").append(mt.getDay().getAbbrev()).append(" ").append(mt.getStartTime()).append("-").append(mt.getEndTime());
+            }
+        }
+        dayAbbrev.append(" ").append(normalTime).append("-").append(meetingTimes.getFirst().getEndTime());
+        if (irregular.length() > 1) {
+            dayAbbrev.append(irregular);
+        }
+        return dayAbbrev.toString();
     }
 
     public String forPDf(Day day) {

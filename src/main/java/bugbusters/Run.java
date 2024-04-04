@@ -1,15 +1,21 @@
 package bugbusters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Run {
 
     private static final String terminalString = "Grove City College Schedule Maker -> ";
     private static ArrayList<Course> courses;
+    private static ArrayList<Schedule> schedules;
+    private static User user;
     private static Search search;
     private static Scanner scanner;
+
     public static void run(){
+        user = new User();
+        schedules = new ArrayList<>();
         search = new Search();
         courses = new ArrayList<>(search.getAllCoursesFromExcel());
         scanner = new Scanner(System.in);
@@ -17,19 +23,302 @@ public class Run {
         while (true){
             System.out.print(terminalString);
 
-            String input = scanner.nextLine().toUpperCase();
+            String[] input = scanner.nextLine().toUpperCase().split(" ");
 
-            switch(input) {
+            String query = input[0];
+
+            switch(query) {
                 case "SEARCH":
                     runSearch();
+                    break;
+                case "SCHEDULE":
+                    runSchedule();
+                    break;
+                case "USER":
+                    runUser(input);
                     break;
                 case "EXIT":
                     System.exit(0);
                     break;
                 default:
-                    System.out.println("'" + input + "' is not a recognized command.");
+                    System.out.println("'" + query + "' is not a recognized command.");
             }
         }
+    }
+
+    private static void runUser(String[] input){
+
+        if (input.length < 2){
+            if (user.getFirstName().equalsIgnoreCase("")) {
+                boolean resolved = false;
+                String firstName = "";
+                String lastName = "";
+
+                while (!resolved) {
+                    String tempLastName = "";
+                    System.out.println("You have not set up user yet, please enter you first and last name as follows ('first last'):");
+                    String names[] = scanner.nextLine().toUpperCase().split(" ");
+                    System.out.println("First name: " + names[0]);
+                    if (names.length >1){
+                        String[] temp = Arrays.copyOfRange(names, 1, names.length);
+                        for (String string : temp){
+                            tempLastName += string + " ";
+                        }
+                        tempLastName.trim();
+                        System.out.println("Last name: " + tempLastName);
+                    } else {
+                        tempLastName = "";
+                    }
+                    System.out.println("Is this correct [y/n] enter 'q' to exit user setup");
+                    String response = scanner.nextLine().toUpperCase();
+                    if (response.equalsIgnoreCase("y")){
+                        firstName = names[0];
+                        lastName = tempLastName;
+                        resolved = true;
+                    } else if (response.equalsIgnoreCase("q")){
+                        return;
+                    }
+                }
+                if (resolved){
+                    user.setFirstName(firstName);
+                    user.setLastName(lastName);
+                }
+            }
+
+            if (user.getCollegeYear() == null){
+                Boolean resolved = false;
+                System.out.println("You have not set up a college year yet please response with the number for your year in college, here are your options:\n" +
+                        "1. FRESHMAN\n" +
+                        "2. SOPHOMORE\n" +
+                        "3. JUNIOR\n" +
+                        "4. SENIOR\n" +
+                        "5. SUPERSENIOR");
+                String num = scanner.nextLine().toUpperCase();
+
+                while (!resolved) {
+                    switch (num) {
+                        case "1":
+                            user.setCollegeYear(CollegeYear.FRESHMAN);
+                            resolved = true;
+                            break;
+                        case "2":
+                            user.setCollegeYear(CollegeYear.SOPHOMORE);
+                            resolved = true;
+                            break;
+                        case "3":
+                            user.setCollegeYear(CollegeYear.JUNIOR);
+                            resolved = true;
+                            break;
+                        case "4":
+                            user.setCollegeYear(CollegeYear.SENIOR);
+                            resolved = true;
+                            break;
+                        case "5":
+                            user.setCollegeYear(CollegeYear.SUPERSENIOR);
+                            resolved = true;
+                            break;
+                        case "q":
+                            return;
+                        default:
+                            System.out.println(num + " is not a valid input, note you can enter 'q' to end user setup");
+                    }
+                }
+            }
+
+            System.out.println(user);
+        } else {
+            String query = input[1];
+            switch (query) {
+                case "MAJOR":
+                    String[] tempMajor = Arrays.copyOfRange(input, 2, input.length-1);
+                    String majorYear = input[input.length-1];
+                    String actualMajor = "";
+                    for (String string : tempMajor){
+                        actualMajor += string + " ";
+                    }
+                    actualMajor = actualMajor.trim();
+                    user.addUserMajor(actualMajor, Integer.parseInt(majorYear));
+                    break;
+                case "MINOR":
+                    String[] tempMinor = Arrays.copyOfRange(input, 2, input.length-1);
+                    String minorYear = input[input.length-1];
+                    String actualMinor = "";
+                    for (String string : tempMinor){
+                        actualMinor += string + " ";
+                    }
+                    actualMinor = actualMinor.trim();
+                    user.addUserMinor(actualMinor, Integer.parseInt(minorYear));
+                    break;
+                default:
+                    System.out.println("Default");
+            }
+        }
+    }
+
+    private static void runSchedule(){
+
+        while (true) {
+            System.out.print(terminalString + "Schedule -> ");
+
+            String[] input = scanner.nextLine().toUpperCase().split(" ");
+
+            switch (input[0]){
+                case "CREATE":
+                    schedules.add(new Schedule(input[1], new Term(input[2] + " " + input[3]), new ArrayList<>()));
+                    break;
+                case "DELETE":
+                    runDeleteSchedule();
+                    break;
+                case "VIEW":
+                    runScheduleView(input[1], input[2]);
+                    break;
+                case "ADD":
+                    if (runAddCourse(input[1], input[2])){
+                        System.out.println("Course successfully added to schedule '" + input[1] + "'");
+                    } else {
+                        System.out.println("An error occurred and the course could not be added to schedule '" + input[1] + "'");
+                    }
+                    break;
+                case "REMOVE":
+                    if (runRemoveCourse(input[1], input[2])){
+                        System.out.println("Course successfully removed from schedule '" + input[1] + "'");
+                    } else {
+                        System.out.println("An error occurred and the course could not be removed from schedule '" + input[1] + "'");
+                    }
+                    break;
+                case "ALL":
+                    if (schedules.size() > 0) {
+                        for (Schedule schedule : schedules) {
+                            System.out.println(schedule.name + " - " + schedule.term);
+                        }
+                    } else {
+                        System.out.println("-----There are currently no schedules saved-----");
+                    }
+                    break;
+                case "BACK":
+                    return;
+                default:
+                    System.out.println("Default");
+            }
+        }
+
+    }
+
+    private static void runDeleteSchedule(){
+        System.out.println("Here sre all your schedules, please respond with the number of the schedule you would like to delete: ");
+        int count = 1;
+        for (Schedule schedule : schedules){
+            System.out.println(count + ". " + schedule.name + " - " + schedule.term);
+        }
+        String numString = scanner.nextLine();
+        try{
+            int num = Integer.parseInt(numString);
+            if ((num < 1)||(num > schedules.size())){
+                System.out.println("Error");
+            } else {
+                Schedule removed = schedules.remove(num-1);
+                System.out.println("Successfully deleted " + removed.name + " - " + removed.term);
+            }
+        } catch(Exception e){
+            System.out.println("Error");
+        }
+    }
+
+    private static void runScheduleView(String scheduleName, String viewType){
+
+        Schedule currentSchedule = null;
+
+        for (Schedule schedule : schedules){
+            if (schedule.name.equalsIgnoreCase(scheduleName)){
+                currentSchedule = schedule;
+                break;
+            }
+        }
+
+        if (currentSchedule == null){
+            System.out.println("Error finding course");
+            return;
+        }
+
+        if (viewType.equalsIgnoreCase("CALENDAR")){
+//            CalendarView view = new CalendarView(currentSchedule);
+//            view.printScheduleAsCalendar();
+        } else if (viewType.equalsIgnoreCase("LIST")){
+            System.out.println(currentSchedule.toString());
+        } else {
+            System.out.println("There was an error");
+        }
+    }
+
+    private static Boolean runRemoveCourse(String scheduleName, String courseID){
+        Schedule currentSchedule = null;
+
+        for (Schedule schedule : schedules){
+            if (schedule.name.equalsIgnoreCase(scheduleName)){
+                currentSchedule = schedule;
+                break;
+            }
+        }
+
+        if (currentSchedule == null){
+            System.out.println("Error in finding schedule");
+            return false;
+        }
+
+        Course currentCourse = null;
+        for (Course course : courses){
+            if (course.getId() == Integer.parseInt(courseID)){
+                currentCourse = course;
+                break;
+            }
+        }
+
+        if (currentCourse == null){
+            System.out.println("Error finding course");
+            return false;
+        }
+
+
+        Course removedCourse = currentSchedule.removeCourse(currentCourse);
+
+        if (removedCourse == null){
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private static Boolean runAddCourse(String scheduleName, String courseID){
+
+        Schedule currentSchedule = null;
+
+        for (Schedule schedule : schedules){
+            if (schedule.name.equalsIgnoreCase(scheduleName)){
+                currentSchedule = schedule;
+                break;
+            }
+        }
+
+        if (currentSchedule == null){
+            System.out.println("Error in finding schedule");
+            return false;
+        }
+
+        Course currentCourse = null;
+        for (Course course : courses){
+            if (course.getId() == Integer.parseInt(courseID)){
+                currentCourse = course;
+                break;
+            }
+        }
+
+        if (currentCourse == null){
+            System.out.println("Error finding course");
+            return false;
+        }
+
+
+        return currentSchedule.addCourse(currentCourse);
     }
 
     private static void runSearch(){
@@ -98,6 +387,9 @@ public class Run {
                     case "TIME":
                         courses = new ArrayList<>(search.withinTime(courses, query.get(0)));
                         printCourses();
+                        break;
+                    case "ADD":
+                        runAddCourse(query.get(0), query.get(1));
                         break;
                     default:
                         System.out.println("Searching by " + filter + " is not currently supported.");

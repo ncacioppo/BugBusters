@@ -28,14 +28,14 @@ public class User {
         registrar.disconnectFromDB();
     }
 
-    private void setFirstName(String firstName){
+    public void setFirstName(String firstName){
         this.firstName = firstName;
     }
     public String getFirstName(){
         return firstName;
     }
 
-    private void setLastName(String lastName){
+    public void setLastName(String lastName){
         this.lastName = lastName;
     }
     public String getLastName(){
@@ -95,7 +95,7 @@ public class User {
 
     private boolean userHasMajor(String input) {
         for (Major major : majors) {
-            if (major.getMajorName().equals(input)) {
+            if (major.getMajorName().equalsIgnoreCase(input)) {
                 return true;
             }
         }
@@ -157,6 +157,33 @@ public class User {
         }
         return false;
     }
+
+    @Override
+    public String toString(){
+        String majorString = "";
+        for (Major major : majors){
+            majorString += major.getMajorName() + ", ";
+        }
+        majorString.trim();
+        //majorString = majorString.substring(0, majorString.length()-3);
+
+        String minorString = "";
+        for (Minor minor : minors){
+            minorString += minor.getMinorName() + " ";
+        }
+        minorString = minorString.trim();
+        //minorString = minorString.substring(0, minorString.length()-3);
+
+
+        return (firstName + " " + lastName + " - " + collegeYear + "\n" +
+                "Major(s): " + majorString + "\n" +
+                "Minor(s):" + minorString);
+    }
+
+//    public static void main(String[] args) {
+//        User user1 = new User();
+//
+//    }
 
     /**
      * take Minor object and add to list of user's minors

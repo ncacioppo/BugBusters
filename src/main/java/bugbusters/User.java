@@ -28,14 +28,14 @@ public class User {
         this.registrar = new Registrar("schemaBugBuster","u222222","p222222");
     }
 
-    private void setFirstName(String firstName){
+    public void setFirstName(String firstName){
         this.firstName = firstName;
     }
     public String getFirstName(){
         return firstName;
     }
 
-    private void setLastName(String lastName){
+    public void setLastName(String lastName){
         this.lastName = lastName;
     }
     public String getLastName(){
@@ -113,8 +113,15 @@ public class User {
         return null;
     }
 
-    public static void main(String[] args) {
-        User user1 = new User();
-
+    @Override
+    public String toString(){
+        return (firstName + " " + lastName + " - " + collegeYear + "\n" +
+                "Major(s): " + majors + "\n" +
+                "Minor(s):" + minors);
     }
+
+//    public static void main(String[] args) {
+//        User user1 = new User();
+//
+//    }
 }

@@ -505,9 +505,15 @@ public class Run {
                         printCourses();
                         break;
                     case "TERM":
-                        courses = new ArrayList<>(search.byTerm(courses, query.get(0) + " " + query.get(1)));
+                        String[] temp = query.get(0).split("-");
+                        if (temp.length <2){
+                            System.out.println("Incorrect usage of Term. Proper format of argument for Term is 'season-year' ex. 'spring-2020'");
+                            break;
+                        } else {
+                        courses = new ArrayList<>(search.byTerm(courses, temp[0] + " " + temp[1]));
                         printCourses();
                         break;
+                        }
                     case "PROFESSOR":
                         courses = new ArrayList<>(search.byProfessor(courses, query.get(0)));
                         printCourses();

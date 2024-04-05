@@ -362,12 +362,8 @@ public class Run {
         }
 
         if (viewType.equalsIgnoreCase("CALENDAR")){
-            /**
-             * TODO
-             * add calendar view once it works and is in master
-             */
-//            CalendarView view = new CalendarView(currentSchedule);
-//            view.printScheduleAsCalendar();
+            CalendarView view = new CalendarView(currentSchedule);
+            view.printScheduleAsCalendar();
         } else if (viewType.equalsIgnoreCase("LIST")){
             System.out.println(currentSchedule.toString());
         } else {

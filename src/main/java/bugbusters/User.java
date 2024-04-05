@@ -14,14 +14,17 @@ import java.util.Locale;
 public class User {
 
     private String firstName;
+
     private String lastName;
     private CollegeYear collegeYear;
+
     private ArrayList<Major> majors;
     private ArrayList<Minor> minors;
     private Registrar registrar;
     private final int userID;
     private final int MAJOR_LIMIT = 2;   //limit to number of majors a user may have in software
     private final int MINOR_LIMIT = 4;   //limit to number of majors a user may have in software
+
     public User() {
         this.firstName = "";
         this.lastName = "";
@@ -34,6 +37,7 @@ public class User {
     }
 
     private int addUserToDatabase() {
+
         int rows = 0;
         int id = 0;
 
@@ -57,6 +61,7 @@ public class User {
     }
 
     public void setFirstName(String firstName){
+
         this.firstName = firstName;
         int updatedRows = updateUserFirstName(firstName);
     }

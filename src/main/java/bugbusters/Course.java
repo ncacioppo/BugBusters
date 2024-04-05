@@ -350,6 +350,13 @@ public class Course {
         return out;
     }
 
+    // Returns true if first meeting time is before or at the same time as other
+    public boolean courseBefore(Course other) {
+        return (this.getMeetingTimes().getFirst().compareTo(
+                other.getMeetingTimes().getFirst())
+        ) < 1;
+    }
+
     // a shorter version of the course toString
     // COMP 350 B
     // Software Engineering

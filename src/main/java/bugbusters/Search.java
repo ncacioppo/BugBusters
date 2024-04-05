@@ -21,7 +21,7 @@ public class Search {
 
     /**
      *
-     * @return
+     * @return A full list of courses of all the data provided to use by Dr. Hutchins
      */
     public List<Course> getAllCoursesFromExcel() {
         int idCount = 1;
@@ -161,6 +161,13 @@ public class Search {
     }
 
     //cod should be in the format "start(inclusive)-end(inclusive)
+
+    /**
+     * This method sorts a list of courses by a range of codes
+     * @param courses The list of courses to be searched
+     * @param code The range of codes in the format "start-end" where start and end are inclusive
+     * @return A list of courses that meets the search criteria
+     */
     public List<Course> byCode(List<Course> courses, String code) {
         ArrayList<Course> out = new ArrayList<>();
         String[] listInput = code.split("-");
@@ -178,6 +185,12 @@ public class Search {
         return out;
     }
 
+    /**
+     * This method searches a list of courses for courses from a specific term
+     * @param courses The list of courses to be searched
+     * @param term The string format of the term you would like to search the courses by
+     * @return A list of courses that are from the specific searched term
+     */
     public List<Course> byTerm(List<Course> courses, String term) {
         ArrayList<Course> out = new ArrayList<>();
 
@@ -216,6 +229,12 @@ public class Search {
         return results;
     }
 
+    /**
+     * This method searches for courses that have the exact ID provided
+     * @param courses The list of courses to be searched
+     * @param id The specific id you would like to search by
+     * @return A list of courses that have the id searched for
+     */
     public List<Course> byID(List<Course> courses, String id) {
         ArrayList<Course> out = new ArrayList<>();
 

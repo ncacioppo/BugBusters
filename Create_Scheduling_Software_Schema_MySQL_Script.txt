@@ -1,9 +1,11 @@
 # Creates tables in scheduler schema and fills course table with values from csv files
 # NOTE: csv files must be stored in the same directory as the MySQLServer
 
+# Creates tables in scheduler schema and fills course table with values from csv files
+# NOTE: csv files must be stored in the same directory as the MySQLServer
 USE schemabugbuster;
 
-DROP TABLE IF EXISTS user_schedule;
+DROP TABLE IF EXISTS schedule_course;
 DROP TABLE IF EXISTS schedule;
 DROP TABLE IF EXISTS user_minors;
 DROP TABLE IF EXISTS minor;
@@ -23,7 +25,7 @@ DROP TABLE IF EXISTS department;
 # 	user_majors
 # 	user_minors
 #	schedule
-# 	user_schedule
+# 	schedule_course
 
 CREATE TABLE IF NOT EXISTS department(
     Dept VARCHAR(4) NOT NULL
@@ -108,17 +110,20 @@ CREATE TABLE IF NOT EXISTS user_minors(
 
 CREATE TABLE IF NOT EXISTS schedule(
 	ScheduleID INT(8) NOT NULL AUTO_INCREMENT,
+    UserID INT(6) NOT NULL DEFAULT 0,
     Name VARCHAR(50) NOT NULL,
     Year INT(4) NOT NULL,
     Semester VARCHAR(15) NOT NULL,
     CONSTRAINT pk_schedule PRIMARY KEY(ScheduleID)
+--    CONSTRAINT fk_schedule_user FOREIGN KEY(UserID) REFERENCES user(UserID)
 );
 
-CREATE TABLE IF NOT EXISTS user_schedule(
-	UserID INT(6) NOT NULL,
+
+CREATE TABLE IF NOT EXISTS schedule_course(
+    UserID INT(6) NOT NULL,			-- included to reduce processing times
     ScheduleID INT(8) NOT NULL,
-    CourseID INT(6),
-    CONSTRAINT pk_user_schedule PRIMARY KEY(UserID, ScheduleID)
+    CourseID INT(6) NOT NULL,
+    CONSTRAINT pk_schedule_course PRIMARY KEY(ScheduleID, CourseID)
 --    CONSTRAINT fk_user_schedule_user FOREIGN KEY(UserID) REFERENCES user(UserID),
 --    CONSTRAINT fk_user_schedule_schedule FOREIGN KEY(ScheduleID) REFERENCES schedule(ScheduleID),
 --    CONSTRAINT fk_user_schedule_course FOREIGN KEY(CourseID) REFERENCES course(CourseID)

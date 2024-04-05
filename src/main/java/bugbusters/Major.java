@@ -8,11 +8,19 @@ public class Major {
 
 //    private List<Course> courses;
 
+    /**
+     * Constructor for Major
+     * @param majorName
+     * @param reqYr
+     */
     public Major(String majorName, int reqYr){
         this.majorName = majorName;
         this.reqYr = reqYr;
     }
 
+    /**
+     * @return name of major as string
+     */
     public String getMajorName() {
         return majorName;
     }

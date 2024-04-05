@@ -19,6 +19,10 @@ public class Search {
         return false;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<Course> getAllCoursesFromExcel() {
         int idCount = 1;
 
@@ -71,7 +75,7 @@ public class Search {
     public Filter removeFilter(Filter filter) {
         return null;
     }
-
+    
     public List<Course> byKeyword(List<Course> courses, String keyword) {
         List<Course> results = new ArrayList<Course>();
 

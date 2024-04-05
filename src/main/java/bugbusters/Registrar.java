@@ -14,6 +14,14 @@ public class Registrar {
     private ArrayList<Course> courses;  //we do not currently create course objects from all courses in database
     private Connection conn;
 
+    /**
+     * Constructor for Registrar.
+     * Connects to the database with given credentials and pulls major and minor names.
+     * If unable to connect to database, sets lists of major and minor names with sample data.
+     * @param schema
+     * @param username
+     * @param password
+     */
     public Registrar(String schema, String username, String password) {
         if(!connectToDB(schema, username, password)) {
             System.out.println("Unable to connect to database");
@@ -30,6 +38,9 @@ public class Registrar {
         }
     }
 
+    /**
+     * @return list of sample major names
+     */
     private ArrayList<String> getSampleMajors() {
         ArrayList<String> sampleMajors = new ArrayList<String>();
         sampleMajors.add("B.S. in Computer Science");
@@ -40,6 +51,9 @@ public class Registrar {
         return sampleMajors;
     }
 
+    /**
+     * @return list of sample minor names
+     */
     private ArrayList<String> getSampleMinors() {
         ArrayList<String> sampleMinors = new ArrayList<String>();
         sampleMinors.add("Computer Science");
@@ -50,12 +64,22 @@ public class Registrar {
         return sampleMinors;
     }
 
+    /**
+     * Prints Registrar's requirement years
+     */
     public void printReqYears(){
         for (int req : this.getReqYrs()){
             System.out.println(req);
         }
     }
 
+    /**
+     * Connects to database with credentials
+     * @param schema
+     * @param username
+     * @param password
+     * @return
+     */
     private boolean connectToDB(String schema, String username, String password) {
         try {
             //Get a properties variable so that we can pass the username and password to
@@ -80,6 +104,10 @@ public class Registrar {
         return true;
     }
 
+    /**
+     * Checks if registrar is connected to the database; if so, disconnects from database.
+     * @return true if registrar is no longer connected to the database.
+     */
     public boolean disconnectFromDB() {
         try {
             if (conn != null) {
@@ -129,9 +157,14 @@ public class Registrar {
         }
     }
 
-    public Boolean isMinor(String potMinor){
+    /**
+     * Takes minor name and iterates through registrar's list of available minors.
+     * @param newMinor
+     * @return true if input minor name exists in registrar's list of minors
+     */
+    public Boolean isMinor(String newMinor){
         for (String minor : minors){
-            if (minor.equalsIgnoreCase(potMinor)){
+            if (minor.equalsIgnoreCase(newMinor)){
                 return  true;
             }
         }
@@ -160,6 +193,10 @@ public class Registrar {
         }
     }
 
+    /**
+     * Selects available requirement years based on current year
+     * @return array of int requirement years
+     */
     public int[] getReqYrs() {
         //TODO: factcheck this. may need to get from db
         int endYr = Year.now().getValue();
@@ -174,6 +211,11 @@ public class Registrar {
         return reqYrs;
     }
 
+    /**
+     * Takes major name and iterates through registrar's list of available majors.
+     * @param newMajor
+     * @return true if input major name exists in registrar's list of majors
+     */
     public boolean isMajor(String newMajor) {
         for(String major : majors) {
             if(major.equalsIgnoreCase(newMajor)) {
@@ -183,10 +225,17 @@ public class Registrar {
         return false;
     }
 
+    /**
+     * @return list of available major names
+     */
     public ArrayList<String> getMajors() {
         return majors;
     }
 
+    /**
+     * @param reqYr
+     * @return true if input requirement year is valid according to registrar
+     */
     public boolean isReqYr(int reqYr) {
         for(int yr : getReqYrs()){
             if(reqYr == yr) {
@@ -196,6 +245,9 @@ public class Registrar {
         return false;
     }
 
+    /**
+     * @return list of available minors according to the registrar
+     */
     public ArrayList<String> getMinors() {
         return minors;
     }
@@ -213,6 +265,13 @@ public class Registrar {
         return courses;
     }
 
+    /**
+     * Connects to database, parses course data from csv into course table in database.
+     * Should only be called once for each data file to input them to course table.
+     * Public only for testing purposes in RegistrarTest.java.
+     * @param filename
+     * @return
+     */
     public int insertCoursesFromCSV(String filename) {
         int rows = 0;
 
@@ -226,6 +285,12 @@ public class Registrar {
         return rows;
     }
 
+    /**
+     * Should only be called once after all data is dropped into a table in the database.
+     * Public only for testing purposes in RegistrarTest.java.
+     * @param tableName
+     * @return
+     */
     public boolean generateIdAttribute(String tableName) {
         try {
             PreparedStatement ps = conn.prepareStatement("" +
@@ -239,6 +304,12 @@ public class Registrar {
         return false;
     }
 
+    /**
+     * Iterates through csv and calls insertCourse() for each line.
+     * Public only for testing purposes in RegistrarTest.java.
+     * @param filename
+     * @return updated rows in database
+     */
     public int parseFileWithCourses(String filename) {
         int rows = 0;
 
@@ -266,6 +337,12 @@ public class Registrar {
         return rows;
     }
 
+    /**
+     * Creates a HashMap to hold course attributes from line of data in csv file.
+     * Public only for testing purposes in RegistrarTest.java.
+     * @param rowScanner
+     * @return
+     */
     private HashMap<String, Object> readCourseFromCSV(Scanner rowScanner) {
         HashMap<String, Object> courseAttributes = new HashMap<>();
 
@@ -295,7 +372,13 @@ public class Registrar {
         return courseAttributes;
     }
 
-
+    /**
+     * Inserts course as row in database.
+     * Public only for testing purposes in RegistrarTest.java.
+     * @param courseAttributes
+     * @param filename
+     * @return
+     */
     private int insertCourse(HashMap<String, Object> courseAttributes,String filename) {    //will take all args;return 1 if successful
         try {
 //            int courseID = (int) courseAttributes.get("CourseID");
@@ -367,6 +450,13 @@ public class Registrar {
         return 0;   //insert failed; no rows updated
     }
 
+    /**
+     * Creates Time value for time-related columns.
+     * Public only for testing purposes in RegistrarTest.java.
+     * @param inputTime
+     * @param filename
+     * @return
+     */
     public Time parseTimeAttribute(Object inputTime, String filename) {
         int hour = 0;
         int minute = 0;
@@ -429,7 +519,10 @@ public class Registrar {
         return false;
     }
 
-    //TODO: delete after testing
+    /**
+     * Prints "Attribute: Value" for each attribute of a course.
+     * @param courseAttributes
+     */
     public void printCourseAttributes(HashMap<String, Object> courseAttributes) {
         for (String attr : courseAttributes.keySet()) {
             System.out.println(attr + ": " + courseAttributes.get(attr) + "     " +
@@ -437,6 +530,9 @@ public class Registrar {
         }
     }
 
+    /**
+     * @return connection to database
+     */
     public Connection getConn() {
         return conn;
     }

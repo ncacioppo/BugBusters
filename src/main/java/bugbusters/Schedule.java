@@ -17,6 +17,7 @@ public class Schedule {
         setCourses(courses);
         setUserID(user.getUserID());
         setScheduleID(0);
+        user.addSchedule(this);
     }
 
     public Schedule(Schedule schedule) {

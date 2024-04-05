@@ -20,6 +20,7 @@ public class User {
 
     private ArrayList<Major> majors;
     private ArrayList<Minor> minors;
+    private ArrayList<Schedule> schedules;
     private Registrar registrar;
     private final int userID;
     private final int MAJOR_LIMIT = 2;   //limit to number of majors a user may have in software
@@ -36,6 +37,7 @@ public class User {
         this.lastName = "";
         this.majors = new ArrayList<Major>();
         this.minors = new ArrayList<Minor>();
+        this.schedules = new ArrayList<>();
         //TODO: note that this is hard-coded for u222222
         this.registrar = new Registrar("schemaBugBuster","u222222","p222222");
         this.userID = addUserToDatabase();
@@ -287,6 +289,40 @@ public class User {
             }
         }
         return false;
+    }
+
+    public void addSchedule(Schedule schedule) {
+        this.schedules.add(schedule);
+        registrar.saveSchedule(schedule);
+    }
+
+    public boolean removeSchedule(Schedule toRemove) {
+        for (Schedule temp : schedules) {
+            if (temp.equals(toRemove)) {
+                schedules.remove(toRemove);
+                registrar.deleteSchedule(toRemove.getScheduleID());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Schedule loadSchedule(String name) {
+        for (Schedule temp : schedules) {
+            if (temp.getName().equals(name)) {
+                return temp;
+            }
+        }
+        return null;
+    }
+
+    public Schedule loadSchedule(int id) {
+        for (Schedule temp : schedules) {
+            if (temp.getScheduleID() == id) {
+                return temp;
+            }
+        }
+        return null;
     }
 
     @Override

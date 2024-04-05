@@ -21,6 +21,10 @@ public class CalendarView {
         this.schedule = schedule;
     }
 
+    /**
+     * Sets all times on a half-hour interval that are valid class times
+     * @return the list of valid times to have a class by half-hour
+     */
     private ArrayList<LocalTime> setHalfHoursOfTheDay() {
         ArrayList<LocalTime> halfHours = new ArrayList<>();
         ArrayList<Integer> increments = new ArrayList<>(List.of(0,30));
@@ -34,6 +38,9 @@ public class CalendarView {
         return halfHours;
     }
 
+    /**
+     * Prints the top part of a schedule with the abbreviated days of the week in columns.
+     */
     public void printDaysOfTheWeek() {
         System.out.format("%-18s","");             //15 spaces
         for(String day : this.daysOfTheWeek) {
@@ -57,6 +64,10 @@ public class CalendarView {
                 "-----------------");
     }
 
+    /**
+     * Sets all times on the hour that are valid class times
+     * @return the list of valid times to have a class by hour
+     */
     private ArrayList<LocalTime> setHoursOfTheDay() {
         ArrayList<LocalTime> hours = new ArrayList<>();
 //        int latestHourInSchedule = schedule.getLatestHour();      //TODO: fix schedule == null bug
@@ -76,19 +87,23 @@ public class CalendarView {
         return hours;
     }
 
+    /**
+     * Prints a schedule in calendar format with half-hour intervals.
+     */
     public void printScheduleAsCalendar() {
         int hrCounter;                                 //acts as hour counter
         int halfHrCounter;                              //acts as 30 min counter
 
         printDaysOfTheWeek();
 
+        // Print the time and any classes occurring
+        // on the schedule on half-hour intervals
         for (LocalTime halfHr : this.halfHoursOfTheDay) {    //can replace with more granular time
             hrCounter = halfHr.getHour();
             halfHrCounter = halfHr.getMinute();
 
             //Print half-hour blocks on left of calendar view
-
-            if (halfHrCounter == 0) {
+            if (halfHrCounter == 0) { // If the time is on the hour
                 if (hrCounter < 12) {
                     System.out.printf("%2d:0%d am", hrCounter, halfHrCounter);
                 } else if (hrCounter == 12) {
@@ -96,7 +111,7 @@ public class CalendarView {
                 } else {
                     System.out.printf("%2d:0%d pm", hrCounter - 12, halfHrCounter);
                 }
-            } else {
+            } else { // When the time is on the half-hour
                 if (hrCounter < 12) {
                     System.out.printf("%2d:%2d am", hrCounter, halfHrCounter);
                 } else if (hrCounter == 12) {
@@ -110,15 +125,18 @@ public class CalendarView {
 
             //Print classes in calendar view
             for (String day : this.daysOfTheWeek) {
+                // Boolean to track whether something has been printed
+                // for the given half-hour time slot on that day
                 boolean printedAlready = false;
 
                 for (Course course : this.schedule.getCourses()) {
                     for (MeetingTime meetingTime : course.getMeetingTimes()) {
-                        if (day.equals(meetingTime.getDay().toString())) {
+                        if (day.equals(meetingTime.getDay().toString())) { // If one of the course's meeting times falls on the current day
                             if ((halfHr.isAfter(meetingTime.getStartTime()) || halfHr.equals(meetingTime.getStartTime()))
+                                    // If the time being checked is at or after the start time, and at or before the end time
                                     &&
                                     ((halfHr.isBefore(meetingTime.getEndTime()) || halfHr.equals(meetingTime.getEndTime())))) {
-                                if (!printedAlready) {
+                                if (!printedAlready) { // If a class has not yet been printed for this time slot
                                     System.out.format("%1s %-1d%-10s", course.getDepartment(),course.getCode(), "");
                                     printedAlready = true;
                                 }
@@ -127,6 +145,8 @@ public class CalendarView {
                     }
                 }
 
+                // If no class has been printed for this time
+                // slot on the given day, there is no class then
                 if (!printedAlready) {
                     System.out.format("%-19s","");
                 }
@@ -137,6 +157,7 @@ public class CalendarView {
                 "-----------------");
     }
 
+    // Alternate method to print a schedule with only hour-long intervals
 /////////////////Working at hour-increments
 
 //    public void printScheduleAsCalendar() {

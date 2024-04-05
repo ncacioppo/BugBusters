@@ -1,5 +1,6 @@
 package bugbusters;
 
+import javax.xml.transform.Result;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.*;
@@ -453,22 +454,39 @@ public class Registrar {
 
     public boolean saveSchedule(Schedule schedule) {
         try {
+            PreparedStatement checkIfExists = conn.prepareStatement("" +
+                    "SELECT * FROM schedule WHERE ScheduleID = ?");
+            checkIfExists.setInt(1, schedule.getScheduleID());
+            ResultSet rows = checkIfExists.executeQuery();
+            if (rows.next()) {
+                System.out.println("Table already exists, deleting table with ID = " + schedule.getScheduleID());
+                deleteSchedule(schedule.getScheduleID());
+                schedule.setScheduleID(0);
+            }
             // insert into schedule first, where we save the schedule object itself
-            PreparedStatement insertSchedule = conn.prepareStatement("INSERT INTO schedule VALUES " +
-                    "(?,?,?)");
-            insertSchedule.setString(1, schedule.getName());
-            insertSchedule.setInt(2, schedule.getTerm().getYear());
-            insertSchedule.setString(3, schedule.getTerm().getSeason());
+            int id = 0;
+            PreparedStatement revisedInsert = conn.prepareStatement("" + "INSERT INTO schedule VALUES()");
+            revisedInsert.executeUpdate();
+            revisedInsert = conn.prepareStatement("" + "SELECT LAST_INSERT_ID();");
+            ResultSet newResults = revisedInsert.executeQuery();
+            while (newResults.next()) {
+                id = newResults.getInt(1);
+            }
+            schedule.setScheduleID(id);
+
+            PreparedStatement insertSchedule = conn.prepareStatement("UPDATE schedule SET UserID = ?," +
+                            "Name = ?, Year = ?, Semester = ? WHERE ScheduleID = ?");
+            insertSchedule.setInt(1, schedule.getUserID());
+            insertSchedule.setString(2, schedule.getName());
+            insertSchedule.setInt(3, schedule.getTerm().getYear());
+            insertSchedule.setString(4, schedule.getTerm().getSeason());
+            insertSchedule.setInt(5, schedule.getScheduleID());
+
 
             int scheduleRows = insertSchedule.executeUpdate();
 
-            // get the scheduleID we just created by saving the schedule
-            PreparedStatement getID = conn.prepareStatement("SELECT SCOPE_IDENTITY() AS [ScheduleID]");
-            ResultSet results = getID.executeQuery();
-            int scheduleID = results.getInt(1);
-            schedule.setScheduleID(scheduleID);
 
-            // now insert into user_schedule for each course in the schedule, where we save all the course objects
+            // now insert into schedule_course for each course in the schedule, where we save all the course objects
             int courseRows = 1;
             for (Course course : schedule.getCourses()) {
                 PreparedStatement insertScheduleEntry = conn.prepareStatement("INSERT INTO schedule_course VALUES " +
@@ -482,6 +500,7 @@ public class Registrar {
             }
 
             if (scheduleRows > 0 && courseRows > 0) {
+                System.out.println("Schedule successfully saved with ID = " + schedule.getScheduleID());
                 return true;
             }
         } catch(SQLException e) {
@@ -498,7 +517,7 @@ public class Registrar {
             ps1.setInt(1, scheduleID);
 
             PreparedStatement ps2 = conn.prepareStatement("" +
-                    "DELETE FROM user_schedule WHERE scheduleID = ?");
+                    "DELETE FROM schedule_course WHERE scheduleID = ?");
             ps2.setInt(1, scheduleID);
 
             int rows1 = ps1.executeUpdate();

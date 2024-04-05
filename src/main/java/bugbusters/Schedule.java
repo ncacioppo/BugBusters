@@ -11,11 +11,12 @@ public class Schedule {
     int scheduleID;
     int userID;
 
-    public Schedule(String name, Term term, List<Course> courses){
+    public Schedule(User user, String name, Term term, List<Course> courses){
         setName(name);
         setTerm(term);
         setCourses(courses);
-        //setUserID(user.getID())
+        setUserID(user.getUserID());
+        setScheduleID(0);
     }
 
     public Schedule(Schedule schedule) {
@@ -49,7 +50,7 @@ public class Schedule {
     }
 
     private void setUserID(int userID) {
-        this.userID = 0;
+        this.userID = userID;
    }
 
     public int getUserID() {

@@ -536,7 +536,8 @@ public class Registrar {
     public Connection getConn() {
         return conn;
     }
-    // We'll see
+
+    // TODO: Prevent duplicate names
     /* public static int checkName(String name) {
         try {
             PreparedStatement nameCheck = conn.prepareStatement("SELECT * FROM Schedule WHERE Name = ?");
@@ -548,39 +549,39 @@ public class Registrar {
         return -1;
     }*/
 
+    /**
+     * Save a schedule in the database, and generate a unique scheduleID for the entry
+     * @param schedule the schedule to be saved
+     * @return true if the schedule was successfully saved, and false otherwise
+     */
     public boolean saveSchedule(Schedule schedule) {
         try {
             PreparedStatement checkIfExists = conn.prepareStatement("" +
                     "SELECT * FROM schedule WHERE ScheduleID = ?");
             checkIfExists.setInt(1, schedule.getScheduleID());
             ResultSet rows = checkIfExists.executeQuery();
+            // if this schedule already exists, delete the old version and make a new entry for the correct version
             if (rows.next()) {
-                System.out.println("Table already exists, deleting table with ID = " + schedule.getScheduleID());
                 deleteSchedule(schedule.getScheduleID());
                 schedule.setScheduleID(0);
             }
+
             // insert into schedule first, where we save the schedule object itself
             int id = 0;
-            PreparedStatement revisedInsert = conn.prepareStatement("" + "INSERT INTO schedule VALUES()");
-            revisedInsert.executeUpdate();
-            revisedInsert = conn.prepareStatement("" + "SELECT LAST_INSERT_ID();");
-            ResultSet newResults = revisedInsert.executeQuery();
-            while (newResults.next()) {
-                id = newResults.getInt(1);
+
+            PreparedStatement newInsertion = conn.prepareStatement("INSERT INTO schedule (UserID, Name, Year, Semester) VALUES (?,?,?,?)");
+            newInsertion.setInt(1, schedule.getUserID());
+            newInsertion.setString(2, schedule.getName());
+            newInsertion.setInt(3, schedule.getTerm().getYear());
+            newInsertion.setString(4, schedule.getTerm().getSeason());
+
+            int addedRows = newInsertion.executeUpdate();
+            newInsertion = conn.prepareStatement("SELECT LAST_INSERT_ID();");
+            ResultSet results = newInsertion.executeQuery();
+            while (results.next()) {
+                id = results.getInt(1);
             }
             schedule.setScheduleID(id);
-
-            PreparedStatement insertSchedule = conn.prepareStatement("UPDATE schedule SET UserID = ?," +
-                            "Name = ?, Year = ?, Semester = ? WHERE ScheduleID = ?");
-            insertSchedule.setInt(1, schedule.getUserID());
-            insertSchedule.setString(2, schedule.getName());
-            insertSchedule.setInt(3, schedule.getTerm().getYear());
-            insertSchedule.setString(4, schedule.getTerm().getSeason());
-            insertSchedule.setInt(5, schedule.getScheduleID());
-
-
-            int scheduleRows = insertSchedule.executeUpdate();
-
 
             // now insert into schedule_course for each course in the schedule, where we save all the course objects
             int courseRows = 1;
@@ -595,8 +596,9 @@ public class Registrar {
                 }
             }
 
-            if (scheduleRows > 0 && courseRows > 0) {
-                System.out.println("Schedule successfully saved with ID = " + schedule.getScheduleID());
+            // if we inserted at least one row in each table, return true
+            if (addedRows > 0 && courseRows > 0) {
+                //System.out.println("Schedule successfully saved with ID = " + schedule.getScheduleID());
                 return true;
             }
         } catch(SQLException e) {
@@ -606,6 +608,11 @@ public class Registrar {
         return false;
     }
 
+    /**
+     * Deletes all entries from the schedule and schedule_course tables that match the given parameter
+     * @param scheduleID the schedule to be deleted
+     * @return true if at least one entry was deleted, and false otherwise
+     */
     public boolean deleteSchedule(int scheduleID) {
         try {
             PreparedStatement ps1 = conn.prepareStatement("" +

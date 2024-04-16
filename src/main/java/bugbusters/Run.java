@@ -38,12 +38,13 @@ public class Run {
                     runUser(input);
                     break;
                 case "EXIT":
+                    user.getRegistrar().disconnectFromDB();
                     System.exit(0);
                     break;
                 case "HELP":
                     System.out.println("Usage:\n" +
                             "SEARCH                                -> To search for courses\n" +
-                            "SCHECULE                              -> To view and edit schedules\n" +
+                            "SCHEDULE                              -> To view and edit schedules\n" +
                             "USER                                  -> To view user information\n" +
                             "USER MAJOR majorname requirementsyear -> To add a major to user account 'majorname' can be multiple words\n" +
                             "USER MINOR minorname requirementsyear -> To add a minor to user account 'minorname' can be multiple words\n" +
@@ -67,7 +68,7 @@ public class Run {
 
                 while (!resolved) {
                     String tempLastName = "";
-                    System.out.println("You have not set up user yet, please enter you first and last name as follows ('first last'):");
+                    System.out.println("You have not set up user yet, please enter your first and last name as follows ('first last'):");
                     String names[] = scanner.nextLine().toUpperCase().split(" ");
                     System.out.println("First name: " + names[0]);
                     if (names.length >1){
@@ -99,15 +100,15 @@ public class Run {
 
             if (user.getCollegeYear() == null){
                 Boolean resolved = false;
-                System.out.println("You have not set up a college year yet please response with the number for your year in college, here are your options:\n" +
-                        "1. FRESHMAN\n" +
-                        "2. SOPHOMORE\n" +
-                        "3. JUNIOR\n" +
-                        "4. SENIOR\n" +
-                        "5. SUPERSENIOR");
-                String num = scanner.nextLine().toUpperCase();
 
                 while (!resolved) {
+                    System.out.println("You have not set up a college year yet. Please respond with the number corresponding to your year in college:\n" +
+                            "1. FRESHMAN\n" +
+                            "2. SOPHOMORE\n" +
+                            "3. JUNIOR\n" +
+                            "4. SENIOR\n" +
+                            "5. SUPERSENIOR");
+                    String num = scanner.nextLine().toUpperCase();
                     switch (num) {
                         case "1":
                             user.setCollegeYear(CollegeYear.FRESHMAN);
@@ -258,7 +259,7 @@ public class Run {
                 case "CREATE":
                     try {
                         Term createTerm = new Term(input[2] + " " + input[3]);
-                        schedules.add(new Schedule(input[1], createTerm, new ArrayList<>()));
+                        schedules.add(new Schedule(user, input[1], createTerm, new ArrayList<>()));
                     } catch (Exception e){
                         System.out.println("Incorrect usage of CREATE, usage Example:\n" + terminalString + "Schedule -> CREATE schedulename spring 2021");
                     }
@@ -361,12 +362,8 @@ public class Run {
         }
 
         if (viewType.equalsIgnoreCase("CALENDAR")){
-            /**
-             * TODO
-             * add calendar view once it works and is in master
-             */
-//            CalendarView view = new CalendarView(currentSchedule);
-//            view.printScheduleAsCalendar();
+            CalendarView view = new CalendarView(currentSchedule);
+            view.printScheduleAsCalendar();
         } else if (viewType.equalsIgnoreCase("LIST")){
             System.out.println(currentSchedule.toString());
         } else {
@@ -508,9 +505,15 @@ public class Run {
                         printCourses();
                         break;
                     case "TERM":
-                        courses = new ArrayList<>(search.byTerm(courses, query.get(0) + " " + query.get(1)));
+                        String[] temp = query.get(0).split("-");
+                        if (temp.length <2){
+                            System.out.println("Incorrect usage of Term. Proper format of argument for Term is 'season-year' ex. 'spring-2020'");
+                            break;
+                        } else {
+                        courses = new ArrayList<>(search.byTerm(courses, temp[0] + " " + temp[1]));
                         printCourses();
                         break;
+                        }
                     case "PROFESSOR":
                         courses = new ArrayList<>(search.byProfessor(courses, query.get(0)));
                         printCourses();

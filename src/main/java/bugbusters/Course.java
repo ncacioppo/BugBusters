@@ -15,6 +15,19 @@ public class Course {
     private ArrayList<MeetingTime> meetingTimes;
     private int credits;
 
+    /**
+     *
+     * @param id
+     * @param name
+     * @param description
+     * @param department
+     * @param code
+     * @param term
+     * @param section
+     * @param instructor
+     * @param meetingTimes
+     * @param credits
+     */
     public Course(int id, String name, String description, String department, int code, Term term,
                    char section, String instructor, ArrayList<MeetingTime> meetingTimes,
                    int credits) {
@@ -30,6 +43,10 @@ public class Course {
         setCredits(credits);
     }
 
+    /**
+     *
+     * @param data
+     */
     public Course(ArrayList<String> data) {
 
         //There are no Course id's in the Excel file. We could make our own maybe in SQL
@@ -331,6 +348,13 @@ public class Course {
                 "Description: " + description + "\n";
 
         return out;
+    }
+
+    // Returns true if first meeting time is before or at the same time as other
+    public boolean courseBefore(Course other) {
+        return (this.getMeetingTimes().getFirst().compareTo(
+                other.getMeetingTimes().getFirst())
+        ) < 1;
     }
 
     // a shorter version of the course toString

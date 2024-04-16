@@ -7,15 +7,31 @@ import java.util.Set;
 public class Schedule {
     String name;
     Term term;
-    List<Course> courses;
+    ArrayList<Course> courses;
     int scheduleID;
     int userID;
 
-    public Schedule(String name, Term term, List<Course> courses){
+    // used for testing
+    public Schedule(int userID, String name, Term term, List<Course> courses){
         setName(name);
         setTerm(term);
         setCourses(courses);
-        //setUserID(user.getID())
+        setUserID(userID);
+        // scheduleID defaults to 0 because the database starts generating IDs at 1,
+        // so an ID of 0 signifies a schedule that has not been saved yet
+        setScheduleID(0);
+    }
+
+    // actual constructor
+    public Schedule(User user, String name, Term term, List<Course> courses){
+        setName(name);
+        setTerm(term);
+        setCourses(courses);
+        setUserID(user.getUserID());
+        // scheduleID defaults to 0 because the database starts generating IDs at 1,
+        // so an ID of 0 signifies a schedule that has not been saved yet
+        setScheduleID(0);
+        user.addSchedule(this);
     }
 
     public Schedule(Schedule schedule) {
@@ -49,7 +65,7 @@ public class Schedule {
     }
 
     private void setUserID(int userID) {
-        this.userID = 0;
+        this.userID = userID;
    }
 
     public int getUserID() {
@@ -64,7 +80,13 @@ public class Schedule {
         return scheduleID;
     }
 
-    public boolean isValid(){
+    /**
+     * This method is called whenever we add a new course to the schedule, and checks the following criteria:
+     *      - does a section of the course already exist in the schedule?
+     *      - does this course overlap with a course already in the schedule?
+     * @return true if the course is valid, and false otherwise
+     */
+    private boolean isValid(){
         // loop through our courses
         for (Course course1 : courses) {
             ArrayList<MeetingTime> course1Times = course1.getMeetingTimes();
@@ -78,9 +100,11 @@ public class Schedule {
                         // compare to the meeting times of course 2
                         for (MeetingTime course2MT : course2Times) {
                             // if the course times overlap return false
-                            if (course1MT.getStartTime().isBefore(course2MT.getEndTime())
-                                    && course1MT.getEndTime().isAfter(course2MT.getStartTime())) {
-                                return false;
+                            if (course1MT.getDay().equals(course2MT.getDay())) {
+                                if (course1MT.getStartTime().isBefore(course2MT.getEndTime())
+                                        && course1MT.getEndTime().isAfter(course2MT.getStartTime())) {
+                                    return false;
+                                }
                             }
                         }
                     }
@@ -95,6 +119,12 @@ public class Schedule {
         return true;
     }
 
+    /**
+     * Adds a course to our list of courses. Calls IsValid and includes an additional check to ensure the course is
+     * allowed to be added.
+     * @param course the course to be saved
+     * @return true if the course was saved, and false otherwise
+     */
     public boolean addCourse(Course course){
         if (course != null) {
             Schedule scheduleCopy = new Schedule(this);
@@ -104,6 +134,8 @@ public class Schedule {
                 // if our resulting schedule is valid, add it to the real schedule
                 if (scheduleCopy.isValid()) {
                     this.courses.add(course);
+                    sort();
+                    //quickSort(0, this.courses.size()-1);
                     return true;
                 }
             }
@@ -111,36 +143,47 @@ public class Schedule {
         return false;
     }
 
+    /**
+     *
+     * @return the course that was removed; null if that course did not exist
+     */
     public Course removeCourse(Course course){
-        Course removed;
         for (int i = 0; i < courses.size(); i++) {
             if (courses.get(i).equals(course)) {
-                removed = courses.get(i);
+                Course removed = courses.get(i);
                 courses.remove(i);
+                sort();
+                //quickSort(0, this.courses.size()-1);
                 return removed;
             }
         }
         return null;
     }
 
+    // Remove a course by course code
     public Course removeCourse(int code){
         Course removed;
         for (int i = 0; i < courses.size(); i++) {
             if (courses.get(i).getCode() == code) {
                 removed = courses.get(i);
                 courses.remove(i);
+                sort();
+                //quickSort(0, this.courses.size()-1);
                 return removed;
             }
         }
         return null;
     }
 
+    // Remove a course by course name
     public Course removeCourse(String courseName){
         Course removed;
         for (int i = 0; i < courses.size(); i++) {
             if (courses.get(i).getName().equals(courseName)) {
                 removed = courses.get(i);
                 courses.remove(i);
+                sort();
+                //quickSort(0, this.courses.size()-1);
                 return removed;
             }
         }
@@ -159,6 +202,8 @@ public class Schedule {
         } else return courses.equals(schedule.courses);
     }
 
+    // Prints out all courses in a schedule, along with the name and term of the schedule
+    // Uses the shortform toString for Course to save space and improve readability
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();
@@ -170,6 +215,7 @@ public class Schedule {
         return sb.toString();
     }
 
+    // Displays two schedules side-by-side
     public static String compareView(Schedule scheduleA, Schedule scheduleB) {
         StringBuilder sb = new StringBuilder();
         String formatString = "%-40s %-40s\n";
@@ -196,4 +242,73 @@ public class Schedule {
         }
         return sb.toString();
     }
+
+    private void sort() {
+        boolean swapped;
+        for (int i = 0; i < courses.size()-1; i++) {
+            swapped = false;
+            for (int j = 0; j < courses.size()-i-1; j++) {
+                if (courses.get(j+1).courseBefore(courses.get(j))) {
+                    System.out.println(courses.get(j+1).getName() + " is before " + courses.get(j).getName());
+                    Course temp = courses.get(j);
+                    courses.set(j, courses.get(j+1));
+                    courses.set(j+1, temp);
+                    swapped = true;
+                }
+            }
+            if (!swapped) {
+                break;
+            }
+        }
+        System.out.println("New sort order: ");
+        for (Course course : courses) {
+            System.out.println(course.getName());
+        }
+    }
+    // the quicksort sorting algorithm, used to sort the list of courses after a course is added or removed
+    // TODO: Fix quicksort
+//    private void quickSort(int start, int stop) {
+//        if (start < stop) {
+//            int partitionIndex = partition(start, stop);
+//            quickSort(start, partitionIndex-1);
+//            quickSort(partitionIndex+1, stop);
+//        }
+//    }
+
+    // used in quicksort, does not work yet
+//    private int partition(int start, int end) {
+//        Course x = courses.get(end);
+//        int newPartition = start-1;
+//        for (int i = start; i < end-1; i++) {
+//            if (courses.get(i).courseBefore(x)) {
+//                System.out.println(courses.get(i).getName() + " is before " + x.getName());
+//                newPartition++;
+//                Course temp = courses.get(newPartition);
+//                courses.set(newPartition, courses.get(i));
+//                courses.set(i, temp);
+//            }
+//        }
+//        System.out.println("Pre final flip: ");
+//        for (Course course: courses) {
+//            System.out.println(course.getName());
+//        }
+//        System.out.println();
+//        if (courses.get(newPartition+1).courseBefore(x)) {
+//            Course temp = courses.get(newPartition + 1);
+//            courses.set(newPartition + 1, x);
+//            courses.set(end, temp);
+//            System.out.println("Post final flip: ");
+//            for (Course course : courses) {
+//                System.out.println(course.getName());
+//            }
+//            System.out.println();
+//        }
+//        System.out.println("New sort order: ");
+//        for (Course course : courses) {
+//            System.out.println(course.getName());
+//        }
+//        return newPartition+1;
+//    }
+
+
 }

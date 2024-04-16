@@ -219,7 +219,6 @@ public class Registrar {
             System.out.println("Unable to connect to database");
         } else {
             rows = parseFileWithCourses(filename);
-            disconnectFromDB();
         }
 
         return rows;

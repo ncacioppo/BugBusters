@@ -3,26 +3,61 @@ package bugbusters;
 import java.sql.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.List;
 
 public class DatabaseSearch {
     private Connection conn;
     private StringBuilder query;   //prepared statement for querying courses
+    private ArrayList<SearchFilter> filters;
     private ArrayList<Course> results;
+
+    /**
+     * Constructor for DatabaseSearch
+     * @param conn from Registrar instance
+     */
     public DatabaseSearch(Connection conn) {
         this.conn = conn;
         this.query = new StringBuilder("SELECT * FROM course");
+        this.filters = new ArrayList<>();
     }
 
-    public ArrayList<Course> executeQuery() {
-        query = new StringBuilder("SELECT * FROM course WHERE CourseID = 2");
+    public void addFilter(SearchFilter.Searchable field, String userQuery) {
+        filters.add(new SearchFilter(field, userQuery));
+    }
+    public PreparedStatement refineQuery() {
+        query = new StringBuilder("SELECT * FROM course");
+        for(SearchFilter filter : filters) {
+            query.append(" " + filter.getClause());
+        }
         query.append(";");
+
         try {
             PreparedStatement ps = conn.prepareStatement(String.valueOf(query));
-            ResultSet rs = ps.executeQuery();
-            results = getResults(rs);
-            Run.printCourses(results);
+            int i = 1;
 
+            for(SearchFilter filter : filters) {
+                if(filter.getField().equals(SearchFilter.Searchable.DEPT)) {
+                    ps.setString(i,filter.getKey());
+                }
+            }
+            return ps;
+
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * Executes this DatabaseSearch's query
+     * @return ArrayList of results as course objects
+     */
+    public ArrayList<Course> executeQuery() {
+        try {
+            PreparedStatement ps = refineQuery();
+
+            ResultSet rs = ps.executeQuery();
+            results = getCourseResults(rs);
         } catch(SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -30,7 +65,12 @@ public class DatabaseSearch {
         return results;
     }
 
-    private ArrayList<Course> getResults(ResultSet rs) {
+    /**
+     * Parse ResultSet from query execution into Course objects
+     * @param rs
+     * @return ArrayList of results as Course objects
+     */
+    private ArrayList<Course> getCourseResults(ResultSet rs) {
         results = new ArrayList<>();
 
         try {
@@ -73,6 +113,17 @@ public class DatabaseSearch {
         return results;
     }
 
+    /**
+     * Create a list of meeting times for a course
+     * @param monday
+     * @param tuesday
+     * @param wednesday
+     * @param thursday
+     * @param friday
+     * @param startTime
+     * @param endTime
+     * @return ArrayList of MeetingTime objects
+     */
     private ArrayList<MeetingTime> setMeetingTimes(String monday, String tuesday, String wednesday, String thursday, String friday, LocalTime startTime, LocalTime endTime) {
         ArrayList<MeetingTime> meetingTimes = new ArrayList<>();
 
@@ -95,8 +146,11 @@ public class DatabaseSearch {
         return meetingTimes;
     }
 
-    public void byKeyword(String keyword) {
-
+    public StringBuilder getQuery() {
+        return query;
     }
 
+    public void setQuery(String query) {
+        this.query = new StringBuilder(query);
+    }
 }

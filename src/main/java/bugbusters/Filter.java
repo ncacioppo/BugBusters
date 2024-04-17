@@ -6,4 +6,5 @@ public enum Filter {
     public String toString(){
         return null;
     }
+
 }

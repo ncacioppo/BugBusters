@@ -471,9 +471,9 @@ public class Run {
                 return;
             } else if (input[0].equalsIgnoreCase("CLEAR")) {
                 courses = new ArrayList<>(search.getAllCoursesFromExcel());
-                printCourses();
+                printCourses(courses);
             } else if (input[0].equalsIgnoreCase("COURSES")){
-                printCourses();
+                printCourses(courses);
             } else {
                 confirmSearchCourses();
                 String filter = input[0];
@@ -490,19 +490,19 @@ public class Run {
                 switch(filter){
                     case "KEYWORD":
                         courses = new ArrayList<>(search.byKeyword(courses, query.get(0)));
-                        printCourses();
+                        printCourses(courses);
                         break;
                     case "NAME":
                         courses = new ArrayList<>(search.byName(courses, query.get(0)));
-                        printCourses();
+                        printCourses(courses);
                         break;
                     case "DEPARTMENT":
                         courses = new ArrayList<>(search.byDepartment(courses, query.get(0)));
-                        printCourses();
+                        printCourses(courses);
                         break;
                     case "CODE":
                         courses = new ArrayList<>(search.byCode(courses, query.get(0)));
-                        printCourses();
+                        printCourses(courses);
                         break;
                     case "TERM":
                         String[] temp = query.get(0).split("-");
@@ -511,24 +511,24 @@ public class Run {
                             break;
                         } else {
                         courses = new ArrayList<>(search.byTerm(courses, temp[0] + " " + temp[1]));
-                        printCourses();
+                        printCourses(courses);
                         break;
                         }
                     case "PROFESSOR":
                         courses = new ArrayList<>(search.byProfessor(courses, query.get(0)));
-                        printCourses();
+                        printCourses(courses);
                         break;
                     case "ID":
                         courses = new ArrayList<>(search.byID(courses, query.get(0)));
-                        printCourses();
+                        printCourses(courses);
                         break;
                     case "DAY":
                         courses = new ArrayList<>(search.byDay(courses, query.get(0)));
-                        printCourses();
+                        printCourses(courses);
                         break;
                     case "TIME":
                         courses = new ArrayList<>(search.withinTime(courses, query.get(0)));
-                        printCourses();
+                        printCourses(courses);
                         break;
                     case "ADD":
                         runAddCourse(query.get(0), query.get(1));
@@ -560,7 +560,7 @@ public class Run {
         }
     }
 
-    private static void printCourses(){
+    public static void printCourses(ArrayList<Course> courses){
         System.out.println("===================Courses===================");
         for (Course course : courses){
             System.out.println("----------------------------");

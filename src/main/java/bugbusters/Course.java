@@ -15,6 +15,7 @@ public class Course {
     private ArrayList<MeetingTime> meetingTimes;
     private int credits;
 
+
     /**
      *
      * @param id

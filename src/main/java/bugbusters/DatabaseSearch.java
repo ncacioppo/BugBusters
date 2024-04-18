@@ -3,6 +3,7 @@ package bugbusters;
 import java.sql.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseSearch {
     private Connection conn;
@@ -89,8 +90,18 @@ public class DatabaseSearch {
                 String wednesday = rs.getString(12);
                 String thursday = rs.getString(13);
                 String friday = rs.getString(14);
-                LocalTime startTime = rs.getTime(15).toLocalTime();
-                LocalTime endTime = rs.getTime(16).toLocalTime();
+
+                LocalTime startTime = null;
+                Time start = rs.getTime(15);
+                if(start != null) {
+                    startTime = start.toLocalTime();
+                }
+                LocalTime endTime = null;
+                Time end = rs.getTime(16);
+                if(end != null) {
+                    endTime = end.toLocalTime();
+                }
+
                 String lNameInstructor = rs.getString(17);
                 String fNameInstructor = rs.getString(18);
                 String prefNameInstructor = rs.getString(19);

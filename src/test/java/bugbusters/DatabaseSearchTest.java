@@ -26,6 +26,6 @@ class DatabaseSearchTest {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
         search.addFilter(SearchFilter.Searchable.DEPT, "HUMA");
-        Run.printCourses(search.executeQuery());
+        assertEquals(230,search.executeQuery().size());
     }
 }

@@ -4,37 +4,33 @@ import java.sql.*;
 import java.util.Scanner;
 
 public class SearchFilter {
-    public Searchable getField() {
-        return field;
+    public Filter getType() {
+        return filter;
     }
 
-    public enum Searchable {
-        COURSEID, COURSENAME, DEPT, COURSECODE, SEMESTER, YEAR, INSTRUCTOR,
-        MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY,
-        EQ_STARTTIME, GE_STARTTIME, LE_STARTTIME,
-        EQ_ENDTIME, GE_ENDTIME, LE_ENDTIME
-    }
-    private Searchable field;
+//    public enum Searchable {
+//        COURSEID, COURSENAME, DEPT, COURSECODE, SEMESTER, YEAR, INSTRUCTOR,
+//        MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY,
+//        EQ_STARTTIME, GE_STARTTIME, LE_STARTTIME,
+//        EQ_ENDTIME, GE_ENDTIME, LE_ENDTIME
+//    }
+    private Filter filter;
     private String clause;
     private String key;
 
-    public SearchFilter(Searchable field, String key) {
-        this.field = field;
-        Scanner scanner = new Scanner(key);
+    public SearchFilter(Filter filter, String key) {
+        this.filter = filter;
+        this.key = key;
 
-        switch(field) {
-            case Searchable.DEPT:
+        switch(filter) {
+            case Filter.DEPARTMENT:
                 this.clause = "WHERE Dept = ?";
-                setKey(key);
                 break;
-            case Searchable.COURSEID:
+            case Filter.ID:
                 this.clause = "WHERE CourseID = ?";
-                if(scanner.hasNextInt()) {
-                    scanner.useDelimiter(" ");
-//                    setKey(scanner.nextInt());
-                }
                 break;
         }
+
 
     }
 

@@ -4,6 +4,7 @@ import java.sql.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class DatabaseSearch {
     private Connection conn;
@@ -21,8 +22,8 @@ public class DatabaseSearch {
         this.filters = new ArrayList<>();
     }
 
-    public void addFilter(SearchFilter.Searchable field, String userQuery) {
-        filters.add(new SearchFilter(field, userQuery));
+    public void addFilter(Filter filter, String userQuery) {
+        filters.add(new SearchFilter(filter, userQuery));
     }
     public PreparedStatement refineQuery() {
         query = new StringBuilder("SELECT * FROM course");
@@ -36,8 +37,12 @@ public class DatabaseSearch {
             int i = 1;
 
             for(SearchFilter filter : filters) {
-                if(filter.getField().equals(SearchFilter.Searchable.DEPT)) {
-                    ps.setString(i,filter.getKey());
+                switch(filter.getType()) {
+                    case Filter.DEPARTMENT:
+                        ps.setString(i, filter.getKey());
+                        break;
+                    case Filter.ID:
+                        ps.setInt(i, scanKeyInt(filter.getKey()));
                 }
             }
             return ps;
@@ -47,6 +52,15 @@ public class DatabaseSearch {
         }
 
         return null;
+    }
+
+    private int scanKeyInt(String key) {
+        Scanner scanner = new Scanner(key);
+        while(scanner.hasNextInt()) {
+            return scanner.nextInt();
+        }
+
+        return -999;
     }
 
     /**

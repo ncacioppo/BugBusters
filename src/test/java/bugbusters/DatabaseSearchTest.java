@@ -42,4 +42,27 @@ class DatabaseSearchTest {
         assertEquals(444, results.get(0).getId());
         Run.printCourses(results);
     }
+
+    @Test
+    public void SearchByName() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+        search.addFilter(Filter.NAME, "ELECTRIC");  //name contains
+
+        ArrayList<Course> results = search.executeQuery();
+        assertEquals(12,results.size());
+        Run.printCourses(results);
+    }
+
+    @Test
+    public void SearchByNameAndDept() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+        search.addFilter(Filter.NAME, "ELECTRIC");  //name contains
+        search.addFilter(Filter.DEPARTMENT, "PHYS");
+
+        ArrayList<Course> results = search.executeQuery();
+        assertEquals(3,results.size());
+        Run.printCourses(results);
+    }
 }

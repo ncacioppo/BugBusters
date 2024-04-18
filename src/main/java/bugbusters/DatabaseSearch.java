@@ -26,9 +26,12 @@ public class DatabaseSearch {
         filters.add(new SearchFilter(filter, userQuery));
     }
     public PreparedStatement refineQuery() {
-        query = new StringBuilder("SELECT * FROM course");
-        for(SearchFilter filter : filters) {
-            query.append(" " + filter.getClause());
+        query.append(" WHERE ");
+        for(int i = 0; i < filters.size(); i++) {
+            query.append(filters.get(i).getClause());
+            if(i != filters.size() - 1) {
+                query.append(" AND ");
+            }
         }
         query.append(";");
 
@@ -43,7 +46,13 @@ public class DatabaseSearch {
                         break;
                     case Filter.ID:
                         ps.setInt(i, scanKeyInt(filter.getKey()));
+                        break;
+                    case Filter.NAME:
+                        String key = "%" + filter.getKey() + "%";
+                        ps.setString(i, key);
+                        break;
                 }
+                i += 1;
             }
             return ps;
 
@@ -68,8 +77,14 @@ public class DatabaseSearch {
      * @return ArrayList of results as course objects
      */
     public ArrayList<Course> executeQuery() {
+        PreparedStatement ps;
+
         try {
-            PreparedStatement ps = refineQuery();
+            if(!filters.isEmpty()) {
+                ps = refineQuery();
+            } else {
+                ps = conn.prepareStatement(String.valueOf(query));
+            }
 
             ResultSet rs = ps.executeQuery();
             results = getCourseResults(rs);

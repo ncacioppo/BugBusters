@@ -24,11 +24,13 @@ public class SearchFilter {
 
         switch(filter) {
             case Filter.DEPARTMENT:
-                this.clause = "WHERE Dept = ?";
+                this.clause = "Dept = ?";
                 break;
             case Filter.ID:
-                this.clause = "WHERE CourseID = ?";
+                this.clause = "CourseID = ?";
                 break;
+            case Filter.NAME:
+                this.clause = "CourseName LIKE ?";
         }
 
 

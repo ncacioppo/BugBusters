@@ -23,8 +23,19 @@ public class DatabaseSearch {
     }
 
     public void addFilter(Filter filter, String userQuery) {
+        //TODO: searching by name or by keyword is effectively the same thing (others can be filters)
         filters.add(new SearchFilter(filter, userQuery));
     }
+
+    private void splitUserQuery(Filter filter, String userQuery) {
+        //TODO: split user query for keyword searches. That way it searches each attribute (returns "Principles of Accounting")
+        // then returns courses ("Principles of Marketing" and "Foundations of Teaching")
+        String[] words = userQuery.strip().split(" ");
+        for(int i = 0; i < words.length; i++) {
+            filters.add(new SearchFilter(filter, words[i]));    //NOTE: will query WHERE...AND... not OR
+        }
+    }
+
     public PreparedStatement refineQuery() {
         query.append(" WHERE ");
         for(int i = 0; i < filters.size(); i++) {

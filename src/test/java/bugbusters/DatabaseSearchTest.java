@@ -65,4 +65,16 @@ class DatabaseSearchTest {
         assertEquals(3,results.size());
         Run.printCourses(results);
     }
+
+    @Test
+    public void SearchByMultipleWords() {
+        //TODO: test as full name then by keyword
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+        search.addFilter(Filter.NAME, "PRINCIPLES OF ACCOUNTING");
+
+        ArrayList<Course> results = search.executeQuery();
+//        assertEquals(3,results.size());
+        Run.printCourses(results);
+    }
 }

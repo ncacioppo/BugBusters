@@ -31,6 +31,20 @@ public class SearchFilter {
                 break;
             case Filter.NAME:
                 this.clause = "CourseName LIKE ?";
+                break;
+            case Filter.CODE:
+                this.clause = "CourseCode = ?";
+                break;
+            case Filter.CODE_MIN:
+                this.clause = "CourseCode >= ?";
+                break;
+            case Filter.CODE_MAX:
+                this.clause = "CourseCode <= ?";
+                break;
+            case Filter.CODE_BETWEEN:
+                this.clause = "CourseCode BETWEEN ? AND ?";
+                break;
+
         }
 
 

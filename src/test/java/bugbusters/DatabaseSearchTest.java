@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DatabaseSearchTest {
+    //TODO: Handle queries like "comp sci spring 2020" as
+    // select CourseID, CourseName,Dept from course where CourseName LIKE '%comp%' and coursename like '%sci%' and semester = 'spring' and year = 2020;
 
     @Test
     public void DatabaseSearchConstructorTest() {
@@ -67,14 +69,12 @@ class DatabaseSearchTest {
     }
 
     @Test
-    public void SearchByMultipleWords() {
-        //TODO: test as full name then by keyword
+    public void SearchByCodeMin() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
-        search.addFilter(Filter.NAME, "PRINCIPLES OF ACCOUNTING");
+        search.addFilter(Filter.CODE_MIN, "300");
 
         ArrayList<Course> results = search.executeQuery();
-//        assertEquals(3,results.size());
-        Run.printCourses(results);
+        assertEquals(1756,results.size());
     }
 }

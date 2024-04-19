@@ -11,6 +11,8 @@ public class DatabaseSearch {
     private StringBuilder query;   //prepared statement for querying courses
     private ArrayList<SearchFilter> filters;
     private ArrayList<Course> results;
+    private int codeMin;
+    private int codeMax;
 
     /**
      * Constructor for DatabaseSearch
@@ -20,16 +22,22 @@ public class DatabaseSearch {
         this.conn = conn;
         this.query = new StringBuilder("SELECT * FROM course");
         this.filters = new ArrayList<>();
+
+        setFilterDefaults();
+    }
+
+    private void setFilterDefaults() {
+        this.codeMin = 0;
+        this.codeMax = 999;
     }
 
     public void addFilter(Filter filter, String userQuery) {
-        //TODO: searching by name or by keyword is effectively the same thing (others can be filters)
         filters.add(new SearchFilter(filter, userQuery));
     }
 
     private void splitUserQuery(Filter filter, String userQuery) {
         //TODO: split user query for keyword searches. That way it searches each attribute (returns "Principles of Accounting")
-        // then returns courses ("Principles of Marketing" and "Foundations of Teaching")
+        // then returns courses ("Principles of Marketing" and "Foundations of Teaching"). Will need to watch for duplicates
         String[] words = userQuery.strip().split(" ");
         for(int i = 0; i < words.length; i++) {
             filters.add(new SearchFilter(filter, words[i]));    //NOTE: will query WHERE...AND... not OR
@@ -37,13 +45,7 @@ public class DatabaseSearch {
     }
 
     public PreparedStatement refineQuery() {
-        query.append(" WHERE ");
-        for(int i = 0; i < filters.size(); i++) {
-            query.append(filters.get(i).getClause());
-            if(i != filters.size() - 1) {
-                query.append(" AND ");
-            }
-        }
+        appendFilterClauses();
         query.append(";");
 
         try {
@@ -62,6 +64,22 @@ public class DatabaseSearch {
                         String key = "%" + filter.getKey() + "%";
                         ps.setString(i, key);
                         break;
+                    case Filter.CODE:
+                        ps.setInt(i, scanKeyInt(filter.getKey()));
+                        break;
+                    case Filter.CODE_MIN:
+                        codeMin = scanKeyInt(filter.getKey());
+                        ps.setInt(i, codeMin);
+                        break;
+                    case Filter.CODE_MAX:
+                        codeMax = scanKeyInt(filter.getKey());
+                        ps.setInt(i, codeMax);
+                        break;
+                    case Filter.CODE_BETWEEN:
+                        ps.setInt(i, codeMin);
+                        ps.setInt(i + 1, codeMin);
+                        i += 1;
+                        break;
                 }
                 i += 1;
             }
@@ -72,6 +90,16 @@ public class DatabaseSearch {
         }
 
         return null;
+    }
+
+    private void appendFilterClauses() {
+        query.append(" WHERE ");
+        for(int i = 0; i < filters.size(); i++) {
+            query.append(filters.get(i).getClause());
+            if(i != filters.size() - 1) {
+                query.append(" AND ");
+            }
+        }
     }
 
     private int scanKeyInt(String key) {
@@ -157,6 +185,7 @@ public class DatabaseSearch {
                 Course course = new Course(id,courseName,"",dept,courseCode,term,section,
                         instructor,meetingTimes,hours);
                 results.add(course);
+                Run.printCourses(new ArrayList<>(List.of(course)));
             }
         } catch(SQLException e) {
             System.out.println(e.getMessage());

@@ -10,6 +10,8 @@ class DatabaseSearchTest {
     //TODO: Handle queries like "comp sci spring 2020" as
     // select CourseID, CourseName,Dept from course where CourseName LIKE '%comp%' and coursename like '%sci%' and semester = 'spring' and year = 2020;
 
+    //TODO: Remove filter
+
     @Test
     public void DatabaseSearchConstructorTest() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
@@ -76,5 +78,36 @@ class DatabaseSearchTest {
 
         ArrayList<Course> results = search.executeQuery();
         assertEquals(1756,results.size());
+    }
+    @Test
+    public void SearchByCodeBetween() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+        search.addFilter(Filter.CODE_MIN, "200");
+        search.addFilter(Filter.CODE_MAX,"300");
+
+        ArrayList<Course> results = search.executeQuery();
+        assertEquals(1431,results.size());
+    }
+
+    @Test
+    public void SearchByTermSpring2018() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+
+        search.addFilter(Filter.TERM, "Spring 2018");
+        ArrayList<Course> results = search.executeQuery();
+        assertEquals(765,results.size());
+    }
+
+    @Test
+    public void SearchByTwoTerms() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+
+        search.addFilter(Filter.TERM, "Spring 2018");
+        search.addFilter(Filter.TERM, "Fall 2018");
+        ArrayList<Course> results = search.executeQuery();
+        assertEquals(0,results.size());
     }
 }

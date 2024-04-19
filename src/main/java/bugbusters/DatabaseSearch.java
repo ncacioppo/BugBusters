@@ -57,15 +57,12 @@ public class DatabaseSearch {
                     case Filter.DEPARTMENT:
                         ps.setString(i, filter.getKey());
                         break;
-                    case Filter.ID:
+                    case Filter.ID, Filter.CODE:
                         ps.setInt(i, scanKeyInt(filter.getKey()));
                         break;
                     case Filter.NAME:
                         String key = "%" + filter.getKey() + "%";
                         ps.setString(i, key);
-                        break;
-                    case Filter.CODE:
-                        ps.setInt(i, scanKeyInt(filter.getKey()));
                         break;
                     case Filter.CODE_MIN:
                         codeMin = scanKeyInt(filter.getKey());
@@ -75,10 +72,11 @@ public class DatabaseSearch {
                         codeMax = scanKeyInt(filter.getKey());
                         ps.setInt(i, codeMax);
                         break;
-                    case Filter.CODE_BETWEEN:
-                        ps.setInt(i, codeMin);
-                        ps.setInt(i + 1, codeMin);
+                    case Filter.TERM:
+                        Term term = convertToTerm(filter.getKey());
+                        ps.setString(i, term.getSeason());
                         i += 1;
+                        ps.setInt(i, term.getYear());
                         break;
                 }
                 i += 1;
@@ -90,6 +88,22 @@ public class DatabaseSearch {
         }
 
         return null;
+    }
+
+    private Term convertToTerm(String key) {
+        String semester = "";
+        int year = 0;
+
+        Scanner scanner = new Scanner(key);
+        scanner.useDelimiter(" ");
+
+        if (scanner.hasNext()) {
+            semester = scanner.next().toUpperCase();
+        }
+        if (scanner.hasNextInt()) {
+            year = scanner.nextInt();
+        }
+        return new Term(semester, year);
     }
 
     private void appendFilterClauses() {

@@ -41,8 +41,8 @@ public class SearchFilter {
             case Filter.CODE_MAX:
                 this.clause = "CourseCode <= ?";
                 break;
-            case Filter.CODE_BETWEEN:
-                this.clause = "CourseCode BETWEEN ? AND ?";
+            case Filter.TERM:
+                this.clause = "Semester = ? AND Year = ?";
                 break;
 
         }

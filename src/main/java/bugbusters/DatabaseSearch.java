@@ -148,7 +148,11 @@ public class DatabaseSearch {
                 String semester = rs.getString(2);
                 String dept = rs.getString(3);
                 int courseCode = rs.getInt(4);
-                char section = rs.getString(5).charAt(0);
+                char section = 'A';
+                String courseSection = rs.getString(5);
+                if(!courseSection.isEmpty()) {
+                    section = courseSection.charAt(0);
+                }
                 String courseName = rs.getString(6);
                 int hours = rs.getInt(7);
                 int capacity = rs.getInt(8);
@@ -185,7 +189,6 @@ public class DatabaseSearch {
                 Course course = new Course(id,courseName,"",dept,courseCode,term,section,
                         instructor,meetingTimes,hours);
                 results.add(course);
-                Run.printCourses(new ArrayList<>(List.of(course)));
             }
         } catch(SQLException e) {
             System.out.println(e.getMessage());

@@ -37,11 +37,11 @@ class DatabaseSearchTest {
     public void SearchByID() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
-        search.addFilter(Filter.ID, "444");
+        search.addFilter(Filter.ID, "294");
 
         ArrayList<Course> results = search.executeQuery();
         assertEquals(1,results.size());
-        assertEquals(444, results.get(0).getId());
+        assertEquals(294, results.get(0).getId());
         Run.printCourses(results);
     }
 

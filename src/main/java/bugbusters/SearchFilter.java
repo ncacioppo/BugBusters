@@ -44,6 +44,11 @@ public class SearchFilter {
             case Filter.TERM:
                 this.clause = "Semester = ? AND Year = ?";
                 break;
+            case Filter.PROFESSOR:
+                this.clause = "FNameInstructor LIKE ? OR " +
+                                "LNameInstructor LIKE ? OR " +
+                                "PrefFNameInstructor LIKE ?";
+                break;
 
         }
 

@@ -61,8 +61,8 @@ public class DatabaseSearch {
                         ps.setInt(i, scanKeyInt(filter.getKey()));
                         break;
                     case Filter.NAME:
-                        String key = "%" + filter.getKey() + "%";
-                        ps.setString(i, key);
+                        String name = "%" + filter.getKey() + "%";
+                        ps.setString(i, name);
                         break;
                     case Filter.CODE_MIN:
                         codeMin = scanKeyInt(filter.getKey());
@@ -77,6 +77,10 @@ public class DatabaseSearch {
                         ps.setString(i, term.getSeason());
                         i += 1;
                         ps.setInt(i, term.getYear());
+                        break;
+                    case Filter.PROFESSOR:
+                        String professor = "%" + filter.getKey() + "%"; //TODO: split into 3 fields
+                        ps.setString(i, professor);
                         break;
                 }
                 i += 1;

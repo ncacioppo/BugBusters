@@ -12,10 +12,6 @@ public class DatabaseSearch {
     private StringBuilder query;   //prepared statement for querying courses
     private ArrayList<SearchFilter> filters;
     private ArrayList<Course> results;
-    private int codeMin;
-    private int codeMax;
-    private Time timeMin;
-    private Time timeMax;
 
     /**
      * Constructor for DatabaseSearch
@@ -25,14 +21,8 @@ public class DatabaseSearch {
         this.conn = conn;
         this.query = new StringBuilder("SELECT * FROM course");
         this.filters = new ArrayList<>();
-
-        setFilterDefaults();
     }
 
-    private void setFilterDefaults() {
-        this.codeMin = 0;
-        this.codeMax = 999;
-    }
 
     public void addFilter(Filter filter, String userQuery) {
         filters.add(new SearchFilter(filter, userQuery));
@@ -60,20 +50,12 @@ public class DatabaseSearch {
                     case Filter.DEPARTMENT:
                         ps.setString(i, filter.getKey());
                         break;
-                    case Filter.ID, Filter.CODE:
+                    case Filter.ID, Filter.CODE, Filter.CODE_MIN, Filter.CODE_MAX:
                         ps.setInt(i, scanKeyInt(filter.getKey()));
                         break;
                     case Filter.NAME:
                         String name = "%" + filter.getKey() + "%";
                         ps.setString(i, name);
-                        break;
-                    case Filter.CODE_MIN:
-                        codeMin = scanKeyInt(filter.getKey());
-                        ps.setInt(i, codeMin);
-                        break;
-                    case Filter.CODE_MAX:
-                        codeMax = scanKeyInt(filter.getKey());
-                        ps.setInt(i, codeMax);
                         break;
                     case Filter.TERM:
                         Term term = convertToTerm(filter.getKey());
@@ -92,13 +74,8 @@ public class DatabaseSearch {
                         ps = setDayFilterValues(ps, filter.getKey(), i);
                         i += 4;
                         break;
-                    case Filter.TIME_MIN:
-                        timeMin = scanKeyTime(filter.getKey());
-                        ps.setTime(i, timeMin);
-                        break;
-                    case Filter.TIME_MAX:
-                        timeMax = scanKeyTime(filter.getKey());
-                        ps.setTime(i, timeMax);
+                    case Filter.TIME_MIN, TIME_MAX:
+                        ps.setTime(i, scanKeyTime(filter.getKey()));
                         break;
                 }
                 i += 1;
@@ -172,8 +149,10 @@ public class DatabaseSearch {
     }
 
     public void removeFilter(Filter type, String key) {
+        SearchFilter filter;
+        key = key.toUpperCase();
         for(int i = 0; i < filters.size(); i++) {
-            SearchFilter filter = filters.get(i);
+            filter = filters.get(i);
             if(type.equals(filter.getType()) && key.equals(filter.getKey())) {
                 filters.remove(i);
             }

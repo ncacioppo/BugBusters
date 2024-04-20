@@ -20,7 +20,7 @@ public class SearchFilter {
 
     public SearchFilter(Filter filter, String key) {
         this.filter = filter;
-        this.key = key;
+        this.key = key.toUpperCase();
 
         switch(filter) {
             case Filter.DEPARTMENT:

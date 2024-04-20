@@ -191,4 +191,28 @@ class DatabaseSearchTest {
         ArrayList<Course> results = search.executeQuery();
         assertEquals(19, results.size());
     }
+
+    @Test
+    public void RemoveTermFilter() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+        search.addFilter(Filter.CODE_MAX, "300");
+        search.addFilter(Filter.TERM,"Fall 2018");
+        search.removeFilter(Filter.TERM, "faLL 2018");
+
+        ArrayList<Course> results = search.executeQuery();
+        assertEquals(2777, results.size());
+    }
+
+    @Test
+    public void RemoveDayFilter() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+        search.addFilter(Filter.DAY, "MWF");
+        search.removeFilter(Filter.DAY, "MWF");
+        search.addFilter(Filter.DAY, "TR");
+
+        ArrayList<Course> results = search.executeQuery();
+        assertEquals(1127, results.size());
+    }
 }

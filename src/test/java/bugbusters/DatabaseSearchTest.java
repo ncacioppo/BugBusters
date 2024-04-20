@@ -153,4 +153,42 @@ class DatabaseSearchTest {
         ArrayList<Course> results = search.executeQuery();
         assertEquals(21,results.size());
     }
+
+    @Test
+    public void RemoveDeptFilter() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+        search.addFilter(Filter.TERM,"Fall 2019");
+        search.addFilter(Filter.DEPARTMENT,"CHEM");
+        search.removeFilter(Filter.DEPARTMENT, "CHEM");
+
+        ArrayList<Course> results = search.executeQuery();
+        assertEquals(756,results.size());
+    }
+
+    @Test
+    public void RemoveTimeFilter() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+        search.addFilter(Filter.TIME_MIN, "11:00:00");
+        search.addFilter(Filter.DEPARTMENT,"CHEM");
+        search.addFilter(Filter.TIME_MAX,"14:00:00");
+        search.removeFilter(Filter.TIME_MIN, "11:00:00");
+
+        ArrayList<Course> results = search.executeQuery();
+        assertEquals(153, results.size());
+    }
+
+    @Test
+    public void RemoveCodeFilter() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+        search.addFilter(Filter.CODE_MAX, "200");
+        search.addFilter(Filter.DEPARTMENT,"SOCW");
+        search.removeFilter(Filter.CODE_MAX,"200");
+        search.addFilter(Filter.CODE_MAX, "300");
+
+        ArrayList<Course> results = search.executeQuery();
+        assertEquals(19, results.size());
+    }
 }

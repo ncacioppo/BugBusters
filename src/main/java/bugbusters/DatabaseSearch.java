@@ -171,6 +171,15 @@ public class DatabaseSearch {
         return Time.valueOf(key);
     }
 
+    public void removeFilter(Filter type, String key) {
+        for(int i = 0; i < filters.size(); i++) {
+            SearchFilter filter = filters.get(i);
+            if(type.equals(filter.getType()) && key.equals(filter.getKey())) {
+                filters.remove(i);
+            }
+        }
+    }
+
     /**
      * Executes this DatabaseSearch's query
      * @return ArrayList of results as course objects
@@ -296,4 +305,5 @@ public class DatabaseSearch {
     public void setQuery(String query) {
         this.query = new StringBuilder(query);
     }
+
 }

@@ -121,4 +121,16 @@ class DatabaseSearchTest {
         ArrayList<Course> results = search.executeQuery();
         assertEquals(3,results.size());
     }
+
+    @Test
+    public void FilterByDay() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+
+        search.addFilter(Filter.DAY, "TR");
+        search.addFilter(Filter.DEPARTMENT, "PSYC");
+        ArrayList<Course> results = search.executeQuery();
+        assertEquals(34,results.size());
+    }
+
 }

@@ -78,13 +78,16 @@ public class DatabaseSearch {
                         i += 1;
                         ps.setInt(i, term.getYear());
                         break;
-                    case Filter.PROFESSOR:
+                    case Filter.PROFESSOR:  //takes one word
                         String professor = "%" + filter.getKey() + "%"; //TODO: split into 3 fields
                         for(int j = i; j < i + 3; j++) {
                             ps.setString(j, professor);
                         }
                         i += 2;
-
+                        break;
+                    case Filter.DAY:    //takes string "MWF" or "TR" for toggle filter
+                        ps = setDayFilterValues(ps, filter.getKey(), i);
+                        i += 4;
                         break;
                 }
                 i += 1;
@@ -96,6 +99,26 @@ public class DatabaseSearch {
         }
 
         return null;
+    }
+
+    private PreparedStatement setDayFilterValues(PreparedStatement ps, String key, int i) throws SQLException{
+        if(key.equals("MWF")) {
+            ps.setString(i, "M");
+            ps.setString(i + 1, "");
+            ps.setString(i + 2, "W");
+            ps.setString(i + 3, "");
+            ps.setString(i + 4, "F");
+            return ps;
+        }
+        if(key.equals("TR")) {
+            ps.setString(i, "");
+            ps.setString(i + 1, "T");
+            ps.setString(i + 2, "");
+            ps.setString(i + 3, "R");
+            ps.setString(i + 4, "");
+            return ps;
+        }
+        return ps;
     }
 
     private Term convertToTerm(String key) {

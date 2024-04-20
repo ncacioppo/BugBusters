@@ -45,9 +45,16 @@ public class SearchFilter {
                 this.clause = "Semester = ? AND Year = ?";
                 break;
             case Filter.PROFESSOR:
-                this.clause = "(FNameInstructor LIKE ? OR " +
-                                "LNameInstructor LIKE ? OR " +
-                                "PrefFNameInstructor LIKE ?)";
+                this.clause = "(FNameInstructor LIKE ?" +
+                                " OR LNameInstructor LIKE ?" +
+                                " OR PrefFNameInstructor LIKE ?)";
+                break;
+            case Filter.DAY:
+                this.clause = "Monday = ?" +
+                                " AND Tuesday = ?" +
+                                " AND Wednesday = ?" +
+                                " AND Thursday = ?" +
+                                " AND Friday = ?";
                 break;
 
         }

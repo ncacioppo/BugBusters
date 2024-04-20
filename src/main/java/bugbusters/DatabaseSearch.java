@@ -80,7 +80,11 @@ public class DatabaseSearch {
                         break;
                     case Filter.PROFESSOR:
                         String professor = "%" + filter.getKey() + "%"; //TODO: split into 3 fields
-                        ps.setString(i, professor);
+                        for(int j = i; j < i + 3; j++) {
+                            ps.setString(j, professor);
+                        }
+                        i += 2;
+
                         break;
                 }
                 i += 1;

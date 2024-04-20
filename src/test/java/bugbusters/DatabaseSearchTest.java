@@ -133,4 +133,24 @@ class DatabaseSearchTest {
         assertEquals(34,results.size());
     }
 
+    @Test
+    public void SearchByTimeMax() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+        search.addFilter(Filter.TIME_MAX, "9:00:00");
+
+        ArrayList<Course> results = search.executeQuery();
+        assertEquals(1391,results.size());
+    }
+    @Test
+    public void SearchByTimeBetween() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+        search.addFilter(Filter.TIME_MIN, "11:00:00");
+        search.addFilter(Filter.DEPARTMENT,"CHEM");
+        search.addFilter(Filter.TIME_MAX,"14:00:00");
+
+        ArrayList<Course> results = search.executeQuery();
+        assertEquals(21,results.size());
+    }
 }

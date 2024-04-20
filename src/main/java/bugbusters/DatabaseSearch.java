@@ -1,6 +1,7 @@
 package bugbusters;
 
 import java.sql.*;
+import java.text.DateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,8 @@ public class DatabaseSearch {
     private ArrayList<Course> results;
     private int codeMin;
     private int codeMax;
+    private Time timeMin;
+    private Time timeMax;
 
     /**
      * Constructor for DatabaseSearch
@@ -89,6 +92,14 @@ public class DatabaseSearch {
                         ps = setDayFilterValues(ps, filter.getKey(), i);
                         i += 4;
                         break;
+                    case Filter.TIME_MIN:
+                        timeMin = scanKeyTime(filter.getKey());
+                        ps.setTime(i, timeMin);
+                        break;
+                    case Filter.TIME_MAX:
+                        timeMax = scanKeyTime(filter.getKey());
+                        ps.setTime(i, timeMax);
+                        break;
                 }
                 i += 1;
             }
@@ -154,6 +165,10 @@ public class DatabaseSearch {
         }
 
         return -999;
+    }
+
+    private Time scanKeyTime(String key) {
+        return Time.valueOf(key);
     }
 
     /**

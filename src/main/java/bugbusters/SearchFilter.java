@@ -56,7 +56,12 @@ public class SearchFilter {
                                 " AND Thursday = ?" +
                                 " AND Friday = ?";
                 break;
-
+            case Filter.TIME_MIN:
+                this.clause = "StartTime >= ?";
+                break;
+            case Filter.TIME_MAX:
+                this.clause = "EndTime <= ?";
+                break;
         }
 
 

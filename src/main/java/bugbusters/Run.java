@@ -187,7 +187,7 @@ public class Run {
                     }
                     break;
                 default:
-                    System.out.println("Default");
+                    System.out.println("Invalid command. Try command HELP");
             }
         }
     }

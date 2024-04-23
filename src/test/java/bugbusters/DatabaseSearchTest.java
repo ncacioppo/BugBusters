@@ -31,7 +31,7 @@ class DatabaseSearchTest {
     public void SearchByDepartment() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
-        search.addFilter(Filter.DEPARTMENT, "HUMA");
+        search.applyFilter(Filter.DEPARTMENT, "HUMA");
         assertEquals(230,search.executeQuery().size());
     }
 
@@ -39,7 +39,7 @@ class DatabaseSearchTest {
     public void SearchByID() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
-        search.addFilter(Filter.ID, "294");
+        search.applyFilter(Filter.ID, "294");
 
         ArrayList<Course> results = search.executeQuery();
         assertEquals(1,results.size());
@@ -51,7 +51,7 @@ class DatabaseSearchTest {
     public void SearchByName() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
-        search.addFilter(Filter.NAME, "ELECTRIC");  //name contains
+        search.applyFilter(Filter.NAME, "ELECTRIC");  //name contains
 
         ArrayList<Course> results = search.executeQuery();
         assertEquals(12,results.size());
@@ -62,8 +62,8 @@ class DatabaseSearchTest {
     public void SearchByNameAndDept() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
-        search.addFilter(Filter.NAME, "ELECTRIC");  //name contains
-        search.addFilter(Filter.DEPARTMENT, "PHYS");
+        search.applyFilter(Filter.NAME, "ELECTRIC");  //name contains
+        search.applyFilter(Filter.DEPARTMENT, "PHYS");
 
         ArrayList<Course> results = search.executeQuery();
         assertEquals(3,results.size());
@@ -74,7 +74,7 @@ class DatabaseSearchTest {
     public void SearchByCodeMin() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
-        search.addFilter(Filter.CODE_MIN, "300");
+        search.applyFilter(Filter.CODE_MIN, "300");
 
         ArrayList<Course> results = search.executeQuery();
         assertEquals(1756,results.size());
@@ -83,8 +83,8 @@ class DatabaseSearchTest {
     public void SearchByCodeBetween() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
-        search.addFilter(Filter.CODE_MIN, "200");
-        search.addFilter(Filter.CODE_MAX,"300");
+        search.applyFilter(Filter.CODE_MIN, "200");
+        search.applyFilter(Filter.CODE_MAX,"300");
 
         ArrayList<Course> results = search.executeQuery();
         assertEquals(1431,results.size());
@@ -95,7 +95,7 @@ class DatabaseSearchTest {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
 
-        search.addFilter(Filter.TERM, "Spring 2018");
+        search.applyFilter(Filter.TERM, "Spring 2018");
         ArrayList<Course> results = search.executeQuery();
         assertEquals(765,results.size());
     }
@@ -105,8 +105,8 @@ class DatabaseSearchTest {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
 
-        search.addFilter(Filter.TERM, "Spring 2018");
-        search.addFilter(Filter.TERM, "Fall 2018");
+        search.applyFilter(Filter.TERM, "Spring 2018");
+        search.applyFilter(Filter.TERM, "Fall 2018");
         ArrayList<Course> results = search.executeQuery();
         assertEquals(0,results.size());
     }
@@ -116,8 +116,8 @@ class DatabaseSearchTest {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
 
-        search.addFilter(Filter.TERM, "Spring 2020");
-        search.addFilter(Filter.PROFESSOR, "trueman");
+        search.applyFilter(Filter.TERM, "Spring 2020");
+        search.applyFilter(Filter.PROFESSOR, "trueman");
         ArrayList<Course> results = search.executeQuery();
         assertEquals(3,results.size());
     }
@@ -127,8 +127,8 @@ class DatabaseSearchTest {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
 
-        search.addFilter(Filter.DAY, "TR");
-        search.addFilter(Filter.DEPARTMENT, "PSYC");
+        search.applyFilter(Filter.DAY, "TR");
+        search.applyFilter(Filter.DEPARTMENT, "PSYC");
         ArrayList<Course> results = search.executeQuery();
         assertEquals(34,results.size());
     }
@@ -137,7 +137,7 @@ class DatabaseSearchTest {
     public void SearchByTimeMax() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
-        search.addFilter(Filter.TIME_MAX, "9:00:00");
+        search.applyFilter(Filter.TIME_MAX, "9:00:00");
 
         ArrayList<Course> results = search.executeQuery();
         assertEquals(1391,results.size());
@@ -146,9 +146,9 @@ class DatabaseSearchTest {
     public void SearchByTimeBetween() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
-        search.addFilter(Filter.TIME_MIN, "11:00:00");
-        search.addFilter(Filter.DEPARTMENT,"CHEM");
-        search.addFilter(Filter.TIME_MAX,"14:00:00");
+        search.applyFilter(Filter.TIME_MIN, "11:00:00");
+        search.applyFilter(Filter.DEPARTMENT,"CHEM");
+        search.applyFilter(Filter.TIME_MAX,"14:00:00");
 
         ArrayList<Course> results = search.executeQuery();
         assertEquals(21,results.size());
@@ -158,8 +158,8 @@ class DatabaseSearchTest {
     public void RemoveDeptFilter() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
-        search.addFilter(Filter.TERM,"Fall 2019");
-        search.addFilter(Filter.DEPARTMENT,"CHEM");
+        search.applyFilter(Filter.TERM,"Fall 2019");
+        search.applyFilter(Filter.DEPARTMENT,"CHEM");
         search.removeFilter(Filter.DEPARTMENT, "CHEM");
 
         ArrayList<Course> results = search.executeQuery();
@@ -170,9 +170,9 @@ class DatabaseSearchTest {
     public void RemoveTimeFilter() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
-        search.addFilter(Filter.TIME_MIN, "11:00:00");
-        search.addFilter(Filter.DEPARTMENT,"CHEM");
-        search.addFilter(Filter.TIME_MAX,"14:00:00");
+        search.applyFilter(Filter.TIME_MIN, "11:00:00");
+        search.applyFilter(Filter.DEPARTMENT,"CHEM");
+        search.applyFilter(Filter.TIME_MAX,"14:00:00");
         search.removeFilter(Filter.TIME_MIN, "11:00:00");
 
         ArrayList<Course> results = search.executeQuery();
@@ -183,10 +183,10 @@ class DatabaseSearchTest {
     public void RemoveCodeFilter() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
-        search.addFilter(Filter.CODE_MAX, "200");
-        search.addFilter(Filter.DEPARTMENT,"SOCW");
+        search.applyFilter(Filter.CODE_MAX, "200");
+        search.applyFilter(Filter.DEPARTMENT,"SOCW");
         search.removeFilter(Filter.CODE_MAX,"200");
-        search.addFilter(Filter.CODE_MAX, "300");
+        search.applyFilter(Filter.CODE_MAX, "300");
 
         ArrayList<Course> results = search.executeQuery();
         assertEquals(19, results.size());
@@ -196,8 +196,8 @@ class DatabaseSearchTest {
     public void RemoveTermFilter() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
-        search.addFilter(Filter.CODE_MAX, "300");
-        search.addFilter(Filter.TERM,"Fall 2018");
+        search.applyFilter(Filter.CODE_MAX, "300");
+        search.applyFilter(Filter.TERM,"Fall 2018");
         search.removeFilter(Filter.TERM, "faLL 2018");
 
         ArrayList<Course> results = search.executeQuery();
@@ -208,11 +208,23 @@ class DatabaseSearchTest {
     public void RemoveDayFilter() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
-        search.addFilter(Filter.DAY, "MWF");
+        search.applyFilter(Filter.DAY, "MWF");
         search.removeFilter(Filter.DAY, "MWF");
-        search.addFilter(Filter.DAY, "TR");
+        search.applyFilter(Filter.DAY, "TR");
 
         ArrayList<Course> results = search.executeQuery();
         assertEquals(1127, results.size());
     }
+
+    @Test
+    public void keywordSearchCourseName() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+        ArrayList<Course> results = search.keywordSearch("electrical engineering");
+//        results = search.applyFilter(Filter.DAY,"MWF");
+
+        assertEquals(6, results.size());
+    }
+
+    //TODO: test edge case where remove all filters and search term
 }

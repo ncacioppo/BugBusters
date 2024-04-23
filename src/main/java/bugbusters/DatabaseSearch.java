@@ -1,15 +1,14 @@
 package bugbusters;
 
 import java.sql.*;
-import java.text.DateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class DatabaseSearch {
     private Connection conn;
     private StringBuilder query;   //prepared statement for querying courses
+    private String searchTerm;     //search query from user input
     private ArrayList<SearchFilter> filters;
     private ArrayList<Course> results;
 
@@ -21,24 +20,72 @@ public class DatabaseSearch {
         this.conn = conn;
         this.query = new StringBuilder("SELECT * FROM course");
         this.filters = new ArrayList<>();
+        this.searchTerm = "";
     }
 
+    /**
+     * Searches for courses based on user input in search bar.
+     * Searches name, department, code, and instructor for full search term and each word
+     * in search term.
+     * @param userQuery
+     * @return
+     */
+    public ArrayList<Course> keywordSearch(String userQuery) {
+        setSearchTerm(userQuery);
 
-    public void addFilter(Filter filter, String userQuery) {
-        filters.add(new SearchFilter(filter, userQuery));
+        applySearchTermFilter(Filter.NAME, userQuery);
+        applySearchTermFilter(Filter.DEPARTMENT, userQuery);
+
+//        String[] words = userQuery.strip().split(" ");
+//        for(String word : words) {
+//
+//        }
+        return executeQuery();
     }
 
-    private void splitUserQuery(Filter filter, String userQuery) {
-        //TODO: split user query for keyword searches. That way it searches each attribute (returns "Principles of Accounting")
-        // then returns courses ("Principles of Marketing" and "Foundations of Teaching"). Will need to watch for duplicates
-        String[] words = userQuery.strip().split(" ");
-        for(int i = 0; i < words.length; i++) {
-            filters.add(new SearchFilter(filter, words[i]));    //NOTE: will query WHERE...AND... not OR
+    public void applyFilter(Filter filter, String userQuery) {
+        if(filters.isEmpty()) {
+           query.append(" WHERE ");
+        } else {
+            query.append(" AND ");
         }
+        SearchFilter searchFilter = new SearchFilter(filter, userQuery);
+        filters.add(searchFilter);
+        query.append(searchFilter.getClause());
+    }
+
+    public void applySearchTermFilter(Filter filter, String userQuery) {
+        if(filters.isEmpty()) {
+            query.append(" WHERE ");
+        } else {
+            query.append(" OR ");
+        }
+        SearchFilter searchFilter = new SearchFilter(filter, userQuery);
+        filters.add(searchFilter);
+        query.append(searchFilter.getClause());
+    }
+
+    public void setSearchTerm(String searchTerm) {
+        this.searchTerm = searchTerm;
+    }
+
+    /**
+     * Executes this DatabaseSearch's query
+     * @return ArrayList of results as course objects
+     */
+    public ArrayList<Course> executeQuery() {
+        try {
+            PreparedStatement ps = refineQuery();
+            ResultSet rs = ps.executeQuery();
+            results = getCourseResults(rs);
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return results;
     }
 
     public PreparedStatement refineQuery() {
-        appendFilterClauses();
         query.append(";");
 
         try {
@@ -135,6 +182,14 @@ public class DatabaseSearch {
         }
     }
 
+    private void appendSearchTermClauses() {
+        for(int i = 0; i < filters.size(); i++) {
+            query.append(filters.get(i).getClause());
+            if(i != filters.size() - 1) {
+                query.append(" OR ");
+            }
+        }
+    }
     private int scanKeyInt(String key) {
         Scanner scanner = new Scanner(key);
         while(scanner.hasNextInt()) {
@@ -157,29 +212,6 @@ public class DatabaseSearch {
                 filters.remove(i);
             }
         }
-    }
-
-    /**
-     * Executes this DatabaseSearch's query
-     * @return ArrayList of results as course objects
-     */
-    public ArrayList<Course> executeQuery() {
-        PreparedStatement ps;
-
-        try {
-            if(!filters.isEmpty()) {
-                ps = refineQuery();
-            } else {
-                ps = conn.prepareStatement(String.valueOf(query));
-            }
-
-            ResultSet rs = ps.executeQuery();
-            results = getCourseResults(rs);
-        } catch(SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-        return results;
     }
 
     /**
@@ -285,4 +317,7 @@ public class DatabaseSearch {
         this.query = new StringBuilder(query);
     }
 
+    public String getSearchTerm() {
+        return searchTerm;
+    }
 }

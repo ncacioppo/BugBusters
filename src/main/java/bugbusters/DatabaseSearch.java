@@ -11,6 +11,7 @@ public class DatabaseSearch {
     private PreparedStatement ps;
     private String searchTerm;     //search query from user input
     private boolean filtered;      //true if query has at least one WHERE clause
+    private boolean rebuildingQuery;
     private ArrayList<SearchFilter> filters;
     private ArrayList<SearchFilter> keywordFilters;
     private ArrayList<Course> results;
@@ -21,10 +22,13 @@ public class DatabaseSearch {
      */
     public DatabaseSearch(Connection conn) {
         this.conn = conn;
-        this.query = new StringBuilder("SELECT * FROM course");
         this.filters = new ArrayList<>();
+        this.keywordFilters = new ArrayList<>();
         this.searchTerm = "";
+        resetQuery();
+
         filtered = false;
+        rebuildingQuery = false;
     }
 
     /**
@@ -34,193 +38,56 @@ public class DatabaseSearch {
      * @param userQuery
      * @return
      */
-    public ArrayList<Course> keywordSearch(String userQuery) {
+    public void keywordSearch(String userQuery) {
         setSearchTerm(userQuery);
+        resetQuery();
+        rebuildingQuery = true;
 
         applySearchTermFilter(Filter.NAME, userQuery);
         applySearchTermFilter(Filter.DEPARTMENT, userQuery);
-
 //        String[] words = userQuery.strip().split(" ");
 //        for(String word : words) {
 //
 //        }
-
         query.append(")");
-        return executeQuery();
+        rebuildQuery();
+        rebuildingQuery = false;
+
+        executeQuery();
     }
 
-    public ArrayList<Course> applyFilter(Filter filter, String userQuery) {
-        addLeadingFilterKeywords();
-        SearchFilter searchFilter = new SearchFilter(filter, userQuery);
-        filters.add(searchFilter);
-        query.append(searchFilter.getClause());
-
-        return executeQuery();
-    }
-
-    private void addLeadingFilterKeywords() {
-        if(filters.isEmpty()) {
-            query.append(" WHERE ");
-            filtered = true;
-        } else {
-            query.append(" AND ");
-        }
-    }
-
+    /**
+     * Applies filter clause to query for search terms without executing the query.
+     * @param filter
+     * @param userQuery
+     */
     public void applySearchTermFilter(Filter filter, String userQuery) {
-        addLeadingSearchTermKeywords();
+        addLeadingSearchTermKeyword();
         SearchFilter searchFilter = new SearchFilter(filter, userQuery);
         keywordFilters.add(searchFilter);
         query.append(searchFilter.getClause());
     }
 
-    private void addLeadingSearchTermKeywords() {
-        if(filters.isEmpty()) {
-            query.append(" WHERE (");
-            filtered = true;
-        } else {
-            query.append(" OR ");
-        }
-    }
+    /**
+     * Applies a search filter to the query and executes the search.
+     * @param filter
+     * @param userQuery
+     */
+    public void applyFilter(Filter filter, String userQuery) {
+        addLeadingFilterKeyword();
+        SearchFilter searchFilter = new SearchFilter(filter, userQuery);
+        filters.add(searchFilter);
+        query.append(searchFilter.getClause());
 
-    public void setSearchTerm(String searchTerm) {
-        this.searchTerm = searchTerm;
+        executeQuery();
     }
 
     /**
-     * Executes this DatabaseSearch's query
-     * @return ArrayList of results as course objects
+     * Removes a search filter, and rebuilds and executes the search query.
+     * @param type
+     * @param key
      */
-    public ArrayList<Course> executeQuery() {
-        try {
-            refineQuery();
-            ResultSet rs = ps.executeQuery();
-            results = getCourseResults(rs);
-        } catch(SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-        return results;
-    }
-
-    public PreparedStatement refineQuery() {
-        try {
-            ps = conn.prepareStatement(String.valueOf(query + ";"));
-            int i = 1;
-
-            for(SearchFilter filter : filters) {
-                i = insertFilterValues(filter, i);
-            }
-            for(SearchFilter filter : keywordFilters) {
-                i = insertFilterValues(filter, i);
-            }
-
-            return ps;
-
-        } catch(SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-        return null;
-    }
-
-    private int insertFilterValues(SearchFilter filter, int i) throws SQLException {
-        switch(filter.getType()) {
-            case Filter.DEPARTMENT:
-                ps.setString(i, filter.getKey());
-                break;
-            case Filter.ID, Filter.CODE, Filter.CODE_MIN, Filter.CODE_MAX:
-                ps.setInt(i, scanKeyInt(filter.getKey()));
-                break;
-            case Filter.NAME:
-                String name = "%" + filter.getKey() + "%";
-                ps.setString(i, name);
-                break;
-            case Filter.TERM:
-                Term term = convertToTerm(filter.getKey());
-                ps.setString(i, term.getSeason());
-                i += 1;
-                ps.setInt(i, term.getYear());
-                break;
-            case Filter.PROFESSOR:  //takes one word
-                String professor = "%" + filter.getKey() + "%"; //TODO: split into 3 fields
-                for(int j = i; j < i + 3; j++) {
-                    ps.setString(j, professor);
-                }
-                i += 2;
-                break;
-            case Filter.DAY:    //takes string "MWF" or "TR" for toggle filter
-                setDayFilterValues(filter.getKey(), i);
-                i += 4;
-                break;
-            case Filter.TIME_MIN, TIME_MAX:
-                ps.setTime(i, scanKeyTime(filter.getKey()));
-                break;
-        }
-        return i + 1;
-    }
-
-    private void setDayFilterValues(String key, int i) throws SQLException{
-        if(key.equals("MWF")) {
-            ps.setString(i, "M");
-            ps.setString(i + 1, "");
-            ps.setString(i + 2, "W");
-            ps.setString(i + 3, "");
-            ps.setString(i + 4, "F");
-            return;
-        }
-        if(key.equals("TR")) {
-            ps.setString(i, "");
-            ps.setString(i + 1, "T");
-            ps.setString(i + 2, "");
-            ps.setString(i + 3, "R");
-            ps.setString(i + 4, "");
-        }
-    }
-
-    private Term convertToTerm(String key) {
-        String semester = "";
-        int year = 0;
-
-        Scanner scanner = new Scanner(key);
-        scanner.useDelimiter(" ");
-
-        if (scanner.hasNext()) {
-            semester = scanner.next().toUpperCase();
-        }
-        if (scanner.hasNextInt()) {
-            year = scanner.nextInt();
-        }
-        return new Term(semester, year);
-    }
-
-    private void appendFilterClauses() {
-        for(SearchFilter searchFilter : filters) {
-            addLeadingSearchTermKeywords();
-            query.append(searchFilter.getClause());
-        }
-    }
-
-    private void appendSearchTermClauses() {
-        for(SearchFilter searchFilter : keywordFilters) {
-            addLeadingSearchTermKeywords();
-            query.append(searchFilter.getClause());
-        }
-    }
-    private int scanKeyInt(String key) {
-        Scanner scanner = new Scanner(key);
-        while(scanner.hasNextInt()) {
-            return scanner.nextInt();
-        }
-
-        return -999;
-    }
-
-    private Time scanKeyTime(String key) {
-        return Time.valueOf(key);
-    }
-
-    public ArrayList<Course> removeFilter(Filter type, String key) {
+    public void removeFilter(Filter type, String key) {
         SearchFilter filter;
         boolean removedFilter = false;
 
@@ -232,25 +99,53 @@ public class DatabaseSearch {
                 removedFilter = true;
             }
         }
-        if(filters.isEmpty()) {
-            filtered = false;
-        } else if(removedFilter) {
-            appendSearchTermClauses();
-            appendFilterClauses();
+        if(removedFilter) {
+            resetQuery();
+            rebuildingQuery = true;
+            rebuildQuery();
         }
-        return executeQuery();
-    }
 
-    private void resetQuery() {
-        query = new StringBuilder("SELECT * FROM course");
+        executeQuery();
     }
 
     /**
-     * Parse ResultSet from query execution into Course objects
+     * Converts the query to a prepared statement and inserts filter and search term filter values.
+     */
+    private void prepareQuery() {
+        try {
+            ps = conn.prepareStatement(String.valueOf(query + ";"));
+            int i = 1;
+
+            for(SearchFilter filter : keywordFilters) {
+                i = insertFilterValues(filter, i);
+            }
+            for(SearchFilter filter : filters) {
+                i = insertFilterValues(filter, i);
+            }
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Executes the database search.
+     * @return ArrayList of results as course objects
+     */
+    private void executeQuery() {
+        try {
+            prepareQuery();
+            ResultSet rs = ps.executeQuery();
+            readCourseResults(rs);
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    /**
+     * Parse ResultSet from query execution into Course objects.
      * @param rs
      * @return ArrayList of results as Course objects
      */
-    private ArrayList<Course> getCourseResults(ResultSet rs) {
+    private void readCourseResults(ResultSet rs) {
         results = new ArrayList<>();
 
         try {
@@ -304,9 +199,163 @@ public class DatabaseSearch {
         } catch(SQLException e) {
             System.out.println(e.getMessage());
         }
-        return results;
     }
 
+    /**
+     * Resets the query to select all courses.
+     */
+    private void resetQuery() {
+        query = new StringBuilder("SELECT * FROM course");
+        filtered = false;
+    }
+
+    /**
+     * Appends filter (not search term filter) clauses to query.
+     */
+    private void rebuildQuery() {
+        for(SearchFilter filter : keywordFilters) {
+            addLeadingSearchTermKeyword();
+            query.append(filter.getClause());
+        }
+        query.append(")");
+        for(SearchFilter filter : filters) {
+            addLeadingFilterKeyword();
+            query.append(filter.getClause());
+        }
+    }
+
+    /**
+     * Adds "WHERE" or "AND" to query.
+     */
+    private void addLeadingFilterKeyword() {
+        if((filters.isEmpty() && keywordFilters.isEmpty()) ||
+                (rebuildingQuery && !filtered) ){
+            query.append(" WHERE ");
+            filtered = true;
+        } else {
+            query.append(" AND ");
+        }
+    }
+    /**
+     * Adds "WHERE" or "OR" to query.
+     */
+    private void addLeadingSearchTermKeyword() {
+        if((filters.isEmpty() && keywordFilters.isEmpty()) ||
+                (rebuildingQuery && !filtered) ){
+            query.append(" WHERE (");
+            filtered = true;
+        } else {
+            query.append(" OR ");
+        }
+    }
+
+    /**
+     * Inserts filter values in prepared statement.
+     * @param filter
+     * @param i as a counter for setting filter and search term filter values in prepared statement
+     * @return incremented i
+     * @throws SQLException
+     */
+    private int insertFilterValues(SearchFilter filter, int i) throws SQLException {
+        switch(filter.getType()) {
+            case Filter.DEPARTMENT:
+                ps.setString(i, filter.getKey());
+                break;
+            case Filter.ID, Filter.CODE, Filter.CODE_MIN, Filter.CODE_MAX:
+                ps.setInt(i, scanKeyInt(filter.getKey()));
+                break;
+            case Filter.NAME:
+                String name = "%" + filter.getKey() + "%";
+                ps.setString(i, name);
+                break;
+            case Filter.TERM:
+                Term term = convertToTerm(filter.getKey());
+                ps.setString(i, term.getSeason());
+                i += 1;
+                ps.setInt(i, term.getYear());
+                break;
+            case Filter.PROFESSOR:  //takes one word
+                String professor = "%" + filter.getKey() + "%"; //TODO: split into 3 fields
+                for(int j = i; j < i + 3; j++) {
+                    ps.setString(j, professor);
+                }
+                i += 2;
+                break;
+            case Filter.DAY:    //takes string "MWF" or "TR" for toggle filter
+                setDayFilterValues(filter.getKey(), i);
+                i += 4;
+                break;
+            case Filter.TIME_MIN, TIME_MAX:
+                ps.setTime(i, scanKeyTime(filter.getKey()));
+                break;
+        }
+        return i + 1;
+    }
+
+    /**
+     * @param key
+     * @return key as an integer, or -999 if not possible
+     */
+    private int scanKeyInt(String key) {
+        Scanner scanner = new Scanner(key);
+        while(scanner.hasNextInt()) {
+            return scanner.nextInt();
+        }
+
+        return -999;
+    }
+
+    /**
+     * @param key
+     * @return key as a Time (java.sql.Time) object
+     */
+    private Time scanKeyTime(String key) {
+        return Time.valueOf(key);
+    }
+
+    /**
+     * @param key in the form "[SEMESTER] [YEAR]" (e.g., "Spring 2024")
+     * @return Term object
+     */
+    private Term convertToTerm(String key) {
+        String semester = "";
+        int year = 0;
+
+        Scanner scanner = new Scanner(key);
+        scanner.useDelimiter(" ");
+
+        if (scanner.hasNext()) {
+            semester = scanner.next().toUpperCase();
+        }
+        if (scanner.hasNextInt()) {
+            year = scanner.nextInt();
+        }
+        return new Term(semester, year);
+    }
+
+    /**
+     * Specifies values in prepared statement based on day fields in course table in database.
+     * @param key in the format "MWF" or "TR"
+     * @param i
+     * @throws SQLException
+     */
+    private void setDayFilterValues(String key, int i) throws SQLException{
+        if(key.equals("MWF")) {
+            ps.setString(i, "M");
+            ps.setString(i + 1, "");
+            ps.setString(i + 2, "W");
+            ps.setString(i + 3, "");
+            ps.setString(i + 4, "F");
+            return;
+        }
+        if(key.equals("TR")) {
+            ps.setString(i, "");
+            ps.setString(i + 1, "T");
+            ps.setString(i + 2, "");
+            ps.setString(i + 3, "R");
+            ps.setString(i + 4, "");
+        }
+    }
     /**
      * Create a list of meeting times for a course
      * @param monday
@@ -340,15 +389,21 @@ public class DatabaseSearch {
         return meetingTimes;
     }
 
+    /**
+     * Sets searchTerm to value and clears search term filters
+     * @param searchTerm
+     */
+    public void setSearchTerm(String searchTerm) {
+        keywordFilters = new ArrayList<>();
+        this.searchTerm = searchTerm;
+    }
+    public String getSearchTerm() {
+        return searchTerm;
+    }
     public StringBuilder getQuery() {
         return query;
     }
-
-    public void setQuery(String query) {
-        this.query = new StringBuilder(query);
-    }
-
-    public String getSearchTerm() {
-        return searchTerm;
+    public ArrayList<Course> getResults() {
+        return results;
     }
 }

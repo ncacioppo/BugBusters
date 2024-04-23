@@ -181,14 +181,15 @@ class DatabaseSearchTest {
 
     @Test
     public void RemoveCodeFilter() {
+        ArrayList<Course> results;
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
-        search.applyFilter(Filter.CODE_MAX, "200");
-        search.applyFilter(Filter.DEPARTMENT,"SOCW");
-        search.removeFilter(Filter.CODE_MAX,"200");
-        search.applyFilter(Filter.CODE_MAX, "300");
 
-        ArrayList<Course> results = search.executeQuery();
+        results = search.applyFilter(Filter.CODE_MAX, "200");
+        results = search.applyFilter(Filter.DEPARTMENT,"SOCW");
+        results = search.removeFilter(Filter.CODE_MAX,"200");
+        results = search.applyFilter(Filter.CODE_MAX, "300");
+
         assertEquals(19, results.size());
     }
 
@@ -217,14 +218,26 @@ class DatabaseSearchTest {
     }
 
     @Test
-    public void keywordSearchCourseName() {
+    public void keywordSearchNameAndDept() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
         ArrayList<Course> results = search.keywordSearch("electrical engineering");
-//        results = search.applyFilter(Filter.DAY,"MWF");
+        results = search.applyFilter(Filter.DAY,"MWF");
 
-        assertEquals(6, results.size());
+        assertEquals(4, results.size());
     }
+
+    @Test
+    public void RemoveAllFilters() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+        ArrayList<Course> results = search.keywordSearch("electrical engineering");
+        results = search.applyFilter(Filter.DAY,"MWF");
+
+        assertEquals(4, results.size());
+    }
+
+
 
     //TODO: test edge case where remove all filters and search term
 }

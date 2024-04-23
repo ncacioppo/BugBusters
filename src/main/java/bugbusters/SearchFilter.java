@@ -7,13 +7,6 @@ public class SearchFilter {
     public Filter getType() {
         return filter;
     }
-
-//    public enum Searchable {
-//        COURSEID, COURSENAME, DEPT, COURSECODE, SEMESTER, YEAR, INSTRUCTOR,
-//        MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY,
-//        EQ_STARTTIME, GE_STARTTIME, LE_STARTTIME,
-//        EQ_ENDTIME, GE_ENDTIME, LE_ENDTIME
-//    }
     private Filter filter;
     private String clause;
     private String key;

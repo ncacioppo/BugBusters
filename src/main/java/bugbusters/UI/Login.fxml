@@ -12,7 +12,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bugbusters.UI.LoginController">
    <center>
       <GridPane BorderPane.alignment="CENTER">
         <columnConstraints>
@@ -60,7 +60,7 @@
                               <Insets left="5.0" />
                            </padding>
                         </CheckBox>
-                        <Button maxWidth="300.0" mnemonicParsing="false" text="Log In | Sign Up" GridPane.halignment="CENTER" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+                        <Button maxWidth="300.0" mnemonicParsing="false" onMouseClicked="#toSchedules" text="Log In | Sign Up" GridPane.halignment="CENTER" GridPane.rowIndex="6" GridPane.valignment="CENTER">
                            <font>
                               <Font size="10.0" />
                            </font>

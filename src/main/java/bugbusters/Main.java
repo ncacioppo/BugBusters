@@ -12,7 +12,7 @@ import java.net.URL;
 public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
-        URL url = new File("src/main/java/bugbusters/UI/UserSchedules.fxml").toURI().toURL();
+        URL url = new File("src/main/java/bugbusters/UI/Login.fxml").toURI().toURL();
         Parent root = FXMLLoader.load(url);
         stage.setTitle("Grove City College Scheduler");
         Scene scene = new Scene(root);

@@ -19,7 +19,7 @@ class DatabaseSearchTest {
     }
 
     @Test
-    public void SearchByDepartment() {
+    public void FilterByDepartment() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
         search.applyFilter(Filter.DEPARTMENT, "HUMA");
@@ -30,7 +30,7 @@ class DatabaseSearchTest {
     }
 
     @Test
-    public void SearchByID() {
+    public void FilterByID() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
         search.applyFilter(Filter.ID, "294");
@@ -43,7 +43,7 @@ class DatabaseSearchTest {
     }
 
     @Test
-    public void SearchByName() {
+    public void FilterByName() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
         search.applyFilter(Filter.NAME, "ELECTRIC");  //name contains
@@ -55,7 +55,7 @@ class DatabaseSearchTest {
     }
 
     @Test
-    public void SearchByNameAndDept() {
+    public void FilterByNameAndDept() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
         search.applyFilter(Filter.NAME, "ELECTRIC");  //name contains
@@ -68,7 +68,7 @@ class DatabaseSearchTest {
     }
 
     @Test
-    public void SearchByCodeMin() {
+    public void FilterByCodeMin() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
         search.applyFilter(Filter.CODE_MIN, "300");
@@ -78,7 +78,7 @@ class DatabaseSearchTest {
         registrar.disconnectFromDB();
     }
     @Test
-    public void SearchByCodeBetween() {
+    public void FilterByCodeBetween() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
         search.applyFilter(Filter.CODE_MIN, "200");
@@ -90,7 +90,7 @@ class DatabaseSearchTest {
     }
 
     @Test
-    public void SearchByTermSpring2018() {
+    public void FilterByTermSpring2018() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
 
@@ -101,7 +101,7 @@ class DatabaseSearchTest {
     }
 
     @Test
-    public void SearchByTwoTerms() {
+    public void FilterByTwoTerms() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
 
@@ -113,7 +113,7 @@ class DatabaseSearchTest {
     }
 
     @Test
-    public void SearchByProfessor() {
+    public void FilterByProfessor() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
 
@@ -139,7 +139,7 @@ class DatabaseSearchTest {
     }
 
     @Test
-    public void SearchByTimeMax() {
+    public void FilterByTimeMax() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
         search.applyFilter(Filter.TIME_MAX, "9:00:00");
@@ -149,7 +149,7 @@ class DatabaseSearchTest {
         registrar.disconnectFromDB();
     }
     @Test
-    public void SearchByTimeBetween() {
+    public void FilterByTimeBetween() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
         search.applyFilter(Filter.TIME_MIN, "11:00:00");

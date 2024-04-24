@@ -1,6 +1,8 @@
 package bugbusters;
 
+import bugbusters.Scraping.MyGCC;
 import com.mysql.cj.jdbc.jmx.LoadBalanceConnectionGroupManager;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -42,6 +44,28 @@ public class User {
         this.registrar = new Registrar("schemaBugBuster","u222222","p222222");
         this.userID = addUserToDatabase();
 //        registrar.disconnectFromDB();       //TODO: all disconnects from DB should happen when user leaves app
+    }
+
+    public boolean importInfo(String Username, String lastName) {
+        try {
+            MyGCC test = new MyGCC("lerouxdj21@gcc.edu", "20023060Dlr!");
+            Pair<ArrayList<Major>, ArrayList<Minor>> majorMinors = test.getInfo();
+            if (majorMinors.getLeft().get(0).getMajorName().equalsIgnoreCase("Failed")){
+                return false;
+            } else {
+                for (Major major : majorMinors.getLeft()){
+                    addUserMajor(major);
+                }
+
+                for (Minor minor : majorMinors.getRight()){
+                    addUserMinor(minor);
+                }
+
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**

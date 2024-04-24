@@ -1,5 +1,6 @@
 package bugbusters;
 
+import bugbusters.Scraping.MyGCC;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -25,7 +26,16 @@ public class Main /**extends Application**/ {
 //        stage.show();
 //    }
     public static void main(String[] args) {
-        run();
+        User test = new User();
+        test.setFirstName("David");
+        test.setLastName("Testing");
+
+        System.out.println("Size before import: " + test.getUserMajors().size());
+
+        test.importInfo("lerouxdj21@gcc.edu", "20023060Dlr!");
+
+        System.out.println("Size after import: " + test.getUserMajors().size());
+
 //        launch();
     }
 

@@ -55,6 +55,9 @@ public class SearchFilter {
             case Filter.TIME_MAX:
                 this.clause = "EndTime <= ?";
                 break;
+            case Filter.DEPARTMENT_CODE:
+                this.clause = "Dept = ?" +
+                                " AND CourseCode = ?";
         }
 
 

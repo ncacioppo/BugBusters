@@ -15,6 +15,7 @@ public class DatabaseSearch {
     private ArrayList<SearchFilter> filters;
     private ArrayList<SearchFilter> keywordFilters;
     private ArrayList<Course> results;
+    private final int COURSE_CODE_MAX = 699;
 
     /**
      * Constructor for DatabaseSearch
@@ -45,15 +46,41 @@ public class DatabaseSearch {
 
         applySearchTermFilter(Filter.NAME, userQuery);
         applySearchTermFilter(Filter.DEPARTMENT, userQuery);
-//        String[] words = userQuery.strip().split(" ");
-//        for(String word : words) {
-//
-//        }
+        String[] words = userQuery.strip().split(" ");
+        if(words.length > 1) {
+            searchForDeptAndCode(words);
+
+            //Advanced search
+//            for (String word : words) {
+//                applySearchTermFilter(Filter.NAME, word);
+//                applySearchTermFilter(Filter.DEPARTMENT, word);
+//            }
+        }
         query.append(")");
-        rebuildQuery();
+        rebuildQueryWithFilters();
         rebuildingQuery = false;
 
         executeQuery();
+    }
+
+    private void searchForDeptAndCode(String[] words) {
+        String dept;
+        int code;
+        String deptCode;
+        boolean end = false;
+        if(words.length < 2) {return;}
+
+        int i = 1;
+        while (!end && i < words.length) {
+            code = scanKeyInt(words[i]);
+            if((code > 100) && (code < COURSE_CODE_MAX)) {
+                dept = words[i - 1].toUpperCase();
+                deptCode = dept + " " + code;
+                applySearchTermFilter(Filter.DEPARTMENT_CODE, deptCode);
+                end = true;
+            }
+            i += 1;
+        }
     }
 
     /**
@@ -102,7 +129,8 @@ public class DatabaseSearch {
         if(removedFilter) {
             resetQuery();
             rebuildingQuery = true;
-            rebuildQuery();
+            rebuildQueryWithKeywordFilters();
+            rebuildQueryWithFilters();
         }
 
         executeQuery();
@@ -210,15 +238,23 @@ public class DatabaseSearch {
     }
 
     /**
+     * Appends search term filter clauses to query.
+     */
+    private void rebuildQueryWithKeywordFilters() {
+        if(!keywordFilters.isEmpty()) {
+            for (SearchFilter filter : keywordFilters) {
+                addLeadingSearchTermKeyword();
+                query.append(filter.getClause());
+            }
+            query.append(")");
+        }
+    }
+
+    /**
      * Appends filter (not search term filter) clauses to query.
      */
-    private void rebuildQuery() {
-        for(SearchFilter filter : keywordFilters) {
-            addLeadingSearchTermKeyword();
-            query.append(filter.getClause());
-        }
-        query.append(")");
-        for(SearchFilter filter : filters) {
+    private void rebuildQueryWithFilters() {
+        for (SearchFilter filter : filters) {
             addLeadingFilterKeyword();
             query.append(filter.getClause());
         }
@@ -288,8 +324,27 @@ public class DatabaseSearch {
             case Filter.TIME_MIN, TIME_MAX:
                 ps.setTime(i, scanKeyTime(filter.getKey()));
                 break;
+            case Filter.DEPARTMENT_CODE:
+                setDeptCodeValues(filter.getKey(), i);
+                i += 1;
+                break;
         }
         return i + 1;
+    }
+
+    /**
+     * @param key in the form "[DEPT] [CODE]" (e.g., "COMP 350")
+     * @param i
+     */
+    private void setDeptCodeValues(String key, int i) throws SQLException {
+        String dept;
+        int code;
+
+        String[] deptCode = key.toUpperCase().strip().split(" ");
+        dept = deptCode[0];
+        code = scanKeyInt(deptCode[1]);
+        ps.setString(i, dept);
+        ps.setInt(i + 1, code);
     }
 
     /**

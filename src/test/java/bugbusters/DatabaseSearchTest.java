@@ -289,6 +289,7 @@ class DatabaseSearchTest {
 
         ArrayList<Course> results = search.getResults();
         assertEquals(4526, results.size());
+        registrar.disconnectFromDB();
     }
 
     @Test
@@ -301,4 +302,21 @@ class DatabaseSearchTest {
 
         ArrayList<Course> results = search.getResults();
         assertEquals(26, results.size());
-    }}
+        registrar.disconnectFromDB();
+    }
+
+    @Test
+    public void SearchDeptAndCode() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+        search.keywordSearch("statistics");
+        search.applyFilter(Filter.CODE_MIN,"200");
+        search.removeFilter(Filter.CODE_MIN, "200");
+
+        search.keywordSearch("aoidsj math 331");
+        ArrayList<Course> results = search.getResults();
+        assertEquals(3, results.size());
+        registrar.disconnectFromDB();
+    }
+
+}

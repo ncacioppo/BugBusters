@@ -319,4 +319,25 @@ class DatabaseSearchTest {
         registrar.disconnectFromDB();
     }
 
+    @Test
+    public void RemoveNonexistentFilter() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+        search.keywordSearch("statistics");
+        search.removeFilter(Filter.CODE_MIN, "200");
+
+        ArrayList<Course> results = search.getResults();
+        assertNotEquals(0, results.size());
+        registrar.disconnectFromDB();
+    }
+    @Test
+    public void MiscSearchTesting() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+        search.keywordSearch("a;oijdf ojefoaj i028 20 332");
+
+        ArrayList<Course> results = search.getResults();
+        assertEquals(0, results.size());
+        registrar.disconnectFromDB();
+    }
 }

@@ -279,7 +279,6 @@ public class Registrar {
             System.out.println("Unable to connect to database");
         } else {
             rows = parseFileWithCourses(filename);
-            disconnectFromDB();
         }
 
         return rows;
@@ -365,7 +364,7 @@ public class Registrar {
         if (rowScanner.hasNext()) {courseAttributes.put("EndTime",rowScanner.next());}
         if (rowScanner.hasNext()) {courseAttributes.put("LNameInstructor",rowScanner.next());}
         if (rowScanner.hasNext()) {courseAttributes.put("FNameInstructor",rowScanner.next());}
-        if (rowScanner.hasNext()) {courseAttributes.put("PreferredFNameInstructor",rowScanner.next());}
+        if (rowScanner.hasNext()) {courseAttributes.put("PrefFNameInstructor",rowScanner.next());}
         if (rowScanner.hasNext()) {courseAttributes.put("Comments",rowScanner.next());}
 
 //            printHashMap(courseAttributes);
@@ -407,7 +406,7 @@ public class Registrar {
 
             String lNameInstructor = (String) courseAttributes.get("LNameInstructor");
             String fNameInstructor = (String) courseAttributes.get("FNameInstructor");
-            String prefNameInstructor = (String) courseAttributes.get("PreferredFNameInstructor");
+            String prefNameInstructor = (String) courseAttributes.get("PrefFNameInstructor");
             String comment = (String) courseAttributes.get("Comments");
 
             PreparedStatement ps = conn.prepareStatement("" +

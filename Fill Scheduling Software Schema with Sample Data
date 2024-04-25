@@ -1,15 +1,27 @@
-USE schemabugbuster;
 
-# Fill course table in IntelliJ first
-
-# Fill department table with depts from course table
-INSERT INTO department SELECT DISTINCT dept FROM course;
-
-# Update course table with foreign key referencing department
-ALTER TABLE course ADD CONSTRAINT fk_course_department FOREIGN KEY(Dept) REFERENCES department(Dept);
-
-# Update schedule_course table with foreign key referencing course
-ALTER TABLE schedule_course ADD CONSTRAINT fk_schedule_course_course FOREIGN KEY(CourseID) REFERENCES course(CourseID);
+# Fill department table with sample data
+INSERT INTO department VALUES('COMP');
+INSERT INTO department VALUES('DSCI');
+INSERT INTO department VALUES('MNGT');
+INSERT INTO department VALUES('ACCT');
+INSERT INTO department VALUES('RELI');
+INSERT INTO department VALUES('PHIL');
+INSERT INTO department VALUES('BIOL');
+INSERT INTO department VALUES('INBS');
+INSERT INTO department VALUES('COMM');
+INSERT INTO department VALUES('EDUC');
+INSERT INTO department VALUES('ELEE');
+INSERT INTO department VALUES('ENGL');
+INSERT INTO department VALUES('MATH');
+INSERT INTO department VALUES('MECE');
+INSERT INTO department VALUES('HIST');
+INSERT INTO department VALUES('STAT');
+INSERT INTO department VALUES('MARK');
+INSERT INTO department VALUES('CHEM');
+INSERT INTO department VALUES('POLS');
+INSERT INTO department VALUES('THEA');
+INSERT INTO department VALUES('EXER');
+INSERT INTO department VALUES('ECON');
 
 
 # Fill major table with sample data

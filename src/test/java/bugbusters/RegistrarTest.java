@@ -40,6 +40,7 @@ class RegistrarTest {
         insertedRows += registrar.insertCoursesFromCSV("2019-2020_GCC_Courses.csv");
         insertedRows += registrar.insertCoursesFromCSV("2020-2021_GCC_Courses.csv");
         idGenerated = registrar.generateIdAttribute("course");
+        registrar.disconnectFromDB();
 
         System.out.println("Inserted Rows: " + insertedRows);
         System.out.println("Generated ID column: " + idGenerated);

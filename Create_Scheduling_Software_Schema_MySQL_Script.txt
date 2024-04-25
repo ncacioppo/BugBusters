@@ -1,8 +1,5 @@
 # Creates tables in scheduler schema and fills course table with values from csv files
 # NOTE: csv files must be stored in the same directory as the MySQLServer
-
-# Creates tables in scheduler schema and fills course table with values from csv files
-# NOTE: csv files must be stored in the same directory as the MySQLServer
 USE schemabugbuster;
 
 DROP TABLE IF EXISTS schedule_course;
@@ -28,8 +25,8 @@ DROP TABLE IF EXISTS department;
 # 	schedule_course
 
 CREATE TABLE IF NOT EXISTS department(
-    Dept VARCHAR(4) NOT NULL
---    CONSTRAINT pk_dept PRIMARY KEY(Dept)
+    Dept VARCHAR(4) NOT NULL,
+	CONSTRAINT pk_dept PRIMARY KEY(Dept)
 );
 
 CREATE TABLE IF NOT EXISTS course(
@@ -51,11 +48,9 @@ CREATE TABLE IF NOT EXISTS course(
     EndTime TIME,
     LNameInstructor VARCHAR(20),
     FNameInstructor VARCHAR(20),
-    PreferredFNameInstructor VARCHAR(20),
+    PrefFNameInstructor VARCHAR(20),
     Comments VARCHAR(200)
---    Description VARCHAR(2000)
---    CONSTRAINT pk_course PRIMARY KEY(CourseID)
---    CONSTRAINT fk_course_department FOREIGN KEY(Dept) REFERENCES department(Dept)
+--    Description VARCHAR(2000),
 );
 
 CREATE TABLE IF NOT EXISTS user(
@@ -74,19 +69,19 @@ CREATE TABLE IF NOT EXISTS major(
     Dept VARCHAR(4) NOT NULL,
     StartYear INT(4),
     EndYear INT(4),
-    CONSTRAINT pk_major PRIMARY KEY(MajorID)
---    CONSTRAINT fk_major_department FOREIGN KEY(Dept) REFERENCES department(Dept)
+    CONSTRAINT pk_major PRIMARY KEY(MajorID),
+    CONSTRAINT fk_major_department FOREIGN KEY(Dept) REFERENCES department(Dept)
 );
 
 CREATE TABLE IF NOT EXISTS user_majors(
 	UserID INT(6) NOT NULL,
     Dept VARCHAR(4) NOT NULL,
     MajorID INT(3) NOT NULL,
-    ReqYear INT(4) NOT NULL
---    CONSTRAINT pk_user_major PRIMARY KEY(UserID, MajorID),
---    CONSTRAINT fk_user_major_user FOREIGN KEY(UserID) REFERENCES user(UserID),
---    CONSTRAINT fk_user_major_major FOREIGN KEY(MajorID) REFERENCES major(MajorID),
---    CONSTRAINT fk_user_major_department FOREIGN KEY(Dept) REFERENCES department(Dept)
+    ReqYear INT(4) NOT NULL,
+    CONSTRAINT pk_user_major PRIMARY KEY(UserID, MajorID),
+    CONSTRAINT fk_user_major_user FOREIGN KEY(UserID) REFERENCES user(UserID),
+    CONSTRAINT fk_user_major_major FOREIGN KEY(MajorID) REFERENCES major(MajorID),
+    CONSTRAINT fk_user_major_department FOREIGN KEY(Dept) REFERENCES department(Dept)
     );
 
 CREATE TABLE IF NOT EXISTS minor(
@@ -95,17 +90,17 @@ CREATE TABLE IF NOT EXISTS minor(
     Title VARCHAR(40) NOT NULL,
     StartYear INT(4),
     EndYear INT(4),
-    CONSTRAINT pk_minor PRIMARY KEY(MinorID)
---    CONSTRAINT fk_minor_department FOREIGN KEY(Dept) REFERENCES department(Dept)
+    CONSTRAINT pk_minor PRIMARY KEY(MinorID),
+    CONSTRAINT fk_minor_department FOREIGN KEY(Dept) REFERENCES department(Dept)
 );
 
 CREATE TABLE IF NOT EXISTS user_minors(
 	UserID INT(6) NOT NULL,
     MinorID INT(3) NOT NULL,
     ReqYear INT(4) NOT NULL,
-    CONSTRAINT pk_user_minor PRIMARY KEY(UserID, MinorID)
---    CONSTRAINT fk_user_minor_user FOREIGN KEY(UserID) REFERENCES user(UserID),
---    CONSTRAINT fk_user_minor_minor FOREIGN KEY(MinorID) REFERENCES minor(MinorID)
+    CONSTRAINT pk_user_minor PRIMARY KEY(UserID, MinorID),
+    CONSTRAINT fk_user_minor_user FOREIGN KEY(UserID) REFERENCES user(UserID),
+    CONSTRAINT fk_user_minor_minor FOREIGN KEY(MinorID) REFERENCES minor(MinorID)
     );
 
 CREATE TABLE IF NOT EXISTS schedule(
@@ -114,8 +109,8 @@ CREATE TABLE IF NOT EXISTS schedule(
     Name VARCHAR(50) NOT NULL,
     Year INT(4) NOT NULL,
     Semester VARCHAR(15) NOT NULL,
-    CONSTRAINT pk_schedule PRIMARY KEY(ScheduleID)
---    CONSTRAINT fk_schedule_user FOREIGN KEY(UserID) REFERENCES user(UserID)
+    CONSTRAINT pk_schedule PRIMARY KEY(ScheduleID),
+    CONSTRAINT fk_schedule_user FOREIGN KEY(UserID) REFERENCES user(UserID)
 );
 
 
@@ -123,8 +118,8 @@ CREATE TABLE IF NOT EXISTS schedule_course(
     UserID INT(6) NOT NULL,			-- included to reduce processing times
     ScheduleID INT(8) NOT NULL,
     CourseID INT(6) NOT NULL,
-    CONSTRAINT pk_schedule_course PRIMARY KEY(ScheduleID, CourseID)
---    CONSTRAINT fk_user_schedule_user FOREIGN KEY(UserID) REFERENCES user(UserID),
---    CONSTRAINT fk_user_schedule_schedule FOREIGN KEY(ScheduleID) REFERENCES schedule(ScheduleID),
+    CONSTRAINT pk_schedule_course PRIMARY KEY(ScheduleID, CourseID),
+    CONSTRAINT fk_user_schedule_user FOREIGN KEY(UserID) REFERENCES user(UserID),
+    CONSTRAINT fk_user_schedule_schedule FOREIGN KEY(ScheduleID) REFERENCES schedule(ScheduleID)
 --    CONSTRAINT fk_user_schedule_course FOREIGN KEY(CourseID) REFERENCES course(CourseID)
 );

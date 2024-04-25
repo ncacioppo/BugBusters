@@ -46,17 +46,25 @@ public class User {
 //        registrar.disconnectFromDB();       //TODO: all disconnects from DB should happen when user leaves app
     }
 
-    public boolean importInfo(String Username, String lastName) {
+    public boolean importInfo(String Username, String password) {
         try {
             MyGCC test = new MyGCC("lerouxdj21@gcc.edu", "20023060Dlr!");
             Pair<ArrayList<Major>, ArrayList<Minor>> majorMinors = test.getInfo();
             if (majorMinors.getLeft().get(0).getMajorName().equalsIgnoreCase("Failed")){
                 return false;
             } else {
+                PreparedStatement deleteMajor = registrar.getConn().prepareStatement("" +
+                        "DELETE FROM user_majors WHERE UserID = ?");
+                deleteMajor.setInt(1, userID);
+                deleteMajor.executeUpdate();
                 for (Major major : majorMinors.getLeft()){
                     addUserMajor(major);
                 }
 
+                PreparedStatement deleteMinor = registrar.getConn().prepareStatement("" +
+                        "DELETE FROM user_minors WHERE UserID = ?");
+                deleteMinor.setInt(1, userID);
+                deleteMinor.executeUpdate();
                 for (Minor minor : majorMinors.getRight()){
                     addUserMinor(minor);
                 }
@@ -252,6 +260,37 @@ public class User {
      */
     private void addUserMajor(Major major) {
         this.majors.add(major);
+
+        int rows = 0;
+        try {
+            PreparedStatement ps = registrar.getConn().prepareStatement("" +
+                    "SELECT MajorID, Dept " +
+                    "FROM major " +
+                    "where Title = ?;");
+            ps.setString(1, major.getMajorName());
+
+            ResultSet rs1 = ps.executeQuery();
+            int majorID = 0;
+            String dept = "";
+            if (rs1.next()) {
+                majorID = rs1.getInt(1);
+                dept = rs1.getString(2);
+            }
+
+
+            PreparedStatement addMajor = registrar.getConn().prepareStatement("" +
+                    "INSERT INTO user_majors VALUES(?, ?, ?, ?)");
+            addMajor.setInt(1, userID);
+            addMajor.setString(2, dept);
+            addMajor.setInt(3, majorID);
+            addMajor.setInt(4, major.getReqYear());
+
+            rows = addMajor.executeUpdate();
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
@@ -284,7 +323,6 @@ public class User {
     public void addUserMinor(String minorName, int reqYr) {
         if(minors.size() + 1 > MINOR_LIMIT) {
             System.out.println("Cannot add more than " + MINOR_LIMIT + " minors.");
-
         } else if (userHasMinor(minorName)) {
             System.out.println("Cannot add duplicate minor.");
 
@@ -382,6 +420,34 @@ public class User {
      */
     private void addUserMinor(Minor minor) {
         this.minors.add(minor);
+
+        int rows = 0;
+        try {
+            PreparedStatement ps = registrar.getConn().prepareStatement("" +
+                    "SELECT MinorID" +
+                    "FROM minor " +
+                    "where Title = ?;");
+            ps.setString(1, minor.getMinorName());
+
+            ResultSet rs1 = ps.executeQuery();
+            int minorID = 0;
+            if (rs1.next()) {
+                minorID = rs1.getInt(1);
+            }
+
+
+            PreparedStatement addMinor = registrar.getConn().prepareStatement("" +
+                    "INSERT INTO user_minors VALUES(?, ?, ?, ?)");
+            addMinor.setInt(1, userID);
+            addMinor.setInt(3, minorID);
+            addMinor.setInt(4, minor.getReqYear());
+
+            rows = addMinor.executeUpdate();
+
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
     }
 
     /**

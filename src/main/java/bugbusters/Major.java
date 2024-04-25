@@ -24,6 +24,8 @@ public class Major {
     public String getMajorName() {
         return majorName;
     }
+
+    public int getReqYear() { return reqYr; }
 //
 //
 //    private void setCourses(List<Course> courses){

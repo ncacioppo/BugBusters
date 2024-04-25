@@ -1,17 +1,21 @@
 package bugbusters;
 
+import bugbusters.Scraping.MyGCC;
+import bugbusters.Scraping.UpdatedCourses;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 
 import static bugbusters.Run.run;
 
-public class Main /**extends Application**/ {
+public class Main /**extends Application**/{
 //    @Override
 //    public void start(Stage stage) throws Exception {
 //        URL url = new File("src/main/java/bugbusters/UI/Login.fxml").toURI().toURL();

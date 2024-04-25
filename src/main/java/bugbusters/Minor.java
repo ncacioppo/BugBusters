@@ -23,6 +23,8 @@ public class Minor {
         return minorName;
     }
 
+    public int getReqYear() { return reqYr; }
+
 //    private void setCourses(List<Course> courses){
 //
 //    }

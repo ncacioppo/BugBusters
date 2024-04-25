@@ -46,9 +46,9 @@ public class User {
 //        registrar.disconnectFromDB();       //TODO: all disconnects from DB should happen when user leaves app
     }
 
-    public boolean importInfo(String Username, String password) {
+    public boolean importInfo(String username, String password) {
         try {
-            MyGCC test = new MyGCC("lerouxdj21@gcc.edu", "20023060Dlr!");
+            MyGCC test = new MyGCC(username, password);
             Pair<ArrayList<Major>, ArrayList<Minor>> majorMinors = test.getInfo();
             if (majorMinors.getLeft().get(0).getMajorName().equalsIgnoreCase("Failed")){
                 return false;

@@ -3,7 +3,6 @@ package bugbusters;
 import bugbusters.Scraping.UpdatedCourses;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.xml.transform.Result;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.*;
@@ -16,7 +15,10 @@ public class Registrar {
     private ArrayList<String> minors;
     private ArrayList<Course> courses;  //we do not currently create course objects from all courses in database
     private Connection conn;
-
+    private final int MAJOR_LIMIT = 2;   //limit to number of majors a user may have in software
+    private final int MINOR_LIMIT = 4;   //limit to number of majors a user may have in software
+    private final String SPRING_GRAD_MONTH = "MAY";
+    private final String FALL_GRAD_MONTH = "DECEMBER";
     /**
      * Constructor for Registrar.
      * Connects to the database with given credentials and pulls major and minor names.
@@ -777,4 +779,38 @@ public class Registrar {
         return false;
     }
 
+    public int loginUser(String username, String password) {
+        try {
+            PreparedStatement ps = conn.prepareStatement("" +
+                    "SELECT userID FROM user WHERE username = ? AND password = ?");
+            ps.setString(1, username);
+            ps.setString(2, password);
+
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                int id = rs.getInt(1);
+                return id;
+            }
+
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return -999;
+    }
+
+    public int get_MAJOR_LIMIT() {
+        return MAJOR_LIMIT;
+    }
+
+    public int get_MINOR_LIMIT() {
+        return MINOR_LIMIT;
+    }
+
+    public String get_SPRING_GRAD_MONTH() {
+        return SPRING_GRAD_MONTH;
+    }
+
+    public String get_FALL_GRAD_MONTH() {
+        return FALL_GRAD_MONTH;
+    }
 }

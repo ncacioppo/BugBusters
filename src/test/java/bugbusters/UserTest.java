@@ -105,8 +105,17 @@ class UserTest {
         System.out.println(user.getFirstName());
         System.out.println(user.getLastName());
         System.out.println(user.getCollegeYear());
-        user.addUserMajor("B.S. in Business Statistics",2020);
+//        user.addUserMajor("B.S. in Business Statistics",2020);
 
+        for (Major m : user.getUserMajors()) {
+            System.out.println(m.getMajorName() + " " + m.getReqYear());
+        }
+        for (Minor m : user.getUserMinors()) {
+            System.out.println(m.getMinorName() + " " + m.getReqYear());
+        }
+        for (Schedule s : user.getSchedules()) {
+            System.out.println(s.toString());
+        }
         user.getRegistrar().disconnectFromDB();
     }
 

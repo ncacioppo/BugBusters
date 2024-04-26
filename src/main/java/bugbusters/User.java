@@ -47,32 +47,90 @@ public class User {
      */
     public User(String username, String password) {
         this.registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        this.majors = new ArrayList<>();
+        this.minors = new ArrayList<>();
+        this.schedules = new ArrayList<>();
         this.userID = registrar.loginUser(username, password);
         if (userID == -999) {
             this.firstName = "";
             this.lastName = "";
-            this.majors = new ArrayList<>();
-            this.minors = new ArrayList<>();
-            this.schedules = new ArrayList<>();
         } else {
             setUserAttributesFromDB();
-            this.majors = getMajorsFromDB();
-//            this.minors = getMinorsFromDB();
-//            this.schedules = getSchedulesFromDB();
+            setMajorsFromDB();
+            setMinorsFromDB();
+            setSchedulesFromDB();
         }
 //        registrar.disconnectFromDB();       //TODO: all disconnects from DB should happen when user leaves app
     }
 
-    private ArrayList<Major> getMajorsFromDB() {
-
-        //todo implement method
+    private void setSchedulesFromDB() {
         try {
             PreparedStatement ps = registrar.getConn().prepareStatement("" +
-                    "SELECT * FROM user_majors WHERE userID = ?");
+                    "SELECT ScheduleID, Name, Year, Semester " +
+                    "FROM schedule " +
+                    "WHERE UserID = ?;");
+            ps.setInt(1, userID);
+
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                int scheduleID = rs.getInt(1);
+                String name = rs.getString(2);
+                int year = rs.getInt(3);
+                String semester = rs.getString(4);
+                Term term = new Term(semester, year);
+                Schedule schedule = new Schedule(userID, name, term, new ArrayList<>());
+                schedule.setCoursesFromDB(registrar.getConn());
+                this.schedules.add(schedule);
+            }
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void setMajorsFromDB() {
+        try {
+            PreparedStatement ps = registrar.getConn().prepareStatement("" +
+                    "SELECT m.Title, u.ReqYear " +
+                            "FROM (SELECT MajorID, ReqYear " +
+                                   "FROM user_majors " +
+                                   "WHERE UserID = ?) AS u " +
+                            "LEFT JOIN major m " +
+                            "ON u.MajorID = m.MajorID;");
+            ps.setInt(1, userID);
+
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                String majorName = rs.getString(1);
+                int reqYr = rs.getInt(2);
+                Major major = new Major(majorName, reqYr);
+                this.majors.add(major);
+            }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return new ArrayList<>();
+    }
+
+    private void setMinorsFromDB() {
+        try {
+            PreparedStatement ps = registrar.getConn().prepareStatement("" +
+                    "SELECT m.Title, u.ReqYear " +
+                    "FROM (SELECT MinorID, ReqYear " +
+                    "FROM user_minors " +
+                    "WHERE UserID = ?) AS u " +
+                    "LEFT JOIN minor m " +
+                    "ON u.MinorID = m.MinorID;");
+            ps.setInt(1, userID);
+
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                String minorName = rs.getString(1);
+                int reqYr = rs.getInt(2);
+                Minor minor = new Minor(minorName, reqYr);
+                this.minors.add(minor);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void setUserAttributesFromDB() {
@@ -585,6 +643,10 @@ public class User {
      */
     public Registrar getRegistrar() {
         return registrar;
+    }
+
+    public ArrayList<Schedule> getSchedules() {
+        return schedules;
     }
 
 }

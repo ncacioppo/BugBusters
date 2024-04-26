@@ -163,7 +163,7 @@ public class DatabaseSearch {
         try {
             prepareQuery();
             ResultSet rs = ps.executeQuery();
-            readCourseResults(rs);
+            results = readCourseResults(rs);
         } catch(SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -173,8 +173,8 @@ public class DatabaseSearch {
      * @param rs
      * @return ArrayList of results as Course objects
      */
-    private void readCourseResults(ResultSet rs) {
-        results = new ArrayList<>();
+    public static ArrayList<Course> readCourseResults(ResultSet rs) {
+        ArrayList<Course> results = new ArrayList<>();
 
         try {
             while (rs.next()) {
@@ -227,6 +227,7 @@ public class DatabaseSearch {
         } catch(SQLException e) {
             System.out.println(e.getMessage());
         }
+        return results;
     }
 
     /**
@@ -422,7 +423,7 @@ public class DatabaseSearch {
      * @param endTime
      * @return ArrayList of MeetingTime objects
      */
-    private ArrayList<MeetingTime> setMeetingTimes(String monday, String tuesday, String wednesday, String thursday, String friday, LocalTime startTime, LocalTime endTime) {
+    private static ArrayList<MeetingTime> setMeetingTimes(String monday, String tuesday, String wednesday, String thursday, String friday, LocalTime startTime, LocalTime endTime) {
         ArrayList<MeetingTime> meetingTimes = new ArrayList<>();
 
         if(monday.equals("M")) {

@@ -7,6 +7,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class ScheduleTest {
 
     @Test
+    void undoChange() {
+
+    }
+
+    @Test
+    void redoChange() {
+
+    }
+
+    @Test
     void addCourse() {
     }
 

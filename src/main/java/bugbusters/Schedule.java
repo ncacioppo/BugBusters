@@ -3,6 +3,8 @@ package bugbusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
+import javafx.util.Pair;
 
 public class Schedule {
     String name;
@@ -10,6 +12,9 @@ public class Schedule {
     ArrayList<Course> courses;
     int scheduleID;
     int userID;
+    Stack<Pair<String, Course>> undoStack;
+    Stack<Pair<String, Course>> redoStack;
+
 
     // used for testing
     public Schedule(int userID, String name, Term term, List<Course> courses){
@@ -20,6 +25,9 @@ public class Schedule {
         // scheduleID defaults to 0 because the database starts generating IDs at 1,
         // so an ID of 0 signifies a schedule that has not been saved yet
         setScheduleID(0);
+
+        undoStack = new Stack<>();
+        redoStack = new Stack<>();
     }
 
     // actual constructor
@@ -32,6 +40,9 @@ public class Schedule {
         // so an ID of 0 signifies a schedule that has not been saved yet
         setScheduleID(0);
         user.addSchedule(this);
+
+        undoStack = new Stack<>();
+        redoStack = new Stack<>();
     }
 
     public Schedule(Schedule schedule) {
@@ -134,6 +145,10 @@ public class Schedule {
                 // if our resulting schedule is valid, add it to the real schedule
                 if (scheduleCopy.isValid()) {
                     this.courses.add(course);
+
+                    undoStack.push(new Pair<>("A", course));
+                    redoStack.clear();
+
                     sort();
                     //quickSort(0, this.courses.size()-1);
                     return true;
@@ -152,6 +167,10 @@ public class Schedule {
             if (courses.get(i).equals(course)) {
                 Course removed = courses.get(i);
                 courses.remove(i);
+
+                undoStack.push(new Pair<>("R", removed));
+                redoStack.clear();
+
                 sort();
                 //quickSort(0, this.courses.size()-1);
                 return removed;
@@ -167,6 +186,10 @@ public class Schedule {
             if (courses.get(i).getCode() == code) {
                 removed = courses.get(i);
                 courses.remove(i);
+
+                undoStack.push(new Pair<>("R", removed));
+                redoStack.clear();
+
                 sort();
                 //quickSort(0, this.courses.size()-1);
                 return removed;
@@ -182,12 +205,42 @@ public class Schedule {
             if (courses.get(i).getName().equals(courseName)) {
                 removed = courses.get(i);
                 courses.remove(i);
+
+                undoStack.push(new Pair<>("R", removed));
+                redoStack.clear();
+
                 sort();
                 //quickSort(0, this.courses.size()-1);
                 return removed;
             }
         }
         return null;
+    }
+
+    public Course undoChange(){
+        Pair<String, Course> undo = undoStack.pop();
+        Course changed = undo.getValue();
+        if (undo.getKey().equals("A")) {
+            removeCourse(changed);
+            redoStack.push(undo);
+        } else if (undo.getKey().equals("R")) {
+            addCourse(changed);
+            redoStack.push(undo);
+        }
+        return changed;
+    }
+
+    public Course redoChange(){
+        Pair<String, Course> redo = redoStack.pop();
+        Course changed = redo.getValue();
+        if (redo.getKey().equals("A")) {
+            addCourse(changed);
+            redoStack.push(redo);
+        } else if (redo.getKey().equals("R")) {
+            removeCourse(changed);
+            redoStack.push(redo);
+        }
+        return changed;
     }
 
     @Override

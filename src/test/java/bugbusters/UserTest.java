@@ -99,6 +99,57 @@ class UserTest {
     }
 
     @Test
+    void setUserAttributesFromDB() {
+        User user = new User("JDusername","JDpassword");
+        System.out.println(user.getUserID());
+        System.out.println(user.getFirstName());
+        System.out.println(user.getLastName());
+        System.out.println(user.getCollegeYear());
+//        user.addUserMajor("B.S. in Business Statistics",2020);
+
+        for (Major m : user.getUserMajors()) {
+            System.out.println(m.getMajorName() + " " + m.getReqYear());
+        }
+        for (Minor m : user.getUserMinors()) {
+            System.out.println(m.getMinorName() + " " + m.getReqYear());
+        }
+        for (Schedule s : user.getSchedules()) {
+            System.out.println(s.toString());
+        }
+        user.getRegistrar().disconnectFromDB();
+    }
+
+
+    // To test, must change User.setCollegeYear() to public
+//    @Test
+//    void getCurrYearAndMonth() {
+//        String month;
+//        int year;
+//
+//        User user = new User();
+//
+//        month = "May";
+//        year = 2024;
+//        user.setCollegeYear(month,year);
+//        System.out.println(user.getCollegeYear());
+//
+//        month = "December";
+//        year = 2024;
+//        user.setCollegeYear(month,year);
+//        System.out.println(user.getCollegeYear());
+//
+//        month = "May";
+//        year = 2027;
+//        user.setCollegeYear(month,year);
+//        System.out.println(user.getCollegeYear());
+//
+//        month = "December";
+//        year = 2025;
+//        user.setCollegeYear(month,year);
+//        System.out.println(user.getCollegeYear());
+//    }
+
+    @Test
     void getFirstName() {
     }
 

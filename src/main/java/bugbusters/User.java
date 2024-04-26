@@ -1,33 +1,27 @@
 package bugbusters;
 
 import bugbusters.Scraping.MyGCC;
-import com.mysql.cj.jdbc.jmx.LoadBalanceConnectionGroupManager;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Month;
 import java.time.Year;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 public class User {
 
     private String firstName;
-
     private String lastName;
     private CollegeYear collegeYear;
-
     private ArrayList<Major> majors;
     private ArrayList<Minor> minors;
     private ArrayList<Schedule> schedules;
     private Registrar registrar;
-    private final int userID;
-    private final int MAJOR_LIMIT = 2;   //limit to number of majors a user may have in software
-    private final int MINOR_LIMIT = 4;   //limit to number of majors a user may have in software
-
+    private int userID;
 
     /**
      * Constructor for User.
@@ -44,6 +38,164 @@ public class User {
         this.registrar = new Registrar("schemaBugBuster","u222222","p222222");
         this.userID = addUserToDatabase();
 //        registrar.disconnectFromDB();       //TODO: all disconnects from DB should happen when user leaves app
+    }
+
+    /**
+     * Constructor for User who enters a username and password.
+     * Creates a registrar object (i.e., a connection to the database for GCC).
+     * Adds user to database with no instantiated attributes and sets userID.
+     */
+    public User(String username, String password) {
+        this.registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        this.majors = new ArrayList<>();
+        this.minors = new ArrayList<>();
+        this.schedules = new ArrayList<>();
+        this.userID = registrar.loginUser(username, password);
+        if (userID == -999) {
+            this.firstName = "";
+            this.lastName = "";
+        } else {
+            setUserAttributesFromDB();
+            setMajorsFromDB();
+            setMinorsFromDB();
+            setSchedulesFromDB();
+        }
+//        registrar.disconnectFromDB();       //TODO: all disconnects from DB should happen when user leaves app
+    }
+
+    private void setSchedulesFromDB() {
+        try {
+            PreparedStatement ps = registrar.getConn().prepareStatement("" +
+                    "SELECT ScheduleID, Name, Year, Semester " +
+                    "FROM schedule " +
+                    "WHERE UserID = ?;");
+            ps.setInt(1, userID);
+
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                int scheduleID = rs.getInt(1);
+                String name = rs.getString(2);
+                int year = rs.getInt(3);
+                String semester = rs.getString(4);
+                Term term = new Term(semester, year);
+                Schedule schedule = new Schedule(userID, name, term, new ArrayList<>());
+                schedule.setCoursesFromDB(registrar.getConn());
+                this.schedules.add(schedule);
+            }
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void setMajorsFromDB() {
+        try {
+            PreparedStatement ps = registrar.getConn().prepareStatement("" +
+                    "SELECT m.Title, u.ReqYear " +
+                            "FROM (SELECT MajorID, ReqYear " +
+                                   "FROM user_majors " +
+                                   "WHERE UserID = ?) AS u " +
+                            "LEFT JOIN major m " +
+                            "ON u.MajorID = m.MajorID;");
+            ps.setInt(1, userID);
+
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                String majorName = rs.getString(1);
+                int reqYr = rs.getInt(2);
+                Major major = new Major(majorName, reqYr);
+                this.majors.add(major);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void setMinorsFromDB() {
+        try {
+            PreparedStatement ps = registrar.getConn().prepareStatement("" +
+                    "SELECT m.Title, u.ReqYear " +
+                    "FROM (SELECT MinorID, ReqYear " +
+                    "FROM user_minors " +
+                    "WHERE UserID = ?) AS u " +
+                    "LEFT JOIN minor m " +
+                    "ON u.MinorID = m.MinorID;");
+            ps.setInt(1, userID);
+
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                String minorName = rs.getString(1);
+                int reqYr = rs.getInt(2);
+                Minor minor = new Minor(minorName, reqYr);
+                this.minors.add(minor);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void setUserAttributesFromDB() {
+        try {
+            PreparedStatement ps = registrar.getConn().prepareStatement("" +
+                    "SELECT FName, LName, GradYear, GradMonth FROM user WHERE userID = ?");
+            ps.setInt(1, userID);
+
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                setFirstName(rs.getString(1));
+                setLastName(rs.getString(2));
+
+                int gradYr = rs.getInt(3);
+                String gradMonth = rs.getString(4).toUpperCase();
+                setCollegeYear(gradMonth, gradYr);
+            }
+
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+     }
+
+    private void setCollegeYear(String gradMonth, int gradYr) {
+        int currYr = Year.now().getValue();
+        int currMo_int = Calendar.getInstance().get(Calendar.MONTH)+1;
+
+        int sprGradMo = Month.valueOf(registrar.get_SPRING_GRAD_MONTH()).getValue();
+        int fallGradMo = Month.valueOf(registrar.get_FALL_GRAD_MONTH()).getValue();
+        int gradMo = Month.valueOf(gradMonth.toUpperCase()).getValue();
+
+        if (currMo_int <= sprGradMo) {              //If current month in Jan-May, inclusive
+            if (gradMo == sprGradMo && gradYr == currYr) {
+                this.collegeYear = CollegeYear.SENIOR;
+            }
+            else if ((gradMo == sprGradMo && gradYr == currYr + 1)
+                        || (gradMo == fallGradMo && gradYr == currYr)) {
+                this.collegeYear = CollegeYear.JUNIOR;
+            }
+            else if ((gradMo == sprGradMo && gradYr == currYr + 2)
+                    || (gradMo == fallGradMo && gradYr == currYr + 1)) {
+                this.collegeYear = CollegeYear.SOPHOMORE;
+            }
+            else if ((gradMo == sprGradMo && gradYr == currYr + 3)
+                    || (gradMo == fallGradMo && gradYr == currYr + 2)) {
+                this.collegeYear = CollegeYear.FRESHMAN;
+            }
+        } else {        //Current month is between Jun and Dec, inclusive]
+            if ((gradMo == sprGradMo && gradYr == currYr + 1)
+                    || (gradMo == fallGradMo && gradYr == currYr)) {
+                this.collegeYear = CollegeYear.SENIOR;
+            }
+            else if ((gradMo == sprGradMo && gradYr == currYr + 2)
+                    || (gradMo == fallGradMo && gradYr == currYr + 1)) {
+                this.collegeYear = CollegeYear.JUNIOR;
+            }
+            else if ((gradMo == sprGradMo && gradYr == currYr + 3)
+                    || (gradMo == fallGradMo && gradYr == currYr + 2)) {
+                this.collegeYear = CollegeYear.SOPHOMORE;
+            }
+            else if ((gradMo == sprGradMo && gradYr == currYr + 4)
+                    || (gradMo == fallGradMo && gradYr == currYr + 3)) {
+                this.collegeYear = CollegeYear.FRESHMAN;
+            }
+        }
     }
 
     public boolean importInfo(String username, String password) {
@@ -221,8 +373,9 @@ public class User {
      * @param reqYr
      */
     public void addUserMajor(String majorName, int reqYr) {
-        if(majors.size() + 1 > MAJOR_LIMIT) {
-            System.out.println("Cannot add more than " + MAJOR_LIMIT + " majors.");
+        int majorLimit = registrar.get_MAJOR_LIMIT();
+        if(majors.size() + 1 > majorLimit) {
+            System.out.println("Cannot add more than " + majorLimit + " majors.");
 
         } else if (userHasMajor(majorName)) {
             System.out.println("Cannot add duplicate major.");
@@ -321,8 +474,9 @@ public class User {
      * @param reqYr
      */
     public void addUserMinor(String minorName, int reqYr) {
-        if(minors.size() + 1 > MINOR_LIMIT) {
-            System.out.println("Cannot add more than " + MINOR_LIMIT + " minors.");
+        int minorLimit = registrar.get_MINOR_LIMIT();
+        if(minors.size() + 1 > minorLimit) {
+            System.out.println("Cannot add more than " + minorLimit + " minors.");
         } else if (userHasMinor(minorName)) {
             System.out.println("Cannot add duplicate minor.");
 
@@ -489,6 +643,10 @@ public class User {
      */
     public Registrar getRegistrar() {
         return registrar;
+    }
+
+    public ArrayList<Schedule> getSchedules() {
+        return schedules;
     }
 
 }

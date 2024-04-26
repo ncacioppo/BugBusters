@@ -1,5 +1,12 @@
 package bugbusters;
 
+import com.mysql.cj.SimpleQuery;
+import com.mysql.cj.x.protobuf.MysqlxPrepare;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -318,6 +325,26 @@ public class Schedule {
             System.out.println(course.getName());
         }
     }
+
+    public void setCoursesFromDB(Connection conn) {
+        try {
+            PreparedStatement ps = conn.prepareStatement("" +
+                    "SELECT c.* " +
+                    "FROM " +
+                        "(SELECT * " +
+                        "FROM schedule_course " +
+                        "WHERE UserID = ?) AS s " +
+                    "LEFT JOIN course AS c " +
+                    "USING(CourseID);");
+            ps.setInt(1, userID);
+
+            ResultSet rs = ps.executeQuery();
+            setCourses(DatabaseSearch.readCourseResults(rs));
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     // the quicksort sorting algorithm, used to sort the list of courses after a course is added or removed
     // TODO: Fix quicksort
 //    private void quickSort(int start, int stop) {

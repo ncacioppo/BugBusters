@@ -3,10 +3,7 @@ package bugbusters;
 import com.mysql.cj.SimpleQuery;
 import com.mysql.cj.x.protobuf.MysqlxPrepare;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -137,6 +134,59 @@ public class Schedule {
         return true;
     }
 
+    public Course findConflict(Course course1){
+        ArrayList<MeetingTime> course1Times = course1.getMeetingTimes();
+
+        // loop through every course for every course
+        for (Course course2 : courses) {
+            // if the courses are different
+            if (!course1.equals(course2)) {
+                ArrayList<MeetingTime> course2Times = course2.getMeetingTimes();
+                // for the meeting times of course 1
+                for (MeetingTime course1MT : course1Times) {
+                    // compare to the meeting times of course 2
+                    for (MeetingTime course2MT : course2Times) {
+                        // if the course times overlap return false
+                        if (course1MT.getDay().equals(course2MT.getDay())) {
+                            if (course1MT.getStartTime().isBefore(course2MT.getEndTime())
+                                    && course1MT.getEndTime().isAfter(course2MT.getStartTime())) {
+                                return course2;
+                            }
+                        }
+                    }
+                }
+            }
+            // if course1 and course2 are two sections of the same class
+            if (course1.getName().equals(course2.getName())
+                    && course1.getSection() != course2.getSection()) {
+                return course2;
+            }
+        }
+        return null;
+    }
+
+    public boolean resolveConflict(Course course, Course conflictingCourse){
+        if (course.getName().equals(conflictingCourse.getName())
+                && course.getSection() != conflictingCourse.getSection()) {
+            // prompt user to choose one section or another
+        } else {
+            // prompt user to choose one class or another
+        }
+
+        Search search = new Search();
+
+        ArrayList<Course> candidateCourses = new ArrayList<>();
+        for (Course newCourse : search.byName(search.getAllCoursesFromExcel(), course.getName())) {
+            if(newCourse.getSection() != course.getSection()
+                    && newCourse.getSection() != conflictingCourse.getSection()){
+                candidateCourses.add(newCourse);
+            }
+        }
+        // or find a course that a user has not taken yet that fulfills a requirement they need?
+
+        return true;
+    }
+
     /**
      * Adds a course to our list of courses. Calls IsValid and includes an additional check to ensure the course is
      * allowed to be added.
@@ -159,6 +209,9 @@ public class Schedule {
                     sort();
                     //quickSort(0, this.courses.size()-1);
                     return true;
+                } else {
+                    Course conflictingCourse = findConflict(course);
+                    return resolveConflict(course, conflictingCourse);
                 }
             }
         }

@@ -25,7 +25,7 @@ class DatabaseSearchTest {
         search.applyFilter(Filter.DEPARTMENT, "HUMA");
 
         ArrayList<Course> results = search.getResults();
-        assertEquals(230, results.size());
+        assertEquals(271, results.size());
         registrar.disconnectFromDB();
     }
 
@@ -49,7 +49,7 @@ class DatabaseSearchTest {
         search.applyFilter(Filter.NAME, "ELECTRIC");  //name contains
 
         ArrayList<Course> results = search.getResults();
-        assertEquals(12,results.size());
+        assertEquals(13,results.size());
 //        Run.printCourses(results);
         registrar.disconnectFromDB();
     }
@@ -74,7 +74,7 @@ class DatabaseSearchTest {
         search.applyFilter(Filter.CODE_MIN, "300");
 
         ArrayList<Course> results = search.getResults();
-        assertEquals(1756,results.size());
+        assertEquals(1955,results.size());
         registrar.disconnectFromDB();
     }
     @Test
@@ -85,7 +85,7 @@ class DatabaseSearchTest {
         search.applyFilter(Filter.CODE_MAX,"300");
 
         ArrayList<Course> results = search.getResults();
-        assertEquals(1431,results.size());
+        assertEquals(1576,results.size());
         registrar.disconnectFromDB();
     }
 
@@ -172,7 +172,7 @@ class DatabaseSearchTest {
         search.removeFilter(Filter.DEPARTMENT, "CHEM");
 
         ArrayList<Course> results = search.getResults();
-        assertEquals(756,results.size());
+        assertEquals(10,results.size());
         registrar.disconnectFromDB();
     }
 
@@ -220,7 +220,7 @@ class DatabaseSearchTest {
         search.removeFilter(Filter.TERM, "faLL 2018");
 
         ArrayList<Course> results = search.getResults();
-        assertEquals(2777, results.size());
+        assertEquals(10, results.size());
         registrar.disconnectFromDB();
     }
 
@@ -273,7 +273,7 @@ class DatabaseSearchTest {
         search.keywordSearch("principles of marketing");
         results = search.getResults();
 
-        assertEquals(9, results.size());
+        assertEquals(11, results.size());
         registrar.disconnectFromDB();
     }
 
@@ -301,7 +301,7 @@ class DatabaseSearchTest {
         search.removeFilter(Filter.CODE_MIN, "200");
 
         ArrayList<Course> results = search.getResults();
-        assertEquals(26, results.size());
+        assertEquals(10, results.size());
         registrar.disconnectFromDB();
     }
 

@@ -2,6 +2,7 @@ package bugbusters;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -243,23 +244,23 @@ class DatabaseSearchTest {
 
 
     @Test
-    public void keywordSearchNameAndDept() {
+    public void keywordSearchNameAndDept() throws FileNotFoundException {
         ArrayList<Course> results;
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
 
-        search.keywordSearch("electrical engineering");
+        search.keywordSearch("leecrtical negienerign");
         results = search.getResults();
 
         search.applyFilter(Filter.DAY,"MWF");
         results = search.getResults();
 
-        assertEquals(4, results.size());
+        assertEquals(3, results.size());
         registrar.disconnectFromDB();
     }
 
     @Test
-    public void changeSearchTerm() {
+    public void changeSearchTerm() throws FileNotFoundException {
         ArrayList<Course> results;
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
@@ -273,13 +274,13 @@ class DatabaseSearchTest {
         search.keywordSearch("principles of marketing");
         results = search.getResults();
 
-        assertEquals(9, results.size());
+        assertEquals(10, results.size());
         registrar.disconnectFromDB();
     }
 
 
     @Test
-    public void RemoveAllFilters() {
+    public void RemoveAllFilters() throws FileNotFoundException {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
         search.keywordSearch("electrical engineering");
@@ -293,7 +294,7 @@ class DatabaseSearchTest {
     }
 
     @Test
-    public void RemoveAllFiltersAndSearch() {
+    public void RemoveAllFiltersAndSearch() throws FileNotFoundException {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
         search.keywordSearch("statistics");
@@ -306,7 +307,7 @@ class DatabaseSearchTest {
     }
 
     @Test
-    public void SearchDeptAndCode() {
+    public void SearchDeptAndCode() throws FileNotFoundException {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
         search.keywordSearch("statistics");
@@ -320,7 +321,7 @@ class DatabaseSearchTest {
     }
 
     @Test
-    public void RemoveNonexistentFilter() {
+    public void RemoveNonexistentFilter() throws FileNotFoundException {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
         search.keywordSearch("statistics");
@@ -331,7 +332,7 @@ class DatabaseSearchTest {
         registrar.disconnectFromDB();
     }
     @Test
-    public void MiscSearchTesting() {
+    public void MiscSearchTesting() throws FileNotFoundException {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
         search.keywordSearch("a;oijdf ojefoaj i028 20 332");

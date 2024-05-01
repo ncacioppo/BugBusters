@@ -44,7 +44,7 @@ public class DatabaseSearch {
      * @param userQuery
      * @return
      */
-    public void keywordSearch(String userQuery) throws FileNotFoundException {
+    public void keywordSearch(String userQuery) {
         setSearchTerm(userQuery);
         resetQuery();
         rebuildingQuery = true;

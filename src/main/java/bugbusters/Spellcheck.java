@@ -19,16 +19,21 @@ public class Spellcheck {
      * @param query the words to be checked
      * @return an ArrayList containing String arrays, each containing the top NUM_SUGGESTIONS suggestions for a word
      */
-    public String check(String query) throws FileNotFoundException {
+    public String check(String query) {
         // change to take one word at a time - we loop through the words array in keywordSearch and replace the word if necessary
-        ArrayList<String[]> results = new ArrayList<>();
-        String result = "";
         query = query.toLowerCase();
         boolean shouldAdd = true;
         String[] matches = new String[NUM_SUGGESTIONS];
         int[] levDistances = new int[NUM_SUGGESTIONS];
-        Scanner dict = new Scanner(DICTIONARY);
-        while (dict.hasNext()) {
+        Scanner dict = null;
+        try {
+            dict = new Scanner(DICTIONARY);
+        } catch (FileNotFoundException f) {
+            System.out.println("No dictionary file found.");
+        }
+        while (true) {
+            assert dict != null;
+            if (!dict.hasNext()) break;
             String candidate = dict.next().toLowerCase();
             if (candidate.equals(query)) {
                 shouldAdd = false;
@@ -60,9 +65,9 @@ public class Spellcheck {
             if (matches[0] != null) {
                 return matches[0];
             } else {
-                for (int i = 0; i < matches.length; i++) {
-                    if (matches[i] != null) {
-                        return matches[i];
+                for (String match : matches) {
+                    if (match != null) {
+                        return match;
                     }
                 }
             }

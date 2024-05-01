@@ -85,7 +85,7 @@ public class Cache {
 
         ArrayList<Course> topResults = new ArrayList<>();
 
-        for (int i = 0; i <= numTopResults; i++) {
+        for (int i = 0; i < numTopResults; i++) {
             topResults.add(results.get(i));
         }
         return topResults;

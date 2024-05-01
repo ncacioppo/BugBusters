@@ -340,4 +340,15 @@ class DatabaseSearchTest {
         assertEquals(0, results.size());
         registrar.disconnectFromDB();
     }
+
+    @Test
+    public void PStoString() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+        search.keywordSearch("electrical engineering");
+        System.out.println(search.getPSasString());
+
+        registrar.disconnectFromDB();
+    }
 }
+

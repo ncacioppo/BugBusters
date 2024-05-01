@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class DatabaseSearch {
+    private Cache cache;
     private Connection conn;
     private StringBuilder query;   //for querying courses
     private PreparedStatement ps;
@@ -22,6 +23,7 @@ public class DatabaseSearch {
      * @param conn from Registrar instance
      */
     public DatabaseSearch(Connection conn) {
+        this.cache = Cache.getInstance();
         this.conn = conn;
         this.filters = new ArrayList<>();
         this.keywordFilters = new ArrayList<>();
@@ -160,13 +162,12 @@ public class DatabaseSearch {
      * @return ArrayList of results as course objects
      */
     private void executeQuery() {
-        try {
-            prepareQuery();
-            ResultSet rs = ps.executeQuery();
-            results = readCourseResults(rs);
-        } catch(SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        prepareQuery();
+        //check cache for ps.toString
+        CacheItem item = cache.getItem(ps);
+        results = (ArrayList<Course>) item.getElement();
+//      ResultSet rs = ps.executeQuery();
+//      results = readCourseResults(rs);
     }
     /**
      * Parse ResultSet from query execution into Course objects.
@@ -461,5 +462,8 @@ public class DatabaseSearch {
     }
     public ArrayList<Course> getResults() {
         return results;
+    }
+    public String getPSasString() {
+        return ps.toString();
     }
 }

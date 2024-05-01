@@ -1,7 +1,5 @@
 package bugbusters;
 
-import org.checkerframework.checker.units.qual.C;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -44,36 +42,57 @@ public class Cache {
      */
     public CacheItem getItem(PreparedStatement key) {
         //check if key in cache
-        if(LRUcache.containsKey(key)) {
-            eQ.remove(key);
-            eQ.addLast(key);
-            return LRUcache.get(key);
+        PreparedStatement LRU_key = getKeyFromLRUcache(key);
+        if(LRU_key != null) {
+            delayKeyInEQ(key);  //get other key
+            return LRUcache.get(LRU_key);
         }
 
         //otherwise
-        CacheItem toReturnAndAddToCache = executeDatabaseCall(key);
-        currentSize += toReturnAndAddToCache.getSize();
+        ArrayList<Course> results = executeDatabaseCall(key);
+        CacheItem toReturn = new CacheItem(results, results.size());
+        ArrayList<Course> topResults = getTopResults(results);
+        CacheItem toAddToCache = new CacheItem(topResults, topResults.size());
+
+        currentSize += toAddToCache.getSize();
         eQ.addLast(key);
-        LRUcache.put(key, toReturnAndAddToCache);
+        LRUcache.put(key, toAddToCache);
         while (currentSize > MAX_SIZE) {
             PreparedStatement front = eQ.remove();
             currentSize -= LRUcache.get(front).getSize();
             LRUcache.remove(front);
         }
 
-        return toReturnAndAddToCache;
+        return toReturn;
     }
 
-    private CacheItem executeDatabaseCall(PreparedStatement key) {
+    private void delayKeyInEQ(PreparedStatement ps) {
+        for(PreparedStatement eQ_key : eQ) {
+            if(eQ_key.toString().equals(ps.toString())) {
+                eQ.remove(eQ_key);
+                eQ.addLast(eQ_key);
+                break;
+            }
+        }
+    }
+
+    private PreparedStatement getKeyFromLRUcache(PreparedStatement ps) {
+        for(PreparedStatement LRU_key : LRUcache.keySet()) {
+            if(LRU_key.toString().equals(ps.toString())) {
+                return LRU_key;
+            }
+        }
+        return null;
+    }
+
+    private ArrayList<Course> executeDatabaseCall(PreparedStatement key) {
         try {
             ResultSet rs = key.executeQuery();
-            ArrayList<Course> results = DatabaseSearch.readCourseResults(rs);
-            ArrayList<Course> topResults = getTopResults(results);
-            CacheItem item = new CacheItem(topResults, topResults.size());
+            return DatabaseSearch.readCourseResults(rs);
         } catch(SQLException e) {
             System.out.println(e.getMessage());
         }
-        return new CacheItem(new ArrayList<Course>(), 0);  //returns no search results if error
+        return new ArrayList<Course>();  //returns no search results if error
     }
 
     private ArrayList<Course> getTopResults(ArrayList<Course> results) {

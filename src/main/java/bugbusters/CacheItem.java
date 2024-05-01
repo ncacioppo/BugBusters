@@ -8,6 +8,7 @@ public class CacheItem {
     public CacheItem(Object element, int size) {
         timeAdded = System.currentTimeMillis();
         this.element = element;
+        this.size = size;
     }
 
     public Object getElement() {

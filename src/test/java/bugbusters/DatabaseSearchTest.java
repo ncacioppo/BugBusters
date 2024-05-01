@@ -288,7 +288,7 @@ class DatabaseSearchTest {
         search.keywordSearch("");
 
         ArrayList<Course> results = search.getResults();
-        assertEquals(4526, results.size());
+        assertEquals(4970, results.size());
         registrar.disconnectFromDB();
     }
 

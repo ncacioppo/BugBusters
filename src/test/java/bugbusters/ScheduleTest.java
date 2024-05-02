@@ -87,6 +87,11 @@ class ScheduleTest {
     }
 
     @Test
+    void resolveConflict() {
+        // TODO: test upon having the UI being integrated to the backend
+    }
+
+    @Test
     void addCourse() {
     }
 

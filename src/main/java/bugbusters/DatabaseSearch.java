@@ -48,9 +48,9 @@ public class DatabaseSearch {
         setSearchTerm(userQuery);
         resetQuery();
         rebuildingQuery = true;
-
-        userQuery = checkSpelling(userQuery);
-
+        if (!userQuery.isEmpty()) {
+            userQuery = checkSpelling(userQuery);
+        }
         applySearchTermFilter(Filter.NAME, userQuery);
         applySearchTermFilter(Filter.DEPARTMENT, userQuery);
         String[] words = userQuery.strip().split("\\s+");
@@ -110,7 +110,9 @@ public class DatabaseSearch {
      */
     public void applyFilter(Filter filter, String userQuery) {
         addLeadingFilterKeyword();
-        userQuery = checkSpelling(userQuery);
+        if (filter == Filter.NAME || filter == Filter.CODE || filter == Filter.PROFESSOR || filter == Filter.DEPARTMENT) {
+            userQuery = checkSpelling(userQuery);
+        }
         SearchFilter searchFilter = new SearchFilter(filter, userQuery);
         filters.add(searchFilter);
         query.append(searchFilter.getClause());
@@ -411,12 +413,8 @@ public class DatabaseSearch {
         // loop through all the words in userQuery and check spelling on each one
         // if a word is misspelled, we replace it with our best guess
         for (int i = 0; i < spellchecking.length; i++) {
-            String suggestion = "";
-            try {
-                suggestion = spellcheck.check(spellchecking[i]);
-            } catch (FileNotFoundException f){
-                System.out.println(f.getMessage());
-            }
+            String suggestion = spellcheck.check(spellchecking[i]);
+
             // check returns "" if the string is spelled properly
             if (!suggestion.isEmpty()) {
                 spellchecking[i] = suggestion;

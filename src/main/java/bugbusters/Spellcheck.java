@@ -39,7 +39,7 @@ public class Spellcheck {
                 shouldAdd = false;
                 break;
             }
-            int lev = TrueDamLev(query, candidate);
+            int lev = DamerauLevenshtein(query, candidate);
             int maxIndex = getMax(levDistances);
             // if the arrays aren't full yet, keep filling
             if (levDistances[levDistances.length-1] == 0) {
@@ -158,6 +158,36 @@ public class Spellcheck {
         }
 
         return d[input.length()][comparison.length()]+1;
+    }
+
+    private int DamerauLevenshtein(String input, String comparison) {
+        char[] s = stringToArr(input);
+        char[] t = stringToArr(comparison);
+
+        int[][] d = new int[s.length][t.length];
+
+        for (int i = 1; i <= input.length(); i++) {
+            d[i][0] = i;
+        }
+
+        for (int j = 1; j <= comparison.length(); j++) {
+            d[0][j] = j;
+        }
+
+        for (int i = 1; i <= input.length(); i++) {
+            for (int j = 1; j <= comparison.length(); j++) {
+                int substitutionCost = 1;
+                if (s[i] == t[j]) {
+                    substitutionCost = 0;
+                }
+                d[i][j] = Math.min(d[i-1][j]+1, Math.min(d[i][j-1]+1, d[i-1][j-1]+substitutionCost));
+                if (i > 1 && j > 1 && s[i] == t[j-1] && s[i-1] == t[j]) {
+                    d[i][j] = Math.min(d[i][j], d[i-2][j-2]+1);
+                }
+            }
+        }
+
+        return d[input.length()][comparison.length()];
     }
 
     // converts String s into a 1-indexed array of chars for the Levenshtein algorithm

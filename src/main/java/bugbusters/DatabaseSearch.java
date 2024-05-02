@@ -413,11 +413,8 @@ public class DatabaseSearch {
         // if a word is misspelled, we replace it with our best guess
         for (int i = 0; i < spellchecking.length; i++) {
             String suggestion = "";
-            try {
-                suggestion = spellcheck.check(spellchecking[i]);
-            } catch (FileNotFoundException f){
-                System.out.println(f.getMessage());
-            }
+            suggestion = spellcheck.check(spellchecking[i]);
+
             // check returns "" if the string is spelled properly
             if (!suggestion.isEmpty()) {
                 spellchecking[i] = suggestion;

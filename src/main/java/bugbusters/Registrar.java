@@ -805,17 +805,4 @@ public class Registrar {
         return false;
     }
 
-
-
-    // TODO: Prevent duplicate names
-    /* public static int checkName(String name) {
-        try {
-            PreparedStatement nameCheck = conn.prepareStatement("SELECT * FROM Schedule WHERE Name = ?");
-            nameCheck.setString(1, name);
-            return nameCheck.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println("SQL Error: " + e.getMessage());
-        }
-        return -1;
-    }*/
 }

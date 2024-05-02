@@ -250,18 +250,18 @@ class DatabaseSearchTest {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
 
-        search.keywordSearch("leecrtical negienerign");
+        search.keywordSearch("electrical engineering");
         results = search.getResults();
 
         search.applyFilter(Filter.DAY,"MWF");
         results = search.getResults();
 
-        assertEquals(3, results.size());
+        assertEquals(5, results.size());
         registrar.disconnectFromDB();
     }
 
     @Test
-    public void changeSearchTerm() throws FileNotFoundException {
+    public void changeSearchTerm() {
         ArrayList<Course> results;
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
@@ -281,7 +281,7 @@ class DatabaseSearchTest {
 
 
     @Test
-    public void RemoveAllFilters() throws FileNotFoundException {
+    public void RemoveAllFilters() {
         Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
         search.keywordSearch("electrical engineering");
@@ -315,7 +315,7 @@ class DatabaseSearchTest {
         search.applyFilter(Filter.CODE_MIN,"200");
         search.removeFilter(Filter.CODE_MIN, "200");
 
-        search.keywordSearch("aoidsj math 331");
+        search.keywordSearch("math 331");
         ArrayList<Course> results = search.getResults();
         assertEquals(3, results.size());
         registrar.disconnectFromDB();

@@ -18,6 +18,9 @@ public class Schedule {
     int userID;
     Stack<Pair<String, Course>> undoStack;
     Stack<Pair<String, Course>> redoStack;
+    Stack<Pair<Course, Course>> undoResolvedConflicts;
+    Stack<Pair<Course, Course>> redoResolvedConflicts;
+    public Pair<Course, Course> currentConflict;
 
 
     // used for testing
@@ -32,6 +35,8 @@ public class Schedule {
 
         undoStack = new Stack<>();
         redoStack = new Stack<>();
+        undoResolvedConflicts = new Stack<>();
+        redoResolvedConflicts = new Stack<>();
     }
 
     // actual constructor
@@ -47,6 +52,8 @@ public class Schedule {
 
         undoStack = new Stack<>();
         redoStack = new Stack<>();
+        undoResolvedConflicts = new Stack<>();
+        redoResolvedConflicts = new Stack<>();
     }
 
     public Schedule(Schedule schedule) {
@@ -55,6 +62,11 @@ public class Schedule {
         setCourses(schedule.getCourses());
         setUserID(schedule.getUserID());
         setScheduleID(schedule.getScheduleID());
+
+        undoStack = new Stack<>();
+        redoStack = new Stack<>();
+        undoResolvedConflicts = new Stack<>();
+        redoResolvedConflicts = new Stack<>();
     }
 
     private void setName(String name) {this.name = name; }
@@ -134,7 +146,7 @@ public class Schedule {
         return true;
     }
 
-    public Course findConflict(Course course1){
+    public void findConflict(Course course1){
         ArrayList<MeetingTime> course1Times = course1.getMeetingTimes();
 
         // loop through every course for every course
@@ -150,7 +162,8 @@ public class Schedule {
                         if (course1MT.getDay().equals(course2MT.getDay())) {
                             if (course1MT.getStartTime().isBefore(course2MT.getEndTime())
                                     && course1MT.getEndTime().isAfter(course2MT.getStartTime())) {
-                                return course2;
+                                currentConflict = new Pair<>(course2, course1);
+                                return;
                             }
                         }
                     }
@@ -159,32 +172,21 @@ public class Schedule {
             // if course1 and course2 are two sections of the same class
             if (course1.getName().equals(course2.getName())
                     && course1.getSection() != course2.getSection()) {
-                return course2;
+                currentConflict = new Pair<>(course2, course1);
+                return;
             }
         }
-        return null;
     }
 
-    public boolean resolveConflict(Course course, Course conflictingCourse){
-        if (course.getName().equals(conflictingCourse.getName())
-                && course.getSection() != conflictingCourse.getSection()) {
-            // prompt user to choose one section or another
-        } else {
-            // prompt user to choose one class or another
-        }
+    public void resolveConflict(Course kept, Course removed){
+        conflictResolveRemoveCourse(removed);
+        conflictResolveAddCourse(kept);
 
-        Search search = new Search();
+        undoStack.push(new Pair<>("C", kept));
+        undoResolvedConflicts.push(new Pair<>(kept, removed));
+        redoResolvedConflicts.clear();
 
-        ArrayList<Course> candidateCourses = new ArrayList<>();
-        for (Course newCourse : search.byName(search.getAllCoursesFromExcel(), course.getName())) {
-            if(newCourse.getSection() != course.getSection()
-                    && newCourse.getSection() != conflictingCourse.getSection()){
-                candidateCourses.add(newCourse);
-            }
-        }
-        // or find a course that a user has not taken yet that fulfills a requirement they need?
-
-        return true;
+        // todo: might need to check for more issues caused with undo/redo
     }
 
     /**
@@ -210,8 +212,26 @@ public class Schedule {
                     //quickSort(0, this.courses.size()-1);
                     return true;
                 } else {
-                    Course conflictingCourse = findConflict(course);
-                    return resolveConflict(course, conflictingCourse);
+                    findConflict(course);
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean conflictResolveAddCourse(Course course){
+        if (course != null) {
+            Schedule scheduleCopy = new Schedule(this);
+            // if our schedule doesn't already contain this course
+            if (!scheduleCopy.getCourses().contains(course))  {
+                scheduleCopy.getCourses().add(course);
+                // if our resulting schedule is valid, add it to the real schedule
+                if (scheduleCopy.isValid()) {
+                    this.courses.add(course);
+
+                    sort();
+                    //quickSort(0, this.courses.size()-1);
+                    return true;
                 }
             }
         }
@@ -277,7 +297,22 @@ public class Schedule {
         return null;
     }
 
+    public Course conflictResolveRemoveCourse(Course course){
+        for (int i = 0; i < courses.size(); i++) {
+            if (courses.get(i).equals(course)) {
+                Course removed = courses.get(i);
+                courses.remove(i);
+
+                sort();
+                //quickSort(0, this.courses.size()-1);
+                return removed;
+            }
+        }
+        return null;
+    }
+
     public Course undoChange(){
+        if(undoStack.isEmpty()) return null;
         Pair<String, Course> undo = undoStack.pop();
         Course changed = undo.getValue();
         if (undo.getKey().equals("A")) {
@@ -286,21 +321,50 @@ public class Schedule {
         } else if (undo.getKey().equals("R")) {
             addCourse(changed);
             redoStack.push(undo);
+        } else if (undo.getKey().equals("C")) {
+            undoResolveConflict();
         }
         return changed;
     }
 
     public Course redoChange(){
+        if(redoStack.isEmpty()) return null;
         Pair<String, Course> redo = redoStack.pop();
         Course changed = redo.getValue();
         if (redo.getKey().equals("A")) {
             addCourse(changed);
-            redoStack.push(redo);
+            undoStack.push(redo);
         } else if (redo.getKey().equals("R")) {
             removeCourse(changed);
-            redoStack.push(redo);
+            undoStack.push(redo);
+        } else if (redo.getKey().equals("C")) {
+            redoResolveConflict();
         }
         return changed;
+    }
+
+    public void undoResolveConflict(){
+        Pair<Course, Course> undo = undoResolvedConflicts.pop();
+
+        Course removed = undo.getKey();
+
+        conflictResolveRemoveCourse(removed);
+        conflictResolveAddCourse(undo.getValue());
+
+        redoResolvedConflicts.push(undo);
+        redoStack.push(new Pair<>("C", removed));
+    }
+
+    public void redoResolveConflict(){
+        Pair<Course, Course> redo = redoResolvedConflicts.pop();
+
+        Course added = redo.getKey();
+
+        conflictResolveAddCourse(added);
+        conflictResolveRemoveCourse(redo.getValue());
+
+        redoResolvedConflicts.push(redo);
+        redoStack.push(new Pair<>("C", added));
     }
 
     @Override

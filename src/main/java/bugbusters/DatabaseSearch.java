@@ -166,9 +166,9 @@ public class DatabaseSearch {
         //check cache for ps.toString
         CacheItem item = cache.getItem(ps);
         results = (ArrayList<Course>) item.getElement();
-//      ResultSet rs = ps.executeQuery();
-//      results = readCourseResults(rs);
+        cache.checkAndRefresh();
     }
+
     /**
      * Parse ResultSet from query execution into Course objects.
      * @param rs

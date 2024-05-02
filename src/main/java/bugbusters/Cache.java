@@ -110,6 +110,27 @@ public class Cache {
         return topResults;
     }
 
+    /**
+     * Currently called after executing a search query in DatabaseSearch.executeQuery()
+     */
+    public void checkAndRefresh() {
+        long currentTime = System.currentTimeMillis();
+        long timeAdded;
+        for (PreparedStatement key : LRUcache.keySet()) {
+            timeAdded = LRUcache.get(key).getTimeAdded();
+            if (currentTime - timeAdded >= TTL) {
+                LRUcache.remove(key);
+                eQ.remove(key);
+            }
+        }
+    }
+
+    public void clearCache() {
+        eQ = new ConcurrentLinkedDeque<>();
+        LRUcache = new ConcurrentHashMap<>();
+        currentSize = 0;
+    }
+
 
 }
 

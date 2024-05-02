@@ -3,6 +3,7 @@ package bugbusters;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -348,6 +349,45 @@ class DatabaseSearchTest {
         search.keywordSearch("electrical engineering");
         System.out.println(search.getPSasString());
 
+        registrar.disconnectFromDB();
+    }
+
+    @Test
+    public void NoResetCache() {
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+
+        search.keywordSearch("engineering");
+        search.keywordSearch("mechanical");
+
+        long timeBefore = System.currentTimeMillis();
+        search.keywordSearch("engineering");
+        long timeAfter = System.currentTimeMillis();
+
+        System.out.println("Time to search with cache: " + (timeAfter - timeBefore) + " ms");
+
+        ArrayList<Course> results = search.getResults();
+        assertEquals(10, results.size());
+        registrar.disconnectFromDB();
+    }
+
+    @Test
+    public void ResetCache() {
+        Registrar registrar = new Registrar("schemaBugBuster", "u222222", "p222222");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+
+        search.keywordSearch("engineering");
+        search.keywordSearch("mechanical");
+
+        Cache.getInstance().clearCache();
+        long timeBefore = System.currentTimeMillis();
+        search.keywordSearch("engineering");
+        long timeAfter = System.currentTimeMillis();
+
+        System.out.println("Time to search without cache: " + (timeAfter - timeBefore) + " ms");
+
+        ArrayList<Course> results = search.getResults();
+        assertEquals(81, results.size());
         registrar.disconnectFromDB();
     }
 }

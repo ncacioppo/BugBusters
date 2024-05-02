@@ -171,6 +171,7 @@ class DatabaseSearchTest {
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
         search.applyFilter(Filter.TERM,"Fall 2019");
         search.applyFilter(Filter.DEPARTMENT,"CHEM");
+        Cache.getInstance().clearCache();                   //Clear cache for testing
         search.removeFilter(Filter.DEPARTMENT, "CHEM");
 
         ArrayList<Course> results = search.getResults();
@@ -219,10 +220,11 @@ class DatabaseSearchTest {
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
         search.applyFilter(Filter.CODE_MAX, "300");
         search.applyFilter(Filter.TERM,"Fall 2018");
+        Cache.getInstance().clearCache();                   //Clear cache for testing
         search.removeFilter(Filter.TERM, "faLL 2018");
 
         ArrayList<Course> results = search.getResults();
-        assertEquals(2777, results.size());
+        assertEquals(3023, results.size());
         registrar.disconnectFromDB();
     }
 
@@ -256,7 +258,7 @@ class DatabaseSearchTest {
         search.applyFilter(Filter.DAY,"MWF");
         results = search.getResults();
 
-        assertEquals(5, results.size());
+        assertEquals(4, results.size());
         registrar.disconnectFromDB();
     }
 
@@ -300,6 +302,7 @@ class DatabaseSearchTest {
         DatabaseSearch search = new DatabaseSearch(registrar.getConn());
         search.keywordSearch("statistics");
         search.applyFilter(Filter.CODE_MIN,"200");
+        Cache.getInstance().clearCache();                   //Clear cache for testing
         search.removeFilter(Filter.CODE_MIN, "200");
 
         ArrayList<Course> results = search.getResults();

@@ -189,9 +189,6 @@ public class DatabaseSearch {
         ArrayList<Course> results = new ArrayList<>();
 
         try {
-            if (!rs.next()) {
-
-            }
             while (rs.next()) {
                 int year = rs.getInt(1);
                 String semester = rs.getString(2);

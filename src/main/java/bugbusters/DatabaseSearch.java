@@ -1,11 +1,13 @@
 package bugbusters;
 
+import java.io.FileNotFoundException;
 import java.sql.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class DatabaseSearch {
+    private Cache cache;
     private Connection conn;
     private StringBuilder query;   //for querying courses
     private PreparedStatement ps;
@@ -17,11 +19,14 @@ public class DatabaseSearch {
     private ArrayList<Course> results;
     private final int COURSE_CODE_MAX = 699;
 
+    private final Spellcheck spellcheck;
+
     /**
      * Constructor for DatabaseSearch
      * @param conn from Registrar instance
      */
     public DatabaseSearch(Connection conn) {
+        this.cache = Cache.getInstance();
         this.conn = conn;
         this.filters = new ArrayList<>();
         this.keywordFilters = new ArrayList<>();
@@ -30,6 +35,8 @@ public class DatabaseSearch {
 
         filtered = false;
         rebuildingQuery = false;
+
+        spellcheck = new Spellcheck("spellcheck_dictionary.txt");
     }
 
     /**
@@ -43,10 +50,13 @@ public class DatabaseSearch {
         setSearchTerm(userQuery);
         resetQuery();
         rebuildingQuery = true;
-
+        if (!userQuery.isEmpty()) {
+            userQuery = checkSpelling(userQuery);
+        }
         applySearchTermFilter(Filter.NAME, userQuery);
         applySearchTermFilter(Filter.DEPARTMENT, userQuery);
-        String[] words = userQuery.strip().split(" ");
+        String[] words = userQuery.strip().split("\\s+");
+
         if(words.length > 1) {
             searchForDeptAndCode(words);
 
@@ -102,6 +112,9 @@ public class DatabaseSearch {
      */
     public void applyFilter(Filter filter, String userQuery) {
         addLeadingFilterKeyword();
+        if (filter == Filter.NAME || filter == Filter.CODE || filter == Filter.PROFESSOR || filter == Filter.DEPARTMENT) {
+            userQuery = checkSpelling(userQuery);
+        }
         SearchFilter searchFilter = new SearchFilter(filter, userQuery);
         filters.add(searchFilter);
         query.append(searchFilter.getClause());
@@ -160,14 +173,13 @@ public class DatabaseSearch {
      * @return ArrayList of results as course objects
      */
     private void executeQuery() {
-        try {
-            prepareQuery();
-            ResultSet rs = ps.executeQuery();
-            results = readCourseResults(rs);
-        } catch(SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        prepareQuery();
+        //check cache for ps.toString
+        CacheItem item = cache.getItem(ps);
+        results = (ArrayList<Course>) item.getElement();
+        cache.checkAndRefresh();
     }
+
     /**
      * Parse ResultSet from query execution into Course objects.
      * @param rs
@@ -390,6 +402,35 @@ public class DatabaseSearch {
     }
 
     /**
+     * Runs the spellchecker on the userQuery and return a corrected string.
+     * @param userQuery the string to check
+     * @return userQuery with our best spelling corrections
+     */
+    private String checkSpelling(String userQuery) {
+        String[] spellchecking = userQuery.strip().split("\\s+");
+        // loop through all the words in userQuery and check spelling on each one
+        // if a word is misspelled, we replace it with our best guess
+        for (int i = 0; i < spellchecking.length; i++) {
+            String suggestion = spellcheck.check(spellchecking[i]);
+
+            // check returns "" if the string is spelled properly
+            if (!suggestion.isEmpty()) {
+                spellchecking[i] = suggestion;
+            }
+        }
+        // rebuild the array into a string we can return
+        StringBuilder rebuild = new StringBuilder();
+        for (int i = 0; i < spellchecking.length; i++) {
+            if (i == spellchecking.length-1) {
+                rebuild.append(spellchecking[i]);
+            } else {
+                rebuild.append(spellchecking[i]).append(" ");
+            }
+        }
+        return rebuild.toString();
+    }
+
+    /**
      * Specifies values in prepared statement based on day fields in course table in database.
      * @param key in the format "MWF" or "TR"
      * @param i
@@ -461,5 +502,13 @@ public class DatabaseSearch {
     }
     public ArrayList<Course> getResults() {
         return results;
+    }
+
+    private void spellcheck() {
+        Scanner scn = new Scanner(searchTerm);
+
+    }
+    public String getPSasString() {
+        return ps.toString();
     }
 }

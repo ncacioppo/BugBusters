@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -114,5 +115,11 @@ public class Navigation {
             // ... user chose CANCEL or closed the dialog
         }
         alert.close();
+    }
+
+    @FXML
+    public TableView createCalendarView(){
+        TableView calendar = new TableView();
+        return calendar;
     }
 }

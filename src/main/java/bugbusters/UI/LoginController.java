@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.File;
@@ -21,11 +22,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static bugbusters.UI.Navigation.*;
 import static bugbusters.UI.Globals.*;
@@ -128,7 +127,11 @@ public class LoginController implements Initializable {
 
     @FXML
     void switchRememberMe(ActionEvent event){
-        lstUsers.setVisible(chkRemember.isSelected());
+        if (chkRemember.isSelected() && userInfo.keySet().size() > 0){
+            lstUsers.setVisible(true);
+        } else {
+            lstUsers.setVisible(false);
+        }
     }
 
     @FXML
@@ -153,6 +156,8 @@ public class LoginController implements Initializable {
 
     @FXML
     void handleLoginClick(ActionEvent event) throws IOException {
+        username = txtUsername.getText();
+        password = txtPassword.getText();
         User tempUser = new User(username, password);
         if (tempUser.getUserID() == -999){
             //User doesn't exists on database
@@ -186,20 +191,92 @@ public class LoginController implements Initializable {
             byte[] bytes = save.getBytes();
             Files.write(Paths.get("userCookie.txt"), bytes);
 
-            System.out.println(actualUser);
-
             toUserSchedules(mainPane);
         }
     }
 
     @FXML
-    void handleSignUpClick(ActionEvent event){
+    void handleSignUpClick(ActionEvent event) throws IOException {
+        username = txtUsername.getText();
+        password = txtPassword.getText();
         User tempUser = new User(username, password);
         if (tempUser.getUserID() == -999){
             //User doesn't exist on database
+            TextField firstName = new TextField();
+            firstName.setPromptText("First Name");
+            TextField lastName = new TextField();
+            lastName.setPromptText("Last Name");
+            Spinner<Integer> year = new Spinner();
+            year.setPromptText("Graduation Year");
+            int now = LocalDate.now().getYear();
+            SpinnerValueFactory<Integer> yearValueFactory =
+                    new SpinnerValueFactory.IntegerSpinnerValueFactory(now, now + 10, now);
+            year.setValueFactory(yearValueFactory);
+            year.setEditable(true);
+            Spinner<String> month = new Spinner();
+            month.setPromptText("Graduation Month");
+            String[] months = {"Jan", "Feb", "March", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"};
+            SpinnerValueFactory<String> monthValueFactory =
+                    new SpinnerValueFactory.ListSpinnerValueFactory<>(FXCollections.observableArrayList(months));
+            month.setValueFactory(monthValueFactory);
+            month.setEditable(true);
+            ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+            ButtonType confirmButton = new ButtonType("Sign Up", ButtonBar.ButtonData.OK_DONE);
+            GridPane grid = new GridPane();
 
+            grid.addRow(0);
+            grid.addRow(1, firstName);
+            grid.addRow(2, lastName);
+            grid.addRow(3, year);
+            grid.addRow(4, month);
+            grid.addRow(5);
+
+            Alert alert = new Alert(Alert.AlertType.NONE);
+
+            alert.setTitle("Signing up");
+            alert.setHeaderText("Enter your information in below to sign up");
+            alert.getDialogPane().setContent(grid);
+            alert.getButtonTypes().setAll(cancelButton, confirmButton);
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if (result.isPresent() && result.get() == confirmButton) {
+                // Process input if Confirm button is clicked
+                String fName = firstName.getText();
+                String lName = lastName.getText();
+                int gradYear = year.getValue();
+                String gradMonth = month.getValue();
+
+                actualUser = new User(username, password, fName, lName, gradYear, gradMonth);
+
+                if (chkRemember.isSelected()){
+                    if (userInfo.get(username) == null){
+                        userInfo.put(username, Pair.of(password, LocalDateTime.now()));
+                    }
+                } else {
+                    userInfo.remove(username);
+                }
+                String save = "";
+
+                for (String line : userInfo.keySet()){
+                    LocalDateTime timeStamp = userInfo.get(line).getRight();
+                    save = save + timeStamp.getYear() + "-" + timeStamp.getMonthValue() + "-" + timeStamp.getDayOfMonth() + "T" + timeStamp.getHour() + ":" + timeStamp.getMinute() + ":" + timeStamp.getSecond() + " : " + line + " - " + userInfo.get(line).getLeft() + "\n";
+                }
+
+                byte[] bytes = save.getBytes();
+                Files.write(Paths.get("userCookie.txt"), bytes);
+
+                toUserSchedules(mainPane);
+
+            } else {}
         } else {
             //User does exist
+            Button ok = new Button("OK");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Username and password already exists");
+            alert.setHeaderText("Username and password already exists");
+            alert.setContentText("The username and password you entered already exists. \n" +
+                    "Try logging in instead.");
+            alert.show();
         }
     }
 

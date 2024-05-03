@@ -2,6 +2,9 @@ package bugbusters;
 
 import bugbusters.Scraping.UpdatedCourses;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jooq.SQL;
+import org.jooq.impl.DSL;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -630,6 +633,7 @@ public class Registrar {
 
         return rows;
     }
+
 
     /**
      * Should only be called once after all data is dropped into a table in the database.

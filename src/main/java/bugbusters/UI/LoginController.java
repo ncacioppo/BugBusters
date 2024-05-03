@@ -2,6 +2,8 @@ package bugbusters.UI;
 
 //Red Hex Color: #d00404
 
+import bugbusters.Registrar;
+import bugbusters.Scraping.UpdatedCourses;
 import bugbusters.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -54,6 +56,10 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle){
+
+        Runnable runnable = () -> new Registrar("schemaBugBuster","u222222","p222222").updateCourses();
+        Thread thread = new Thread(runnable);
+        thread.start();
 
         File cookieFile = new File("userCookie.txt");
         Path path = Paths.get("userCookie.txt");
@@ -191,6 +197,8 @@ public class LoginController implements Initializable {
             byte[] bytes = save.getBytes();
             Files.write(Paths.get("userCookie.txt"), bytes);
 
+            searchCourses = actualUser.getRegistrar().getAllCourses();
+
             toUserSchedules(mainPane);
         }
     }
@@ -264,6 +272,8 @@ public class LoginController implements Initializable {
 
                 byte[] bytes = save.getBytes();
                 Files.write(Paths.get("userCookie.txt"), bytes);
+
+                searchCourses = actualUser.getRegistrar().getAllCourses();
 
                 toUserSchedules(mainPane);
 

@@ -12,12 +12,15 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class Navigation {
@@ -118,8 +121,8 @@ public class Navigation {
     }
 
     @FXML
-    public TableView createCalendarView(){
-        TableView calendar = new TableView();
+    public GridPane createCalendarView(){
+        GridPane calendar = new GridPane();
         return calendar;
     }
 }

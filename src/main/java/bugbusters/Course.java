@@ -337,6 +337,19 @@ public class Course {
      * @return A string representation of a course.
      */
     public String toString() {
+        String out = name + "\n" + department + " " + code + " " + section + "\nProfessor " + instructor + "\n" + term ;
+
+        return out;
+    }
+
+    public String toLongString(){
+
+        String meetingTimeString = "";
+
+        for (MeetingTime meet : meetingTimes){
+             meetingTimeString = meetingTimeString + "\t" + meet.getDay() + " from " + meet.getStartTime().getHour() + ":" + meet.getStartTime().getMinute() + " to " + meet.getEndTime().getHour() + ":" + meet.getEndTime().getMinute() + "\n";
+        }
+
         String out = "ID: " + id + "\n" +
                 "Name: " + name + "\n" +
                 "Department: " + department + "\n" +
@@ -344,9 +357,8 @@ public class Course {
                 "Term: " + term + "\n" +
                 "Section: " + section + "\n" +
                 "Instructor: " + instructor + "\n" +
-                "Meeting Times: " + meetingTimes + "\n" +
-                "Credits: " + credits + "\n" +
-                "Description: " + description + "\n";
+                "Meeting Times: \n\n" + meetingTimeString + "\n" +
+                "Credits: " + credits + "\n";
 
         return out;
     }

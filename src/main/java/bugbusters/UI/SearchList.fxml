@@ -3,14 +3,13 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -131,12 +130,12 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <ChoiceBox maxHeight="30.0" maxWidth="190.0" minHeight="30.0" minWidth="190.0" prefHeight="30.0" prefWidth="190.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                        <ChoiceBox fx:id="termFilter" maxHeight="30.0" maxWidth="190.0" minHeight="30.0" minWidth="190.0" prefHeight="30.0" prefWidth="190.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                            <GridPane.margin>
                               <Insets />
                            </GridPane.margin>
                         </ChoiceBox>
-                        <ChoiceBox maxHeight="30.0" maxWidth="190.0" minHeight="30.0" minWidth="190.0" prefHeight="30.0" prefWidth="190.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                        <ChoiceBox fx:id="yearFilter" maxHeight="30.0" maxWidth="190.0" minHeight="30.0" minWidth="190.0" prefHeight="30.0" prefWidth="190.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
                      </children>
                   </GridPane>
                   <GridPane GridPane.rowIndex="2">
@@ -161,7 +160,7 @@
                               <CheckBox mnemonicParsing="false" text="T | TR" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
                            </children>
                         </GridPane>
-                        <ChoiceBox maxHeight="30.0" maxWidth="190.0" minHeight="30.0" minWidth="190.0" prefHeight="30.0" prefWidth="190.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                        <ChoiceBox fx:id="deptFilter" maxHeight="30.0" maxWidth="190.0" minHeight="30.0" minWidth="190.0" prefHeight="30.0" prefWidth="190.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
                      </children>
                   </GridPane>
                   <GridPane GridPane.rowIndex="3">
@@ -181,8 +180,16 @@
                               <Insets right="5.0" />
                            </GridPane.margin>
                         </Text>
-                        <ChoiceBox maxHeight="30.0" maxWidth="60.0" minHeight="30.0" minWidth="60.0" prefHeight="30.0" prefWidth="60.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="CENTER" />
-                        <ChoiceBox maxHeight="30.0" maxWidth="60.0" minHeight="30.0" minWidth="60.0" prefHeight="30.0" prefWidth="60.0" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
+                        <TextField fx:id="minCode" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+                           <GridPane.margin>
+                              <Insets left="10.0" />
+                           </GridPane.margin>
+                        </TextField>
+                        <TextField fx:id="maxCode" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+                           <GridPane.margin>
+                              <Insets right="10.0" />
+                           </GridPane.margin>
+                        </TextField>
                      </children>
                   </GridPane>
                   <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#d00404" height="5.0" stroke="BLACK" strokeType="INSIDE" width="390.0" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
@@ -190,11 +197,7 @@
                         <Insets />
                      </GridPane.margin>
                   </Rectangle>
-                  <ScrollPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="5">
-                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
-                     </content>
-                  </ScrollPane>
+                  <ListView fx:id="lstCourses" onMouseClicked="#handleListViewClick" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="5" />
                </children>
             </GridPane>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#d00404" height="685.0" stroke="BLACK" strokeType="INSIDE" width="5.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.valignment="TOP">
@@ -303,14 +306,14 @@
                                           <Insets bottom="35.0" right="15.0" />
                                        </GridPane.margin>
                                     </ImageView>
-                                    <TextArea prefHeight="200.0" prefWidth="200.0" promptText="Desctiption:">
+                                    <TextArea fx:id="txtDescription" prefHeight="200.0" prefWidth="200.0" promptText="Desctiption:">
                                        <GridPane.margin>
                                           <Insets bottom="30.0" left="5.0" right="20.0" top="5.0" />
                                        </GridPane.margin>
                                     </TextArea>
                                  </children>
                               </GridPane>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Course Info" GridPane.halignment="LEFT" GridPane.valignment="TOP">
+                              <Text fx:id="txtCourseInfo" strokeType="OUTSIDE" strokeWidth="0.0" text="Course Info" GridPane.halignment="LEFT" GridPane.valignment="TOP">
                                  <GridPane.margin>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </GridPane.margin>

@@ -200,7 +200,7 @@ public class User {
                 int year = rs.getInt(3);
                 String semester = rs.getString(4);
                 Term term = new Term(semester, year);
-                Schedule schedule = new Schedule(userID, name, term, new ArrayList<>());
+                Schedule schedule = new Schedule(userID, name, term, new ArrayList<>(), new ArrayList<>());
                 schedule.setCoursesFromDB(registrar.getConn());
                 this.schedules.add(schedule);
             }

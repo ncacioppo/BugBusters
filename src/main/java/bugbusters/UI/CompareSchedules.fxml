@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -102,19 +99,7 @@
                   <Insets top="5.0" />
                </GridPane.margin>
             </Rectangle>
-            <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
-              <tabs>
-                <Tab text="Untitled Tab 1">
-                     <content>
-                        <TableView prefHeight="200.0" prefWidth="200.0">
-                          <columns>
-                            <TableColumn prefWidth="75.0" text="C1" />
-                            <TableColumn prefWidth="75.0" text="C2" />
-                          </columns>
-                        </TableView>
-                     </content>
-                </Tab>
-              </tabs>
+            <TabPane fx:id="tbLeft" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" />
                </padding>
@@ -122,19 +107,7 @@
                   <Insets />
                </GridPane.margin>
             </TabPane>
-            <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="2">
-              <tabs>
-                <Tab text="Untitled Tab 1">
-                     <content>
-                        <TableView prefHeight="200.0" prefWidth="200.0">
-                          <columns>
-                            <TableColumn prefWidth="75.0" text="C1" />
-                            <TableColumn prefWidth="75.0" text="C2" />
-                          </columns>
-                        </TableView>
-                     </content>
-                </Tab>
-              </tabs>
+            <TabPane fx:id="tbRight" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="2">
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" />
                </padding>

@@ -247,7 +247,7 @@ public class Course {
      * @return the actual name of the day
      */
     private Day toDay(String dayChar){
-        Day out;
+        Day out = Day.MONDAY;
 
         switch (dayChar.toUpperCase()) {
             case "M":
@@ -265,9 +265,6 @@ public class Course {
             case "F":
                 out = Day.FRIDAY;
                 break;
-            default:
-                System.out.println(dayChar);
-                out = Day.NONE;
         }
 
         return out;
@@ -337,6 +334,19 @@ public class Course {
      * @return A string representation of a course.
      */
     public String toString() {
+        String out = name + "\n" + department + " " + code + " " + section + "\nProfessor " + instructor + "\n" + term ;
+
+        return out;
+    }
+
+    public String toLongString(){
+
+        String meetingTimeString = "";
+
+        for (MeetingTime meet : meetingTimes){
+             meetingTimeString = meetingTimeString + "\t" + meet.getDay() + " from " + meet.getStartTime().getHour() + ":" + meet.getStartTime().getMinute() + " to " + meet.getEndTime().getHour() + ":" + meet.getEndTime().getMinute() + "\n";
+        }
+
         String out = "ID: " + id + "\n" +
                 "Name: " + name + "\n" +
                 "Department: " + department + "\n" +
@@ -344,9 +354,8 @@ public class Course {
                 "Term: " + term + "\n" +
                 "Section: " + section + "\n" +
                 "Instructor: " + instructor + "\n" +
-                "Meeting Times: " + meetingTimes + "\n" +
-                "Credits: " + credits + "\n" +
-                "Description: " + description + "\n";
+                "Meeting Times: \n\n" + meetingTimeString + "\n" +
+                "Credits: " + credits + "\n";
 
         return out;
     }
@@ -365,7 +374,7 @@ public class Course {
     public String shortToString() {
         String out = department + " " + code + " " + section + "\n" +
                 name + " \n" +
-                meetingTimesToString();
+                meetingTimesToString() + "\n" + term;
         return out;
     }
 

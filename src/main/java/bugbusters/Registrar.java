@@ -47,7 +47,6 @@ public class Registrar {
         }
     }
 
-
     /**
      * Connects to database with credentials
      * @param schema
@@ -77,6 +76,67 @@ public class Registrar {
             return false;
         }
         return true;
+    }
+
+    public ArrayList<Course> getAllCourses(){
+        ArrayList<Course> courses = new ArrayList<>();
+
+        try{
+            PreparedStatement ps = conn.prepareStatement("" +
+                    "SELECT CourseId, CourseName, Dept, CourseCode, Year, Semester, Section, " +
+                    "FnameInstructor, LNameInstructor, Monday, Tuesday, Wednesday, Thursday, " +
+                    "Friday, StartTime, EndTime, Hours FROM course;");
+
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                String dept = rs.getString(3);
+                int code = rs.getInt(4);
+                int year = rs.getInt(5);
+                String season = rs.getString(6);
+                char section = 'A';
+                try {
+                    section = rs.getString(7).charAt(0);
+                } catch (Exception e){}
+                String instructor = rs.getString(8) + " " + rs.getString(9);
+                String mon = rs.getString(10);
+                String tue = rs.getString(11);
+                String wed = rs.getString(12);
+                String thu = rs.getString(13);
+                String fri = rs.getString(14);
+                Time startTime = rs.getTime(15);
+                Time endTime = rs.getTime(16);
+                int hours = rs.getInt(17);
+
+                Term term = new Term(season, year);
+                ArrayList<MeetingTime> meetingTimes = new ArrayList<>();
+
+                if (mon.equalsIgnoreCase("M")){
+                    meetingTimes.add(new MeetingTime(Day.MONDAY, startTime.toLocalTime(), endTime.toLocalTime()));
+                }
+                if (tue.equalsIgnoreCase("T")){
+                    meetingTimes.add(new MeetingTime(Day.TUESDAY, startTime.toLocalTime(), endTime.toLocalTime()));
+                }
+                if (wed.equalsIgnoreCase("W")){
+                    meetingTimes.add(new MeetingTime(Day.WEDNESDAY, startTime.toLocalTime(), endTime.toLocalTime()));
+                }
+                if (thu.equalsIgnoreCase("R")){
+                    meetingTimes.add(new MeetingTime(Day.THURSDAY, startTime.toLocalTime(), endTime.toLocalTime()));
+                }
+                if (fri.equalsIgnoreCase("F")){
+                    meetingTimes.add(new MeetingTime(Day.FRIDAY, startTime.toLocalTime(), endTime.toLocalTime()));
+                }
+
+                courses.add(new Course(id, name, "This is a description example as we did not have any real descriptions", dept, code, term, section, instructor, meetingTimes, hours));
+
+            }
+
+        } catch (SQLException e){
+
+        }
+
+        return courses;
     }
 
     /**

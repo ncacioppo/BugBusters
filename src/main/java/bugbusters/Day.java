@@ -1,14 +1,12 @@
 package bugbusters;
 
 public enum Day{
-    SUNDAY("SUNDAY"),
     MONDAY("MONDAY"),
     TUESDAY("TUESDAY"),
     WEDNESDAY("WEDNESDAY"),
     THURSDAY("THURSDAY"),
     FRIDAY("FRIDAY"),
-    SATURDAY("SATURDAY"),
-    NONE("NONE");
+    SATURDAY("SATURDAY");
 
 
     private final String name;

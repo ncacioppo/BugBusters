@@ -3,6 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -38,7 +40,7 @@
          <children>
             <Pane maxHeight="219.0" maxWidth="371.0" minHeight="219.0" minWidth="371.0" prefHeight="219.0" prefWidth="371.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="6" GridPane.valignment="CENTER">
                <children>
-                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#dbeeff00" height="219.0" stroke="BLACK" strokeType="INSIDE" width="371.0" />
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#dbeeff00" height="230.0" stroke="BLACK" strokeType="INSIDE" width="371.0" />
                   <GridPane maxHeight="219.0" maxWidth="371.0" minHeight="219.0" minWidth="371.0" prefHeight="219.0" prefWidth="371.0">
                     <columnConstraints>
                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -48,23 +50,51 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="5.0" minHeight="5.0" prefHeight="5.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <TextField maxWidth="200.0" promptText="Username" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-                        <TextField maxWidth="200.0" promptText="Password" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-                        <CheckBox alignment="CENTER" mnemonicParsing="false" text="Remember Me" GridPane.rowIndex="4">
+                        <CheckBox fx:id="chkRemember" alignment="CENTER" mnemonicParsing="false" onAction="#switchRememberMe" text="Remember Me" GridPane.rowIndex="6">
                            <padding>
                               <Insets left="5.0" />
                            </padding>
                         </CheckBox>
-                        <Button maxWidth="300.0" mnemonicParsing="false" onMouseClicked="#toSchedules" text="Log In | Sign Up" GridPane.halignment="CENTER" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+                        <Button maxWidth="300.0" mnemonicParsing="false" onAction="#handleLoginClick" text="Log In" GridPane.halignment="CENTER" GridPane.rowIndex="8" GridPane.valignment="CENTER">
                            <font>
                               <Font size="10.0" />
                            </font>
                         </Button>
+                        <Button maxWidth="300.0" mnemonicParsing="false" onAction="#handleSignUpClick" text="Sign Up" GridPane.halignment="CENTER" GridPane.rowIndex="10" GridPane.valignment="CENTER">
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                        </Button>
+                        <GridPane GridPane.rowIndex="1">
+                          <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                           <children>
+                              <TextField fx:id="txtUsername" maxWidth="200.0" minWidth="200.0" onKeyPressed="#updateUsername" onMouseClicked="#showListView" promptText="Username" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                              <ListView fx:id="lstUsers" maxHeight="25.0" maxWidth="200.0" minHeight="25.0" minWidth="200.0" onMouseClicked="#handleListViewClick" prefHeight="25.0" prefWidth="200.0" visible="false" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
+                           </children>
+                           <rowConstraints>
+                              <RowConstraints />
+                           </rowConstraints>
+                        </GridPane>
+                        <CheckBox fx:id="chkShowPassword" maxHeight="10.0" minHeight="10.0" mnemonicParsing="false" onAction="#switchPasswordView" prefHeight="10.0" text="Show Password" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                        </CheckBox>
+                        <PasswordField fx:id="txtPassword" maxWidth="200.0" minWidth="200.0" onKeyPressed="#updatePassword" prefWidth="200.0" promptText="Password" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+                        <TextField fx:id="txtPasswordShow" maxWidth="200.0" minWidth="200.0" onKeyPressed="#updatePasswordShown" prefWidth="200.0" promptText="Password" visible="false" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
                      </children>
                   </GridPane>
                </children>

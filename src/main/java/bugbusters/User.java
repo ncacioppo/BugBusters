@@ -37,6 +37,16 @@ public class User {
         this.userID = addUserToDatabase();
     }
 
+    public User(String username, String password, String firstName, String lastName, int gradYear, String gradMonth) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.majors = new ArrayList<Major>();
+        this.minors = new ArrayList<Minor>();
+        this.schedules = new ArrayList<>();
+        this.registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        this.userID = addUserToDatabase(username, password, gradYear, gradMonth);
+    }
+
     /**
      * Constructor for User who enters a username and password.
      * Creates a registrar object (i.e., a connection to the database for GCC).
@@ -71,6 +81,47 @@ public class User {
         try {
             PreparedStatement ps = registrar.getConn().prepareStatement("" +
                     "INSERT INTO user() VALUES();");
+            rows = ps.executeUpdate();
+
+            ps = registrar.getConn().prepareStatement("" +
+                    "SELECT LAST_INSERT_ID();");
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()) {
+                id = rs.getInt(1);
+            }
+
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return id;
+    }
+
+    private int addUserToDatabase(String username, String password, int gradYear, String gradMonth) {
+
+        int rows = 0;
+        int id = 0;
+
+        try {
+            int lastID = 0;
+            PreparedStatement max = registrar.getConn().prepareStatement("" +
+                    "SELECT MAX(UserID) FROM user;");
+            ResultSet maxrs = max.executeQuery();
+
+            while (maxrs.next()){
+                lastID = maxrs.getInt(1);
+            }
+
+            PreparedStatement ps = registrar.getConn().prepareStatement("" +
+                    "INSERT INTO user() VALUES(?, ?, ?, ?, ?, ?, ?);");
+            ps.setInt(1, lastID+1);
+            ps.setString(2, username);
+            ps.setString(3, password);
+            ps.setString(4, firstName);
+            ps.setString(5, lastName);
+            ps.setInt(6, gradYear);
+            ps.setString(7, gradMonth);
+
             rows = ps.executeUpdate();
 
             ps = registrar.getConn().prepareStatement("" +

@@ -162,16 +162,20 @@ public class Schedule {
     private boolean eventsAreValid(){
         // loop through our courses
         for (Course course1 : courses) {
+            // check for conflicts with other courses
             if (checkCourseConflict(course1)) {
                 return false;
+            // check for conflicts with other events
             } else if (checkEventConflict(course1)) {
                 return false;
             }
         }
         // loop through our events
         for (Course event1 : events) {
+            // check for conflicts with other courses
             if (checkCourseConflict(event1)) {
                 return false;
+            // check for conflicts with other events
             } else if (checkEventConflict(event1)) {
                 return false;
             }

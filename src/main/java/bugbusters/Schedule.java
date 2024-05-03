@@ -274,9 +274,6 @@ public class Schedule {
         undoStack.push(new Pair<>("C", kept));
         undoResolvedConflicts.push(new Pair<>(kept, removed));
         redoResolvedConflicts.clear();
-
-        Changelog.logChange("Schedule conflict resolved in " + name +
-                ", keeping course " + kept.getName() + ", discarding " + removed.getName());
         // todo: might need to check for more issues caused with undo/redo
     }
 
@@ -302,7 +299,8 @@ public class Schedule {
                     sort();
                     //quickSort(0, this.courses.size()-1);
 
-                    Changelog.logChange("Added course" + course.getName() + " to schedule " + name);
+                    Changelog.logChange("Added course " + course.getName() + " to schedule " + name);
+                    System.out.println("logging statement passed");
                     return true;
                 }
             }
@@ -326,7 +324,7 @@ public class Schedule {
                 undoStack.push(new Pair<>("AE", event));
                 redoStack.clear();
 
-                Changelog.logChange("Added event" + event.getName() + " to schedule " + name);
+                Changelog.logChange("Added event " + event.getName() + " to schedule " + name);
 
                 return true;
             }
@@ -346,7 +344,7 @@ public class Schedule {
                 undoStack.push(new Pair<>("AE", event));
                 redoStack.clear();
 
-                Changelog.logChange("Added event" + event.getName() + " to schedule " + name);
+                Changelog.logChange("Added event " + event.getName() + " to schedule " + name);
 
                 return true;
             }
@@ -366,6 +364,9 @@ public class Schedule {
 
                     sort();
                     //quickSort(0, this.courses.size()-1);
+
+                    Changelog.logChange("Added course " + course.getName() + " to schedule " + name);
+
                     return true;
                 }
             }
@@ -389,7 +390,7 @@ public class Schedule {
                 sort();
                 //quickSort(0, this.courses.size()-1);
 
-                Changelog.logChange("Removed course" + course.getName() + " from schedule " + name);
+                Changelog.logChange("Removed course " + course.getName() + " from schedule " + name);
 
                 return removed;
             }
@@ -406,7 +407,7 @@ public class Schedule {
                 undoStack.push(new Pair<>("RE", removed));
                 redoStack.clear();
 
-                Changelog.logChange("Removed event" + event.getName() + " from schedule " + name);
+                Changelog.logChange("Removed event " + event.getName() + " from schedule " + name);
 
                 return removed;
             }
@@ -428,7 +429,7 @@ public class Schedule {
                 sort();
                 //quickSort(0, this.courses.size()-1);
 
-                Changelog.logChange("Removed course" + removed.getName() + " from schedule " + name);
+                Changelog.logChange("Removed course " + removed.getName() + " from schedule " + name);
 
                 return removed;
             }
@@ -450,7 +451,7 @@ public class Schedule {
                 sort();
                 //quickSort(0, this.courses.size()-1);
 
-                Changelog.logChange("Removed course" + removed.getName() + " from schedule " + name);
+                Changelog.logChange("Removed course " + removed.getName() + " from schedule " + name);
 
                 return removed;
             }
@@ -466,6 +467,9 @@ public class Schedule {
 
                 sort();
                 //quickSort(0, this.courses.size()-1);
+
+                Changelog.logChange("Removed course " + course.getName() + " from schedule " + name);
+
                 return removed;
             }
         }

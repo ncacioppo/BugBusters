@@ -320,10 +320,6 @@ public class Schedule {
                 break;
             }
         }
-        System.out.println("New sort order: ");
-        for (Course course : courses) {
-            System.out.println(course.getName());
-        }
     }
 
     public void setCoursesFromDB(Connection conn) {
@@ -344,51 +340,5 @@ public class Schedule {
             System.out.println(e.getMessage());
         }
     }
-
-    // the quicksort sorting algorithm, used to sort the list of courses after a course is added or removed
-    // TODO: Fix quicksort
-//    private void quickSort(int start, int stop) {
-//        if (start < stop) {
-//            int partitionIndex = partition(start, stop);
-//            quickSort(start, partitionIndex-1);
-//            quickSort(partitionIndex+1, stop);
-//        }
-//    }
-
-    // used in quicksort, does not work yet
-//    private int partition(int start, int end) {
-//        Course x = courses.get(end);
-//        int newPartition = start-1;
-//        for (int i = start; i < end-1; i++) {
-//            if (courses.get(i).courseBefore(x)) {
-//                System.out.println(courses.get(i).getName() + " is before " + x.getName());
-//                newPartition++;
-//                Course temp = courses.get(newPartition);
-//                courses.set(newPartition, courses.get(i));
-//                courses.set(i, temp);
-//            }
-//        }
-//        System.out.println("Pre final flip: ");
-//        for (Course course: courses) {
-//            System.out.println(course.getName());
-//        }
-//        System.out.println();
-//        if (courses.get(newPartition+1).courseBefore(x)) {
-//            Course temp = courses.get(newPartition + 1);
-//            courses.set(newPartition + 1, x);
-//            courses.set(end, temp);
-//            System.out.println("Post final flip: ");
-//            for (Course course : courses) {
-//                System.out.println(course.getName());
-//            }
-//            System.out.println();
-//        }
-//        System.out.println("New sort order: ");
-//        for (Course course : courses) {
-//            System.out.println(course.getName());
-//        }
-//        return newPartition+1;
-//    }
-
 
 }

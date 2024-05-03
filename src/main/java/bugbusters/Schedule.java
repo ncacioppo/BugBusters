@@ -14,7 +14,7 @@ public class Schedule {
     String name;
     Term term;
     ArrayList<Course> courses;
-    ArrayList<Course> events; // TODO: add to constructors
+    ArrayList<Course> events;
     int scheduleID;
     int userID;
     Stack<Pair<String, Course>> undoStack;
@@ -162,16 +162,20 @@ public class Schedule {
     private boolean eventsAreValid(){
         // loop through our courses
         for (Course course1 : courses) {
+            // check for conflicts with other courses
             if (checkCourseConflict(course1)) {
                 return false;
+            // check for conflicts with other events
             } else if (checkEventConflict(course1)) {
                 return false;
             }
         }
         // loop through our events
         for (Course event1 : events) {
+            // check for conflicts with other courses
             if (checkCourseConflict(event1)) {
                 return false;
+            // check for conflicts with other events
             } else if (checkEventConflict(event1)) {
                 return false;
             }
@@ -181,8 +185,6 @@ public class Schedule {
     }
 
     public boolean checkCourseConflict(Course course1) {
-        if (!courses.contains(course1)) return false;
-
         ArrayList<MeetingTime> course1Times = course1.getMeetingTimes();
         for (Course course2 : courses) {
             // if the courses are different
@@ -213,8 +215,6 @@ public class Schedule {
     }
 
     public boolean checkEventConflict(Course course1) {
-        if (!events.contains(course1)) return false;
-
         ArrayList<MeetingTime> course1Times = course1.getMeetingTimes();
         for (Course event : events) {
             // if the courses are different
@@ -279,7 +279,6 @@ public class Schedule {
         undoStack.push(new Pair<>("C", kept));
         undoResolvedConflicts.push(new Pair<>(kept, removed));
         redoResolvedConflicts.clear();
-
         // todo: might need to check for more issues caused with undo/redo
     }
 
@@ -304,6 +303,9 @@ public class Schedule {
 
                     sort();
                     //quickSort(0, this.courses.size()-1);
+
+                    Changelog.logChange("Added course " + course.getName() + " to schedule " + name);
+                    System.out.println("logging statement passed");
                     return true;
                 }
             }
@@ -327,6 +329,8 @@ public class Schedule {
                 undoStack.push(new Pair<>("AE", event));
                 redoStack.clear();
 
+                Changelog.logChange("Added event " + event.getName() + " to schedule " + name);
+
                 return true;
             }
         }
@@ -344,6 +348,8 @@ public class Schedule {
 
                 undoStack.push(new Pair<>("AE", event));
                 redoStack.clear();
+
+                Changelog.logChange("Added event " + event.getName() + " to schedule " + name);
 
                 return true;
             }
@@ -363,6 +369,9 @@ public class Schedule {
 
                     sort();
                     //quickSort(0, this.courses.size()-1);
+
+                    Changelog.logChange("Added course " + course.getName() + " to schedule " + name);
+
                     return true;
                 }
             }
@@ -385,6 +394,9 @@ public class Schedule {
 
                 sort();
                 //quickSort(0, this.courses.size()-1);
+
+                Changelog.logChange("Removed course " + course.getName() + " from schedule " + name);
+
                 return removed;
             }
         }
@@ -399,6 +411,8 @@ public class Schedule {
 
                 undoStack.push(new Pair<>("RE", removed));
                 redoStack.clear();
+
+                Changelog.logChange("Removed event " + event.getName() + " from schedule " + name);
 
                 return removed;
             }
@@ -419,6 +433,9 @@ public class Schedule {
 
                 sort();
                 //quickSort(0, this.courses.size()-1);
+
+                Changelog.logChange("Removed course " + removed.getName() + " from schedule " + name);
+
                 return removed;
             }
         }
@@ -438,6 +455,9 @@ public class Schedule {
 
                 sort();
                 //quickSort(0, this.courses.size()-1);
+
+                Changelog.logChange("Removed course " + removed.getName() + " from schedule " + name);
+
                 return removed;
             }
         }
@@ -452,6 +472,9 @@ public class Schedule {
 
                 sort();
                 //quickSort(0, this.courses.size()-1);
+
+                Changelog.logChange("Removed course " + course.getName() + " from schedule " + name);
+
                 return removed;
             }
         }

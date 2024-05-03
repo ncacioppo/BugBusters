@@ -55,6 +55,8 @@ CREATE TABLE IF NOT EXISTS course(
 
 CREATE TABLE IF NOT EXISTS user(
 	UserID INT(6) NOT NULL AUTO_INCREMENT,
+    Username VARCHAR(20) UNIQUE,
+    Password VARCHAR(20),
     FName VARCHAR(20),
     LName VARCHAR(20),
     GradYear INT(4),
@@ -77,6 +79,7 @@ CREATE TABLE IF NOT EXISTS user_majors(
 	UserID INT(6) NOT NULL,
     Dept VARCHAR(4) NOT NULL,
     MajorID INT(3) NOT NULL,
+-- 	Title VARCHAR(40) NOT NULL,
     ReqYear INT(4) NOT NULL,
     CONSTRAINT pk_user_major PRIMARY KEY(UserID, MajorID),
     CONSTRAINT fk_user_major_user FOREIGN KEY(UserID) REFERENCES user(UserID),
@@ -97,7 +100,9 @@ CREATE TABLE IF NOT EXISTS minor(
 CREATE TABLE IF NOT EXISTS user_minors(
 	UserID INT(6) NOT NULL,
     MinorID INT(3) NOT NULL,
+--  Title VARCHAR(40) NOT NULL,
     ReqYear INT(4) NOT NULL,
+    Dept VARCHAR(4),
     CONSTRAINT pk_user_minor PRIMARY KEY(UserID, MinorID),
     CONSTRAINT fk_user_minor_user FOREIGN KEY(UserID) REFERENCES user(UserID),
     CONSTRAINT fk_user_minor_minor FOREIGN KEY(MinorID) REFERENCES minor(MinorID)

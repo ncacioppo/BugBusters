@@ -2,9 +2,8 @@ package bugbusters.UI;
 
 //Red Hex Color: #d00404
 
-import bugbusters.Registrar;
+import bugbusters.*;
 import bugbusters.Scraping.UpdatedCourses;
-import bugbusters.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -198,7 +197,8 @@ public class LoginController implements Initializable {
             Files.write(Paths.get("userCookie.txt"), bytes);
 
             searchCourses = actualUser.getRegistrar().getAllCourses();
-            currentCourse = searchCourses.get(0);
+            currentCourse = new Course(-999, "name", "description", "department", 10, new Term("Fall", 2018),
+                    'A', "instructor", new ArrayList<MeetingTime>(), 3);
 
             toUserSchedules(mainPane);
         }

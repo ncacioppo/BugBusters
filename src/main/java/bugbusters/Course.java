@@ -374,7 +374,7 @@ public class Course {
     public String shortToString() {
         String out = department + " " + code + " " + section + "\n" +
                 name + " \n" +
-                meetingTimesToString();
+                meetingTimesToString() + "\n" + term;
         return out;
     }
 

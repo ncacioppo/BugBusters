@@ -6,13 +6,11 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
 import javax.swing.text.html.ImageView;
@@ -47,6 +45,12 @@ public class SearchListController implements Initializable {
     private ChoiceBox professorFilter;
     @FXML
     private TextField txtKeyWord;
+    @FXML
+    private CheckBox MWFfilter;
+    @FXML
+    private CheckBox TRfilter;
+    @FXML
+    private TabPane tbSched;
 
     private DatabaseSearch dbSearch;
 
@@ -55,6 +59,19 @@ public class SearchListController implements Initializable {
         dbSearch = new DatabaseSearch(actualUser.getRegistrar().getConn());
         ObservableList<Course> items = FXCollections.observableArrayList(searchCourses);
         lstCourses.setItems(items);
+
+        for (Schedule sched : actualUser.getSchedules()){
+            userSchedules.put(sched.getName(), sched);
+            Tab tab = new Tab(sched.getName());
+            ScrollPane scrlPane = new ScrollPane();
+            GridPane gridPane = new GridPane();
+            Text schedText = new Text();
+            schedText.setText(sched.toString());
+            gridPane.getChildren().add(schedText);
+            scrlPane.setContent(gridPane);
+            tab.setContent(scrlPane);
+            tbSched.getTabs().add(tab);
+        }
 
         ArrayList<Integer> codes = new ArrayList<>();
         for (int i=1; i<1000; i++){
@@ -147,11 +164,9 @@ public class SearchListController implements Initializable {
 
         String keyWord = txtKeyWord.getText() + event.getText();
 
-        txtDescription.setText("KeyWord: " + keyWord +"\nprevKeyWord: " + prevKeyword);
-
-        dbSearch.removeFilter(Filter.KEYWORD, prevKeyword);
-        prevKeyword = keyWord;
-        dbSearch.applyFilter(Filter.KEYWORD, keyWord);
+//        dbSearch.removeFilter(Filter.KEYWORD, prevKeyword);
+//        prevKeyword = keyWord;
+        dbSearch.keywordSearch(keyWord);
 
         ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
         lstCourses.setItems(searchResults);
@@ -180,6 +195,63 @@ public class SearchListController implements Initializable {
 
     @FXML
     public void toConflict(MouseEvent event) throws IOException {
-        handleConflict(mainPane); // todo: make if statement
+        handleConflict(mainPane);
+
+        TabPane temp = new TabPane();
+
+        tbSched.getTabs().clear();
+        for (Schedule sched : actualUser.getSchedules()){
+            userSchedules.put(sched.getName(), sched);
+            Tab tab = new Tab(sched.getName());
+            ScrollPane scrlPane = new ScrollPane();
+            GridPane gridPane = new GridPane();
+            Text schedText = new Text();
+            schedText.setText(sched.toString());
+            gridPane.getChildren().add(schedText);
+            scrlPane.setContent(gridPane);
+            tab.setContent(scrlPane);
+            tbSched.getTabs().add(tab);
+        }
+    }
+
+    @FXML
+    public void handleMWF(ActionEvent event){
+        if (MWFfilter.isSelected()){
+            dbSearch.applyFilter(Filter.DAY, "MWF");
+        } else {
+            dbSearch.removeFilter(Filter.DAY, "MWF");
+        }
+        ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
+        lstCourses.setItems(searchResults);
+    }
+
+    @FXML
+    public void handleTR(ActionEvent event){
+        if (TRfilter.isSelected()){
+            dbSearch.applyFilter(Filter.DAY, "TR");
+        } else {
+            dbSearch.removeFilter(Filter.DAY, "TR");
+        }
+        ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
+        lstCourses.setItems(searchResults);
+    }
+
+    @FXML
+    public void handleRemove(MouseEvent event){
+        currentSchedule.removeCourse(currentCourse);
+
+        tbSched.getTabs().clear();
+        for (Schedule sched : actualUser.getSchedules()){
+            userSchedules.put(sched.getName(), sched);
+            Tab tab = new Tab(sched.getName());
+            ScrollPane scrlPane = new ScrollPane();
+            GridPane gridPane = new GridPane();
+            Text schedText = new Text();
+            schedText.setText(sched.toString());
+            gridPane.getChildren().add(schedText);
+            scrlPane.setContent(gridPane);
+            tab.setContent(scrlPane);
+            tbSched.getTabs().add(tab);
+        }
     }
 }

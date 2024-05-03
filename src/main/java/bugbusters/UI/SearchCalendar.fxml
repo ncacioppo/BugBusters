@@ -155,8 +155,8 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <CheckBox fx:id="MWFfilter" mnemonicParsing="false" text="M | W | F" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-                              <CheckBox fx:id="TRfilter" mnemonicParsing="false" text="T | R" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                              <CheckBox fx:id="MWFfilter" mnemonicParsing="false" onAction="#handleMWF" text="M | W | F" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                              <CheckBox fx:id="TRfilter" mnemonicParsing="false" onAction="#handleTR" text="T | R" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
                            </children>
                         </GridPane>
                         <ChoiceBox fx:id="deptFilter" maxHeight="30.0" maxWidth="190.0" minHeight="30.0" minWidth="190.0" prefHeight="30.0" prefWidth="190.0" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
@@ -256,7 +256,7 @@
                                   <RowConstraints maxHeight="70.0" minHeight="70.0" prefHeight="70.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-                                    <ImageView fitHeight="60.0" fitWidth="60.0" onMouseClicked="#toConflict" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
+                                    <ImageView fitHeight="60.0" fitWidth="60.0" onMouseClicked="#toConflict" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
                                        <image>
                                           <Image url="@../../../../../Icons/Plus.png" />
                                        </image>
@@ -269,6 +269,14 @@
                                           <Insets bottom="30.0" left="5.0" right="20.0" top="5.0" />
                                        </GridPane.margin>
                                     </TextArea>
+                                    <ImageView fitHeight="60.0" fitWidth="60.0" onMouseClicked="#handleRemove" pickOnBounds="true" preserveRatio="true" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
+                                       <GridPane.margin>
+                                          <Insets bottom="35.0" left="15.0" />
+                                       </GridPane.margin>
+                                       <image>
+                                          <Image url="@../../../../../Icons/Minus.png" />
+                                       </image>
+                                    </ImageView>
                                  </children>
                               </GridPane>
                               <Text fx:id="txtCourseInfo" strokeType="OUTSIDE" strokeWidth="0.0" text="Course Info" GridPane.halignment="LEFT" GridPane.valignment="TOP">

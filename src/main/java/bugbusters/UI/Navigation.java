@@ -26,13 +26,16 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import static bugbusters.UI.Globals.currentCourse;
+import static bugbusters.UI.Globals.currentSchedule;
+
 public class Navigation {
 
     private static Stage stage;
     private static Scene scene;
     private static Parent root;
-    private static Schedule currentSchedule;
-    private static Course currentCourse; // todo: make these work
+//    private static Schedule currentSchedule;
+//    private static Course currentCourse; // todo: make these work
 
     @FXML
     public static void toCompareSchedules(BorderPane pane) throws IOException {
@@ -93,6 +96,7 @@ public class Navigation {
     public static void handleConflict(BorderPane pane) throws IOException {
         boolean courseAdded = currentSchedule.addCourse(currentCourse);
 
+        System.out.println(courseAdded);
         if (courseAdded) return;
 
         Course currentCourse = currentSchedule.currentConflict.getKey();

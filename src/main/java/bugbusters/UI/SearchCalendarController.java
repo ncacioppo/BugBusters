@@ -167,8 +167,6 @@ public class SearchCalendarController implements Initializable {
 
         String keyWord = txtKeyWord.getText() + event.getText();
 
-        txtDescription.setText("KeyWord: " + keyWord +"\nprevKeyWord: " + prevKeyword);
-
 //        dbSearch.removeFilter(Filter.KEYWORD, prevKeyword);
 //        prevKeyword = keyWord;
         dbSearch.keywordSearch(keyWord);
@@ -201,6 +199,58 @@ public class SearchCalendarController implements Initializable {
     @FXML
     public void toConflict(MouseEvent event) throws IOException {
         handleConflict(mainPane);
+
+        TabPane temp = new TabPane();
+
+        tbSched.getTabs().clear();
+        for (Schedule sched : actualUser.getSchedules()){
+            userSchedules.put(sched.getName(), sched);
+            Tab tab = new Tab(sched.getName());
+            ScrollPane scrlPane = new ScrollPane();
+            GridPane gridPane = createCalendarView(sched);
+            scrlPane.setContent(gridPane);
+            tab.setContent(scrlPane);
+            tbSched.getTabs().add(tab);
+        }
     }
+
+    @FXML
+    public void handleMWF(ActionEvent event){
+        if (MWFfilter.isSelected()){
+            dbSearch.applyFilter(Filter.DAY, "MWF");
+        } else {
+            dbSearch.removeFilter(Filter.DAY, "MWF");
+        }
+        ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
+        lstCourses.setItems(searchResults);
+    }
+
+    @FXML
+    public void handleTR(ActionEvent event){
+        if (TRfilter.isSelected()){
+            dbSearch.applyFilter(Filter.DAY, "TR");
+        } else {
+            dbSearch.removeFilter(Filter.DAY, "TR");
+        }
+        ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
+        lstCourses.setItems(searchResults);
+    }
+
+    @FXML
+    public void handleRemove(MouseEvent event){
+        currentSchedule.removeCourse(currentCourse);
+
+        tbSched.getTabs().clear();
+        for (Schedule sched : actualUser.getSchedules()){
+            userSchedules.put(sched.getName(), sched);
+            Tab tab = new Tab(sched.getName());
+            ScrollPane scrlPane = new ScrollPane();
+            GridPane gridPane = createCalendarView(sched);
+            scrlPane.setContent(gridPane);
+            tab.setContent(scrlPane);
+            tbSched.getTabs().add(tab);
+        }
+    }
+
 
 }

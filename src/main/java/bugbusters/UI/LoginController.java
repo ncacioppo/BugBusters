@@ -2,15 +2,13 @@ package bugbusters.UI;
 
 //Red Hex Color: #d00404
 
+import bugbusters.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -30,6 +28,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import static bugbusters.UI.Navigation.*;
+import static bugbusters.UI.Globals.*;
 
 public class LoginController implements Initializable {
 
@@ -77,13 +76,9 @@ public class LoginController implements Initializable {
                         LocalDateTime timeStamp = LocalDateTime.of(Integer.parseInt(strDate[0]), Integer.parseInt(strDate[1]), Integer.parseInt(strDate[2]), Integer.parseInt(strTime[0]), Integer.parseInt(strTime[1]), Integer.parseInt(strTime[2]));
                         if (Duration.between(timeStamp, LocalDateTime.now()).toSeconds() < 864000){
                             userInfo.put(line.split(" : ")[1].split(" - ")[0], Pair.of(line.split(" : ")[1].split(" - ")[1], timeStamp));
-                            save = save + timeStamp.getYear() + "-" + timeStamp.getMonthValue() + "-" + timeStamp.getDayOfMonth() + "T" + timeStamp.getHour() + ":" + timeStamp.getMinute() + ":" + timeStamp.getSecond() + " : " + line.split(" : ")[1].split(" - ")[0] + " - " + line.split(" : ")[1].split(" - ")[1] + "\n";
                         }
                     }
                 }
-
-                byte[] bytes = save.getBytes();
-                Files.write(path, bytes);
 
                 if (userInfo.keySet().size() > 0){
                     chkRemember.setSelected(true);
@@ -139,23 +134,73 @@ public class LoginController implements Initializable {
     @FXML
     void updateUsername(KeyEvent event){
         username = txtUsername.getText() + event.getText();
+        lstUsers.setVisible(false);
     }
 
     @FXML
     void updatePassword(KeyEvent event){
         password = txtPassword.getText() + event.getText();
         txtPasswordShow.setText(password);
+        lstUsers.setVisible(false);
     }
 
     @FXML
     void updatePasswordShown(KeyEvent event){
         password = txtPasswordShow.getText() + event.getText();
         txtPassword.setText(password);
+        lstUsers.setVisible(false);
     }
 
     @FXML
-    void toSchedules(MouseEvent event) throws IOException {
-        toUserSchedules(mainPane);
+    void handleLoginClick(ActionEvent event) throws IOException {
+        User tempUser = new User(username, password);
+        if (tempUser.getUserID() == -999){
+            //User doesn't exists on database
+            Button ok = new Button("OK");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Username and password incorrect");
+            alert.setHeaderText("Incorrect username and password");
+            alert.setContentText("The username and password you entered do not exist. \n" +
+                    "Try signing up or looking for any errors in your log in information.");
+            alert.show();
+
+
+        } else {
+            //User does exist
+            actualUser = tempUser;
+
+            if (chkRemember.isSelected()){
+                if (userInfo.get(username) == null){
+                    userInfo.put(username, Pair.of(password, LocalDateTime.now()));
+                }
+            } else {
+                userInfo.remove(username);
+            }
+            String save = "";
+
+            for (String line : userInfo.keySet()){
+                LocalDateTime timeStamp = userInfo.get(line).getRight();
+                save = save + timeStamp.getYear() + "-" + timeStamp.getMonthValue() + "-" + timeStamp.getDayOfMonth() + "T" + timeStamp.getHour() + ":" + timeStamp.getMinute() + ":" + timeStamp.getSecond() + " : " + line + " - " + userInfo.get(line).getLeft() + "\n";
+            }
+
+            byte[] bytes = save.getBytes();
+            Files.write(Paths.get("userCookie.txt"), bytes);
+
+            System.out.println(actualUser);
+
+            toUserSchedules(mainPane);
+        }
+    }
+
+    @FXML
+    void handleSignUpClick(ActionEvent event){
+        User tempUser = new User(username, password);
+        if (tempUser.getUserID() == -999){
+            //User doesn't exist on database
+
+        } else {
+            //User does exist
+        }
     }
 
 }

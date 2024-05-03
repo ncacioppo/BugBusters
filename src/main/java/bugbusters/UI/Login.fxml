@@ -64,12 +64,12 @@
                               <Insets left="5.0" />
                            </padding>
                         </CheckBox>
-                        <Button maxWidth="300.0" mnemonicParsing="false" onMouseClicked="#toSchedules" text="Log In" GridPane.halignment="CENTER" GridPane.rowIndex="8" GridPane.valignment="CENTER">
+                        <Button maxWidth="300.0" mnemonicParsing="false" onAction="#handleLoginClick" text="Log In" GridPane.halignment="CENTER" GridPane.rowIndex="8" GridPane.valignment="CENTER">
                            <font>
                               <Font size="10.0" />
                            </font>
                         </Button>
-                        <Button maxWidth="300.0" mnemonicParsing="false" onMouseClicked="#toSchedules" text="Sign Up" GridPane.halignment="CENTER" GridPane.rowIndex="10" GridPane.valignment="CENTER">
+                        <Button maxWidth="300.0" mnemonicParsing="false" onAction="#handleSignUpClick" text="Sign Up" GridPane.halignment="CENTER" GridPane.rowIndex="10" GridPane.valignment="CENTER">
                            <font>
                               <Font size="10.0" />
                            </font>
@@ -93,7 +93,7 @@
                               <Font size="10.0" />
                            </font>
                         </CheckBox>
-                        <PasswordField fx:id="txtPassword" maxWidth="200.0" minWidth="200.0" onKeyPressed="#updatePassword" onMouseClicked="#showListView" prefWidth="200.0" promptText="Password" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+                        <PasswordField fx:id="txtPassword" maxWidth="200.0" minWidth="200.0" onKeyPressed="#updatePassword" prefWidth="200.0" promptText="Password" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
                         <TextField fx:id="txtPasswordShow" maxWidth="200.0" minWidth="200.0" onKeyPressed="#updatePasswordShown" prefWidth="200.0" promptText="Password" visible="false" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
                      </children>
                   </GridPane>

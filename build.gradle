@@ -28,6 +28,8 @@ dependencies {
     implementation 'io.github.bonigarcia:webdrivermanager:5.7.0'
 
     implementation 'org.json:json:20240303'
+    implementation 'org.jooq:jooq:3.19.7'
+
 }
 
 test {

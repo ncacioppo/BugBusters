@@ -37,6 +37,7 @@ public class DatabaseSearch {
         rebuildingQuery = false;
 
         spellcheck = new Spellcheck("spellcheck_dictionary.txt");
+        spellcheck.readToFile(conn);
     }
 
     /**
@@ -411,11 +412,18 @@ public class DatabaseSearch {
         // loop through all the words in userQuery and check spelling on each one
         // if a word is misspelled, we replace it with our best guess
         for (int i = 0; i < spellchecking.length; i++) {
-            String suggestion = spellcheck.check(spellchecking[i]);
+            if (!spellchecking[i].matches("\\d+")) {
+                String suggestion = "";
+                try {
+                    suggestion = spellcheck.check(spellchecking[i]);
+                } catch (FileNotFoundException f) {
+                    System.out.println("Dictionary file not found.");
+                }
 
-            // check returns "" if the string is spelled properly
-            if (!suggestion.isEmpty()) {
-                spellchecking[i] = suggestion;
+                // check returns "" if the string is spelled properly
+                if (!suggestion.isEmpty()) {
+                    spellchecking[i] = suggestion;
+                }
             }
         }
         // rebuild the array into a string we can return

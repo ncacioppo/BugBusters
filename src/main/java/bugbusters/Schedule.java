@@ -24,14 +24,15 @@ public class Schedule {
 
 
     // used for testing
-    public Schedule(int userID, String name, Term term, List<Course> courses){
+    public Schedule(int scheduleID, int userID, String name, Term term, List<Course> courses){
+        setScheduleID(scheduleID);
         setName(name);
         setTerm(term);
         setCourses(courses);
         setUserID(userID);
         // scheduleID defaults to 0 because the database starts generating IDs at 1,
         // so an ID of 0 signifies a schedule that has not been saved yet
-        setScheduleID(0);
+//        setScheduleID(0);
 
         undoStack = new Stack<>();
         redoStack = new Stack<>();
@@ -450,10 +451,11 @@ public class Schedule {
                     "FROM " +
                         "(SELECT * " +
                         "FROM schedule_course " +
-                        "WHERE UserID = ?) AS s " +
+                        "WHERE UserID = ? AND ScheduleID = ?) AS s " +
                     "LEFT JOIN course AS c " +
                     "USING(CourseID);");
             ps.setInt(1, userID);
+            ps.setInt(2, scheduleID);
 
             ResultSet rs = ps.executeQuery();
             setCourses(DatabaseSearch.readCourseResults(rs));

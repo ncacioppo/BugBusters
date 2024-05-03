@@ -8,6 +8,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ScheduleTest {
 
+    @ Test
+    void schedule_courseBug() {
+        User user = new User("JDusername", "JDpassword");
+        for (Schedule s : user.getSchedules()) {
+            System.out.println(s.getName());
+            for (Course c : s.getCourses()) {
+                System.out.println(c.getId() + "   " + c.getDepartment() + " " + c.getCode());
+            }
+            System.out.println();
+        }
+    }
+
     @Test
     void undoChange() {
         User user = new User();

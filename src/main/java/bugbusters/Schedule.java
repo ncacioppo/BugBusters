@@ -25,7 +25,8 @@ public class Schedule {
 
 
     // used for testing
-    public Schedule(int userID, String name, Term term, List<Course> courses, List<Course> events){
+    public Schedule(int scheduleID, int userID, String name, Term term, List<Course> courses,  List<Course> events){
+        setScheduleID(scheduleID);
         setName(name);
         setTerm(term);
         setCourses(courses);
@@ -623,10 +624,11 @@ public class Schedule {
                     "FROM " +
                         "(SELECT * " +
                         "FROM schedule_course " +
-                        "WHERE UserID = ?) AS s " +
+                        "WHERE UserID = ? AND ScheduleID = ?) AS s " +
                     "LEFT JOIN course AS c " +
                     "USING(CourseID);");
             ps.setInt(1, userID);
+            ps.setInt(2, scheduleID);
 
             ResultSet rs = ps.executeQuery();
             setCourses(DatabaseSearch.readCourseResults(rs));

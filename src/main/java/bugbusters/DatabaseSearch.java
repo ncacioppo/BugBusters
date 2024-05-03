@@ -1,5 +1,7 @@
 package bugbusters;
 
+import org.checkerframework.checker.units.qual.C;
+
 import java.io.FileNotFoundException;
 import java.sql.*;
 import java.time.LocalTime;
@@ -20,6 +22,7 @@ public class DatabaseSearch {
     private final int COURSE_CODE_MAX = 699;
 
     private final Spellcheck spellcheck;
+    private User user;
 
     /**
      * Constructor for DatabaseSearch
@@ -40,6 +43,23 @@ public class DatabaseSearch {
         spellcheck.readToFile(conn);
     }
 
+
+    public DatabaseSearch(Connection conn, User user) {
+        this.cache = Cache.getInstance();
+        this.conn = conn;
+        this.filters = new ArrayList<>();
+        this.keywordFilters = new ArrayList<>();
+        this.searchTerm = "";
+        resetQuery();
+
+        filtered = false;
+        rebuildingQuery = false;
+
+        spellcheck = new Spellcheck("spellcheck_dictionary.txt");
+        spellcheck.readToFile(conn);
+
+        this.user = user;
+    }
     /**
      * Searches for courses based on user input in search bar.
      * Searches name, department, code, and instructor for full search term and each word
@@ -178,7 +198,53 @@ public class DatabaseSearch {
         //check cache for ps.toString
         CacheItem item = cache.getItem(ps);
         results = (ArrayList<Course>) item.getElement();
+
+        majorMinorSort();
         cache.checkAndRefresh();
+    }
+
+    /**
+     * Sort the search results to prioritize classes in the user's major/minor, displaying those at the top
+     */
+    public void majorMinorSort() {
+        ArrayList<Course> majorCourses = new ArrayList<>();
+        ArrayList<Course> minorCourses = new ArrayList<>();
+        ArrayList<Course> otherCourses = new ArrayList<>();
+        boolean removed;
+        for (Course course : results) {
+            removed = false;
+            // 1. check user majors for match
+            for (Major major : user.getUserMajors()) {
+                if (major.getDepartment().equals(course.getDepartment())) {
+                    majorCourses.add(course);
+                    removed = true;
+                    break;
+                }
+            }
+            // 2. check user minors for match
+            if (!removed) {
+                for (Minor minor : user.getUserMinors()) {
+                    if (minor.getMinorName().equals(course.getDepartment())) {
+                        if (!majorCourses.contains(course)) {
+                            minorCourses.add(course);
+                            removed = true;
+                            break;
+                        }
+                    }
+                }
+                // 3. if we didn't add it to relevant courses, add it to the rest of the list
+                if (!removed) {
+                    otherCourses.add(course);
+                }
+            }
+
+        }
+        // add priority results in order, then assign the new list to results
+        ArrayList<Course> newResults = new ArrayList<>();
+        newResults.addAll(majorCourses);
+        newResults.addAll(minorCourses);
+        newResults.addAll(otherCourses);
+        results = newResults;
     }
 
     /**
@@ -240,6 +306,7 @@ public class DatabaseSearch {
         } catch(SQLException e) {
             System.out.println(e.getMessage());
         }
+
         return results;
     }
 
@@ -412,6 +479,7 @@ public class DatabaseSearch {
         // loop through all the words in userQuery and check spelling on each one
         // if a word is misspelled, we replace it with our best guess
         for (int i = 0; i < spellchecking.length; i++) {
+            // we don't run the spellchecker for numbers
             if (!spellchecking[i].matches("\\d+")) {
                 String suggestion = "";
                 try {
@@ -510,11 +578,6 @@ public class DatabaseSearch {
     }
     public ArrayList<Course> getResults() {
         return results;
-    }
-
-    private void spellcheck() {
-        Scanner scn = new Scanner(searchTerm);
-
     }
     public String getPSasString() {
         return ps.toString();

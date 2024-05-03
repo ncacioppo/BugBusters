@@ -56,7 +56,7 @@ public class SearchCalendarController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle){
-        dbSearch = new DatabaseSearch(actualUser.getRegistrar().getConn());
+        dbSearch = new DatabaseSearch(actualUser.getRegistrar().getConn(), actualUser);
         ObservableList<Course> items = FXCollections.observableArrayList(searchCourses);
         lstCourses.setItems(items);
 

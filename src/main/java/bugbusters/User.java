@@ -33,7 +33,7 @@ public class User {
         this.majors = new ArrayList<Major>();
         this.minors = new ArrayList<Minor>();
         this.schedules = new ArrayList<>();
-        this.registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        this.registrar = new Registrar("schemaBugBuster","u111111","p111111");
         this.userID = addUserToDatabase();
     }
 
@@ -214,11 +214,11 @@ public class User {
         try {
             PreparedStatement ps = registrar.getConn().prepareStatement("" +
                     "SELECT m.Title, u.ReqYear " +
-                    "FROM (SELECT MinorID, ReqYear " +
+                    "FROM (SELECT Dept, ReqYear " +
                     "FROM user_minors " +
                     "WHERE UserID = ?) AS u " +
                     "LEFT JOIN minor m " +
-                    "ON u.MinorID = m.MinorID;");
+                    "ON u.Dept = m.Dept;");
             ps.setInt(1, userID);
 
             ResultSet rs = ps.executeQuery();
@@ -251,7 +251,7 @@ public class User {
                 int year = rs.getInt(3);
                 String semester = rs.getString(4);
                 Term term = new Term(semester, year);
-                Schedule schedule = new Schedule(userID, name, term, new ArrayList<>(), new ArrayList<>());
+                Schedule schedule = new Schedule(scheduleID, userID, name, term, new ArrayList<>(), new ArrayList<>());
                 schedule.setCoursesFromDB(registrar.getConn());
                 this.schedules.add(schedule);
             }
@@ -489,7 +489,8 @@ public class User {
                     "SELECT MajorID, Dept " +
                     "FROM major " +
                     "where Title = ?;");
-            ps.setString(1, major.getMajorName());
+            String tmp = major.getMajorName().replaceFirst("^(B\\.S\\. in|B\\.A\\. in)\\s*", "");
+            ps.setString(1, tmp);
 
             ResultSet rs1 = ps.executeQuery();
             int majorID = 0;
@@ -540,8 +541,9 @@ public class User {
             PreparedStatement addMinor = registrar.getConn().prepareStatement("" +
                     "INSERT INTO user_minors VALUES(?, ?, ?, ?)");
             addMinor.setInt(1, userID);
-            addMinor.setInt(3, minorID);
-            addMinor.setInt(4, minor.getReqYear());
+            addMinor.setInt(2, minorID);
+            addMinor.setInt(3, minor.getReqYear());
+            addMinor.setString(4, minor.getMinorName());
 
             rows = addMinor.executeUpdate();
 

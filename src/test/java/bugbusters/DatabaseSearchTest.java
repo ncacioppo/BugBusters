@@ -394,5 +394,19 @@ class DatabaseSearchTest {
         assertEquals(81, results.size());
         registrar.disconnectFromDB();
     }
+
+    @Test
+    public void majorMinorSort() {
+        User user = new User();
+        Registrar registrar = user.getRegistrar();
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn(), user);
+        //user.removeUserMajor("Computer Science");
+        user.addUserMajor("B.S. in Computer Science", 2022);
+
+        search.keywordSearch("progrm");
+        for (Course course : search.getResults()) {
+            System.out.println(course);
+        }
+    }
 }
 

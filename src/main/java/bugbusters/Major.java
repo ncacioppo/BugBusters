@@ -1,12 +1,13 @@
 package bugbusters;
 
+import java.sql.Connection;
 import java.util.List;
 
 public class Major {
-    private String majorName;
-    private int reqYr;
+    private final String majorName;
+    private final int reqYr;
+    private final String department;
 
-//    private List<Course> courses;
 
     /**
      * Constructor for Major
@@ -16,6 +17,7 @@ public class Major {
     public Major(String majorName, int reqYr){
         this.majorName = majorName;
         this.reqYr = reqYr;
+        this.department = setDepartment(majorName);
     }
 
     /**
@@ -26,22 +28,24 @@ public class Major {
     }
 
     public int getReqYear() { return reqYr; }
-//
-//
-//    private void setCourses(List<Course> courses){
-//
-//    }
-//    public List<Course> getCourses(){
-//        return null;
-//    }
-//
-//
-//    public boolean addCourse(Course course){
-//        return false;
-//    }
-//
-//    public Course removeCourse(Course course){
-//        return null;
-//    }
+
+    private String setDepartment(String majorName) {
+        majorName = majorName.toLowerCase();
+        if (majorName.contains("computer science")) {
+            return "COMP";
+        } else if (majorName.contains("business statistics")) {
+            return "MNGT";
+        } else if (majorName.contains("accounting")) {
+            return "ACCT";
+        } else if (majorName.contains("biblical")) {
+            return "RELI";
+        } else if (majorName.contains("philosophy")) {
+            return "PHIL";
+        }
+        return "";
+    }
+
+    public String getDepartment() { return department; }
+
 
 }

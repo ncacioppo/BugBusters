@@ -259,7 +259,7 @@ public class Run {
                 case "CREATE":
                     try {
                         Term createTerm = new Term(input[2] + " " + input[3]);
-                        schedules.add(new Schedule(user, input[1], createTerm, new ArrayList<>()));
+                        schedules.add(new Schedule(user, input[1], createTerm, new ArrayList<>(), new ArrayList<>()));
                     } catch (Exception e){
                         System.out.println("Incorrect usage of CREATE, usage Example:\n" + terminalString + "Schedule -> CREATE schedulename spring 2021");
                     }

@@ -1,10 +1,13 @@
 package bugbusters.UI;
 
+import bugbusters.Course;
+import bugbusters.Schedule;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 
+import javax.swing.text.html.ImageView;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -15,6 +18,8 @@ public class SearchListController implements Initializable {
 
     @FXML
     private BorderPane mainPane;
+    @FXML
+    private ImageView addButton;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle){
@@ -35,5 +40,8 @@ public class SearchListController implements Initializable {
         toSearchCalendar(mainPane);
     }
 
-
+    @FXML
+    public void toConflict(MouseEvent event) throws IOException {
+        handleConflict(mainPane); // todo: make if statement
+    }
 }

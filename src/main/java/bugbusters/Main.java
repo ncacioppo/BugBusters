@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 import static bugbusters.Run.run;
 
-public class Main extends Application{
+public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         URL url = new File("src/main/java/bugbusters/UI/Login.fxml").toURI().toURL();

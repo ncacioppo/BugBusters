@@ -247,7 +247,7 @@ public class Course {
      * @return the actual name of the day
      */
     private Day toDay(String dayChar){
-        Day out;
+        Day out = Day.MONDAY;
 
         switch (dayChar.toUpperCase()) {
             case "M":
@@ -265,9 +265,6 @@ public class Course {
             case "F":
                 out = Day.FRIDAY;
                 break;
-            default:
-                System.out.println(dayChar);
-                out = Day.NONE;
         }
 
         return out;

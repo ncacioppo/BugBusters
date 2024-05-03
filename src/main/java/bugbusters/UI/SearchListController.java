@@ -1,7 +1,6 @@
 package bugbusters.UI;
 
-import bugbusters.Course;
-import bugbusters.Schedule;
+import bugbusters.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,6 +10,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
@@ -19,6 +19,7 @@ import javax.swing.text.html.ImageView;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.ResourceBundle;
 
 import static bugbusters.UI.Globals.*;
@@ -43,10 +44,15 @@ public class SearchListController implements Initializable {
     @FXML
     private ChoiceBox termFilter;
     @FXML
-    private ChoiceBox yearFilter;
+    private ChoiceBox professorFilter;
+    @FXML
+    private TextField txtKeyWord;
+
+    private DatabaseSearch dbSearch;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle){
+        dbSearch = new DatabaseSearch(actualUser.getRegistrar().getConn());
         ObservableList<Course> items = FXCollections.observableArrayList(searchCourses);
         lstCourses.setItems(items);
 
@@ -57,17 +63,98 @@ public class SearchListController implements Initializable {
 
         for (Course course : searchCourses){
             departments.add(course.getDepartment());
-            seasons.add(course.getTerm().getSeason());
-            years.add(course.getTerm().getYear());
+            terms.add(course.getTerm().toString());
+            professors.add(course.getInstructor());
         }
+        ArrayList<String> temp = new ArrayList<>(professors);
+        Collections.sort(temp);
         ObservableList<String> departmentList = FXCollections.observableArrayList(departments);
+        deptFilter.getItems().add("");
         deptFilter.getItems().addAll(departmentList);
 
-        ObservableList<String> seasonList = FXCollections.observableArrayList(seasons);
+        ObservableList<String> seasonList = FXCollections.observableArrayList(terms);
+        termFilter.getItems().add("");
         termFilter.getItems().addAll(seasonList);
 
-        ObservableList<Integer> yearList = FXCollections.observableArrayList(years);
-        yearFilter.getItems().addAll(yearList);
+        ObservableList<String> professorList = FXCollections.observableArrayList(temp);
+        professorFilter.getItems().add("");
+        professorFilter.getItems().addAll(professorList);
+
+        deptFilter.setOnAction(event -> {
+            if (!deptFilter.getValue().toString().equalsIgnoreCase("")) {
+                dbSearch.removeFilter(Filter.DEPARTMENT, prevDept);
+                prevDept = deptFilter.getValue().toString();
+                dbSearch.applyFilter(Filter.DEPARTMENT, deptFilter.getValue().toString());
+            } else {
+                dbSearch.removeFilter(Filter.DEPARTMENT, prevDept);
+                prevDept = deptFilter.getValue().toString();
+            }
+            ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
+            lstCourses.setItems(searchResults);
+        });
+
+        termFilter.setOnAction(event-> {
+            if (!termFilter.getValue().toString().equalsIgnoreCase("")) {
+                dbSearch.removeFilter(Filter.TERM, prevTerm);
+                prevTerm = termFilter.getValue().toString();
+                dbSearch.applyFilter(Filter.TERM, termFilter.getValue().toString());
+            } else {
+                dbSearch.removeFilter(Filter.TERM, prevTerm);
+                prevTerm = termFilter.getValue().toString();
+            }
+            ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
+            lstCourses.setItems(searchResults);
+        });
+
+        professorFilter.setOnAction(event-> {
+            if (!professorFilter.getValue().toString().equalsIgnoreCase("")) {
+                dbSearch.removeFilter(Filter.PROFESSOR, prevProf);
+                prevProf = professorFilter.getValue().toString();
+                dbSearch.applyFilter(Filter.PROFESSOR, professorFilter.getValue().toString());
+            } else {
+                dbSearch.removeFilter(Filter.PROFESSOR, prevProf);
+                prevProf = professorFilter.getValue().toString();
+            }
+            ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
+            lstCourses.setItems(searchResults);
+        });
+
+    }
+
+    @FXML
+    public void handleMinCode(KeyEvent event){
+        String min = minCode.getText() + event.getText();
+        dbSearch.removeFilter(Filter.CODE_MIN, prevMin);
+        prevMin = min;
+        dbSearch.applyFilter(Filter.CODE_MIN, min);
+
+        ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
+        lstCourses.setItems(searchResults);
+    }
+
+    @FXML
+    public void handleMaxCode(KeyEvent event){
+        String max = maxCode.getText() + event.getText();
+        dbSearch.removeFilter(Filter.CODE_MAX, prevMax);
+        prevMax = max;
+        dbSearch.applyFilter(Filter.CODE_MAX, max);
+
+        ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
+        lstCourses.setItems(searchResults);
+    }
+
+    @FXML void handleKeyword(KeyEvent event){
+
+        String keyWord = txtKeyWord.getText() + event.getText();
+
+        txtDescription.setText("KeyWord: " + keyWord +"\nprevKeyWord: " + prevKeyword);
+
+        dbSearch.removeFilter(Filter.KEYWORD, prevKeyword);
+        prevKeyword = keyWord;
+        dbSearch.applyFilter(Filter.KEYWORD, keyWord);
+
+        ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
+        lstCourses.setItems(searchResults);
     }
 
     @FXML

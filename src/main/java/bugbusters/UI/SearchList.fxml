@@ -116,7 +116,7 @@
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <TextField maxHeight="25.0" maxWidth="400.0" promptText="Search" GridPane.halignment="LEFT" GridPane.valignment="TOP">
+                  <TextField fx:id="txtKeyWord" maxHeight="25.0" maxWidth="400.0" promptText="Search" GridPane.halignment="LEFT" GridPane.valignment="TOP">
                      <GridPane.margin>
                         <Insets left="5.0" right="5.0" top="5.0" />
                      </GridPane.margin>
@@ -135,7 +135,7 @@
                               <Insets />
                            </GridPane.margin>
                         </ChoiceBox>
-                        <ChoiceBox fx:id="yearFilter" maxHeight="30.0" maxWidth="190.0" minHeight="30.0" minWidth="190.0" prefHeight="30.0" prefWidth="190.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                        <ChoiceBox fx:id="professorFilter" maxHeight="30.0" maxWidth="190.0" minHeight="30.0" minWidth="190.0" prefHeight="30.0" prefWidth="190.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
                      </children>
                   </GridPane>
                   <GridPane GridPane.rowIndex="2">
@@ -180,12 +180,12 @@
                               <Insets right="5.0" />
                            </GridPane.margin>
                         </Text>
-                        <TextField fx:id="minCode" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+                        <TextField fx:id="minCode" onKeyPressed="#handleMinCode" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
                            <GridPane.margin>
                               <Insets left="10.0" />
                            </GridPane.margin>
                         </TextField>
-                        <TextField fx:id="maxCode" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+                        <TextField fx:id="maxCode" onKeyPressed="#handleMaxCode" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
                            <GridPane.margin>
                               <Insets right="10.0" />
                            </GridPane.margin>

@@ -198,6 +198,7 @@ public class LoginController implements Initializable {
             Files.write(Paths.get("userCookie.txt"), bytes);
 
             searchCourses = actualUser.getRegistrar().getAllCourses();
+            currentCourse = searchCourses.get(0);
 
             toUserSchedules(mainPane);
         }

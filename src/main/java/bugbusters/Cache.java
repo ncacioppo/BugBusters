@@ -12,7 +12,7 @@ public class Cache {
     private int currentSize = 0;
     private ConcurrentLinkedDeque<PreparedStatement> eQ;   //eviction queue
     private ConcurrentHashMap<PreparedStatement, CacheItem> LRUcache;    //Items will be mostly database search results
-    private final long TTL = 180*1000; //TTL=timetolive, three minutes
+    private final long TTL = 600*1000; //TTL=timetolive, ten minutes
     public static Cache single_instance = null;
 
     /**
@@ -66,6 +66,10 @@ public class Cache {
         return toReturn;
     }
 
+    /**
+     * Keep key in cache for longer by moving it to the back of the eviction queue
+     * @param ps
+     */
     private void delayKeyInEQ(PreparedStatement ps) {
         for(PreparedStatement eQ_key : eQ) {
             if(eQ_key.toString().equals(ps.toString())) {
@@ -76,6 +80,10 @@ public class Cache {
         }
     }
 
+    /**
+     * @param ps
+     * @return PreparedStatement key from cache
+     */
     private PreparedStatement getKeyFromLRUcache(PreparedStatement ps) {
         for(PreparedStatement LRU_key : LRUcache.keySet()) {
             if(LRU_key.toString().equals(ps.toString())) {
@@ -85,6 +93,11 @@ public class Cache {
         return null;
     }
 
+    /**
+     * Executes PreparedStatement in MySQL
+     * @param key
+     * @return search results from query as ArrayList of courses
+     */
     private ArrayList<Course> executeDatabaseCall(PreparedStatement key) {
         try {
             ResultSet rs = key.executeQuery();
@@ -95,6 +108,10 @@ public class Cache {
         return new ArrayList<Course>();  //returns no search results if error
     }
 
+    /**
+     * @param results
+     * @return top 10 courses from search results
+     */
     private ArrayList<Course> getTopResults(ArrayList<Course> results) {
         int numResults = results.size();
         int numTopResults;
@@ -111,6 +128,7 @@ public class Cache {
     }
 
     /**
+     * Removes items from cache that have been in cache longer than TTL
      * Currently called after executing a search query in DatabaseSearch.executeQuery()
      */
     public void checkAndRefresh() {
@@ -125,6 +143,9 @@ public class Cache {
         }
     }
 
+    /**
+     * Empties the cache
+     */
     public void clearCache() {
         eQ = new ConcurrentLinkedDeque<>();
         LRUcache = new ConcurrentHashMap<>();

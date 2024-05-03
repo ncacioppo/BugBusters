@@ -19,6 +19,7 @@ public class Registrar {
     private final int MINOR_LIMIT = 4;   //limit to number of majors a user may have in software
     private final String SPRING_GRAD_MONTH = "MAY";
     private final String FALL_GRAD_MONTH = "DECEMBER";
+
     /**
      * Constructor for Registrar.
      * Connects to the database with given credentials and pulls major and minor names.
@@ -43,6 +44,177 @@ public class Registrar {
         }
     }
 
+
+    /**
+     * Connects to database with credentials
+     * @param schema
+     * @param username
+     * @param password
+     * @return
+     */
+    private boolean connectToDB(String schema, String username, String password) {
+        try {
+            //Get a properties variable so that we can pass the username and password to
+            // the database.
+            Properties info = new Properties();
+
+            //Set the username and password
+            info.put("user", username);
+            info.put("password", password);
+
+            //Connect to the database (schemabugbuster)
+            conn = DriverManager.getConnection("jdbc:mysql://CSDB1901/" + "schemaBugBuster", info);
+            //TODO: delete this print statement after testing
+            System.out.println("Connection successful");
+
+        } catch(SQLException e) {
+            //TODO: delete this print statement after testing
+            System.out.println("Connection unsuccessful");
+            System.out.println(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Checks if registrar is connected to the database; if so, disconnects from database.
+     * @return true if registrar is no longer connected to the database.
+     */
+    public boolean disconnectFromDB() {
+        try {
+            if (conn != null) {
+                conn.close();
+            }
+        } catch(SQLException e) {
+            //TODO: delete this print statement after testing
+            System.out.println("Unable to disconnect from database");
+            System.out.println(e.getMessage());
+            return false;
+        }
+        //TODO: delete this print statement after testing
+        System.out.println("Successfully disconnected");
+        return true;
+    }
+
+
+    /**
+     * Queries database for user's username and password
+     * @param username
+     * @param password
+     * @return userID from DB or -999 if user not found in DB
+     */
+    public int loginUser(String username, String password) {
+        try {
+            PreparedStatement ps = conn.prepareStatement("" +
+                    "SELECT userID FROM user WHERE username = ? AND password = ?");
+            ps.setString(1, username);
+            ps.setString(2, password);
+
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                int id = rs.getInt(1);
+                return id;
+            }
+
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return -999;
+    }
+
+
+    /**
+     * Save a schedule in the database, and generate a unique scheduleID for the entry
+     * @param schedule the schedule to be saved
+     * @return true if the schedule was successfully saved, and false otherwise
+     */
+    public boolean saveSchedule(Schedule schedule) {
+        try {
+            PreparedStatement checkIfExists = conn.prepareStatement("" +
+                    "SELECT * FROM schedule WHERE ScheduleID = ?");
+            checkIfExists.setInt(1, schedule.getScheduleID());
+            ResultSet rows = checkIfExists.executeQuery();
+            // if this schedule already exists, delete the old version and make a new entry for the correct version
+            if (rows.next()) {
+                deleteSchedule(schedule.getScheduleID());
+                schedule.setScheduleID(0);
+            }
+
+            // insert into schedule first, where we save the schedule object itself
+            int id = 0;
+
+            PreparedStatement newInsertion = conn.prepareStatement("INSERT INTO schedule (UserID, Name, Year, Semester) VALUES (?,?,?,?)");
+            newInsertion.setInt(1, schedule.getUserID());
+            newInsertion.setString(2, schedule.getName());
+            newInsertion.setInt(3, schedule.getTerm().getYear());
+            newInsertion.setString(4, schedule.getTerm().getSeason());
+
+            int addedRows = newInsertion.executeUpdate();
+            newInsertion = conn.prepareStatement("SELECT LAST_INSERT_ID();");
+            ResultSet results = newInsertion.executeQuery();
+            while (results.next()) {
+                id = results.getInt(1);
+            }
+            schedule.setScheduleID(id);
+
+            // now insert into schedule_course for each course in the schedule, where we save all the course objects
+            int courseRows = 1;
+            for (Course course : schedule.getCourses()) {
+                PreparedStatement insertScheduleEntry = conn.prepareStatement("INSERT INTO schedule_course VALUES " +
+                        "(?,?,?)");
+                insertScheduleEntry.setInt(1, schedule.getUserID());
+                insertScheduleEntry.setInt(2, schedule.getScheduleID());
+                insertScheduleEntry.setInt(3, course.getId());
+                if (insertScheduleEntry.executeUpdate() == 0) {
+                    courseRows = 0;
+                }
+            }
+
+            // if we inserted at least one row in each table, return true
+            if (addedRows > 0 && courseRows > 0) {
+                //System.out.println("Schedule successfully saved with ID = " + schedule.getScheduleID());
+                return true;
+            }
+        } catch(SQLException e) {
+            System.out.println("Failed to save schedule, Exception: " + e.getMessage());
+            return false;
+        }
+        return false;
+    }
+
+    /**
+     * Deletes all entries from the schedule and schedule_course tables that match the given parameter
+     * @param scheduleID the schedule to be deleted
+     * @return true if at least one entry was deleted, and false otherwise
+     */
+    public boolean deleteSchedule(int scheduleID) {
+        try {
+            PreparedStatement ps1 = conn.prepareStatement("" +
+                    "DELETE FROM schedule WHERE scheduleID = ?");
+            ps1.setInt(1, scheduleID);
+
+            PreparedStatement ps2 = conn.prepareStatement("" +
+                    "DELETE FROM schedule_course WHERE scheduleID = ?");
+            ps2.setInt(1, scheduleID);
+
+            int rows1 = ps1.executeUpdate();
+            int rows2 = ps2.executeUpdate();
+
+            if(rows1 > 0 && rows2 > 0) {
+                return true;
+            }
+        } catch(SQLException e) {
+            System.out.println("Failed to delete, Exception:  " + e.getMessage());
+            return false;
+        }
+        return false;
+    }
+
+
+    /**
+     * Scrapes current course list and updates course table in database.
+     * @return true if successfully updated course table
+     */
     public boolean updateCourses(){
 
         UpdatedCourses updatedCoursesObject = new UpdatedCourses();
@@ -183,6 +355,60 @@ public class Registrar {
 
 
     /**
+     * Calls connectToDB() and pulls major titles into an ArrayList
+     * B.S. in Computer Science, B.A. in Computer Science, or B.S. in Data Science
+     * combines ex. "B.S." + " in " + "Computer Science"
+     * @return set of major names
+     */
+    private void setMajorsFromDB() {
+        try {
+            PreparedStatement ps = conn.prepareStatement("" +
+                    "SELECT ArtSci, Title FROM major");
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()) {
+                String artsci = rs.getString(1);
+                String title = rs.getString(2);
+                String output;
+
+                if (artsci == null) {
+                    output = title;
+                } else if (artsci.equals("Arts")) {
+                    output = "B.A. in " + title;
+                } else {
+                    output = "B.S. in " + title;
+                }
+                majors.add(output);
+            }
+
+        } catch(SQLException e) {
+            System.out.println("Failed to select majors from database.");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Calls connectToDB() and pulls minor titles into an ArrayList
+     * @return set of major names
+     */
+    private void setMinorsFromDB() {
+        try {
+            PreparedStatement ps = conn.prepareStatement("" +
+                    "SELECT Title FROM minor");
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()) {
+                String title = rs.getString(1);
+                minors.add(title);
+            }
+
+        } catch(SQLException e) {
+            System.out.println("Failed to select minors from database.");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
      * @return list of sample major names
      */
     private ArrayList<String> getSampleMajors() {
@@ -217,88 +443,32 @@ public class Registrar {
         }
     }
 
+
     /**
-     * Connects to database with credentials
-     * @param schema
-     * @param username
-     * @param password
-     * @return
+     * @param reqYr
+     * @return true if input requirement year is valid according to registrar
      */
-    private boolean connectToDB(String schema, String username, String password) {
-        try {
-            //Get a properties variable so that we can pass the username and password to
-            // the database.
-            Properties info = new Properties();
-
-            //Set the username and password
-            info.put("user", username);
-            info.put("password", password);
-
-            //Connect to the database (schemabugbuster)
-            conn = DriverManager.getConnection("jdbc:mysql://CSDB1901/" + "schemaBugBuster", info);
-            //TODO: delete this print statement after testing
-            System.out.println("Connection successful");
-
-        } catch(SQLException e) {
-            //TODO: delete this print statement after testing
-            System.out.println("Connection unsuccessful");
-            System.out.println(e.getMessage());
-            return false;
+    public boolean isReqYr(int reqYr) {
+        for(int yr : getReqYrs()){
+            if(reqYr == yr) {
+                return true;
+            }
         }
-        return true;
+        return false;
     }
 
     /**
-     * Checks if registrar is connected to the database; if so, disconnects from database.
-     * @return true if registrar is no longer connected to the database.
+     * Takes major name and iterates through registrar's list of available majors.
+     * @param newMajor
+     * @return true if input major name exists in registrar's list of majors
      */
-    public boolean disconnectFromDB() {
-        try {
-            if (conn != null) {
-                conn.close();
+    public boolean isMajor(String newMajor) {
+        for(String major : majors) {
+            if(major.equalsIgnoreCase(newMajor)) {
+                return true;
             }
-        } catch(SQLException e) {
-            //TODO: delete this print statement after testing
-            System.out.println("Unable to disconnect from database");
-            System.out.println(e.getMessage());
-            return false;
         }
-        //TODO: delete this print statement after testing
-        System.out.println("Successfully disconnected");
-        return true;
-    }
-
-    /**
-     * Calls connectToDB() and pulls major titles into an ArrayList
-     * B.S. in Computer Science, B.A. in Computer Science, or B.S. in Data Science
-     * combines ex. "B.S." + " in " + "Computer Science"
-     * @return set of major names
-     */
-    private void setMajorsFromDB() {
-        try {
-            PreparedStatement ps = conn.prepareStatement("" +
-                    "SELECT ArtSci, Title FROM major");
-            ResultSet rs = ps.executeQuery();
-
-            while(rs.next()) {
-                String artsci = rs.getString(1);
-                String title = rs.getString(2);
-                String output;
-
-                if (artsci == null) {
-                    output = title;
-                } else if (artsci.equals("Arts")) {
-                    output = "B.A. in " + title;
-                } else {
-                    output = "B.S. in " + title;
-                }
-                majors.add(output);
-            }
-
-        } catch(SQLException e) {
-            System.out.println("Failed to select majors from database.");
-            System.out.println(e.getMessage());
-        }
+        return false;
     }
 
     /**
@@ -316,25 +486,12 @@ public class Registrar {
     }
 
 
+
     /**
-     * Calls connectToDB() and pulls minor titles into an ArrayList
-     * @return set of major names
+     * @return connection to database
      */
-    private void setMinorsFromDB() {
-        try {
-            PreparedStatement ps = conn.prepareStatement("" +
-                    "SELECT Title FROM minor");
-            ResultSet rs = ps.executeQuery();
-
-            while(rs.next()) {
-                String title = rs.getString(1);
-                minors.add(title);
-            }
-
-        } catch(SQLException e) {
-            System.out.println("Failed to select minors from database.");
-            System.out.println(e.getMessage());
-        }
+    public Connection getConn() {
+        return conn;
     }
 
     /**
@@ -356,37 +513,10 @@ public class Registrar {
     }
 
     /**
-     * Takes major name and iterates through registrar's list of available majors.
-     * @param newMajor
-     * @return true if input major name exists in registrar's list of majors
-     */
-    public boolean isMajor(String newMajor) {
-        for(String major : majors) {
-            if(major.equalsIgnoreCase(newMajor)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * @return list of available major names
      */
     public ArrayList<String> getMajors() {
         return majors;
-    }
-
-    /**
-     * @param reqYr
-     * @return true if input requirement year is valid according to registrar
-     */
-    public boolean isReqYr(int reqYr) {
-        for(int yr : getReqYrs()){
-            if(reqYr == yr) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -397,17 +527,30 @@ public class Registrar {
     }
 
     /**
-     * Pull all courses from database and set to Registrar's ArrayList of courses
-     */
-    public void setCourses() {
-    }
-
-    /**
      * @return ArrayList of Course objects from the database
      */
     public ArrayList<Course> getCourses() {
         return courses;
     }
+
+    public int get_MAJOR_LIMIT() {
+        return MAJOR_LIMIT;
+    }
+
+    public int get_MINOR_LIMIT() {
+        return MINOR_LIMIT;
+    }
+
+    public String get_SPRING_GRAD_MONTH() {
+        return SPRING_GRAD_MONTH;
+    }
+
+    public String get_FALL_GRAD_MONTH() {
+        return FALL_GRAD_MONTH;
+    }
+
+
+//Should only be called once for each data file to input them to course table.
 
     /**
      * Connects to database, parses course data from csv into course table in database.
@@ -438,7 +581,7 @@ public class Registrar {
         try {
             PreparedStatement ps = conn.prepareStatement("" +
                     "ALTER TABLE " + tableName + " ADD CourseID INT(6) " +
-                        "PRIMARY KEY AUTO_INCREMENT;");
+                    "PRIMARY KEY AUTO_INCREMENT;");
             ps.execute();
             return true;
         } catch(SQLException e) {
@@ -555,7 +698,7 @@ public class Registrar {
 
             PreparedStatement ps = conn.prepareStatement("" +
                     "INSERT INTO course VALUES" +
-                        "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                    "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
             //Pass in parameters
 //            ps.setInt(1,courseID);
@@ -662,155 +805,4 @@ public class Registrar {
         return false;
     }
 
-    /**
-     * Prints "Attribute: Value" for each attribute of a course.
-     * @param courseAttributes
-     */
-    public void printCourseAttributes(HashMap<String, Object> courseAttributes) {
-        for (String attr : courseAttributes.keySet()) {
-            System.out.println(attr + ": " + courseAttributes.get(attr) + "     " +
-                    courseAttributes.get(attr).getClass());
-        }
-    }
-
-    /**
-     * @return connection to database
-     */
-    public Connection getConn() {
-        return conn;
-    }
-
-    // TODO: Prevent duplicate names
-    /* public static int checkName(String name) {
-        try {
-            PreparedStatement nameCheck = conn.prepareStatement("SELECT * FROM Schedule WHERE Name = ?");
-            nameCheck.setString(1, name);
-            return nameCheck.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println("SQL Error: " + e.getMessage());
-        }
-        return -1;
-    }*/
-
-    /**
-     * Save a schedule in the database, and generate a unique scheduleID for the entry
-     * @param schedule the schedule to be saved
-     * @return true if the schedule was successfully saved, and false otherwise
-     */
-    public boolean saveSchedule(Schedule schedule) {
-        try {
-            PreparedStatement checkIfExists = conn.prepareStatement("" +
-                    "SELECT * FROM schedule WHERE ScheduleID = ?");
-            checkIfExists.setInt(1, schedule.getScheduleID());
-            ResultSet rows = checkIfExists.executeQuery();
-            // if this schedule already exists, delete the old version and make a new entry for the correct version
-            if (rows.next()) {
-                deleteSchedule(schedule.getScheduleID());
-                schedule.setScheduleID(0);
-            }
-
-            // insert into schedule first, where we save the schedule object itself
-            int id = 0;
-
-            PreparedStatement newInsertion = conn.prepareStatement("INSERT INTO schedule (UserID, Name, Year, Semester) VALUES (?,?,?,?)");
-            newInsertion.setInt(1, schedule.getUserID());
-            newInsertion.setString(2, schedule.getName());
-            newInsertion.setInt(3, schedule.getTerm().getYear());
-            newInsertion.setString(4, schedule.getTerm().getSeason());
-
-            int addedRows = newInsertion.executeUpdate();
-            newInsertion = conn.prepareStatement("SELECT LAST_INSERT_ID();");
-            ResultSet results = newInsertion.executeQuery();
-            while (results.next()) {
-                id = results.getInt(1);
-            }
-            schedule.setScheduleID(id);
-
-            // now insert into schedule_course for each course in the schedule, where we save all the course objects
-            int courseRows = 1;
-            for (Course course : schedule.getCourses()) {
-                PreparedStatement insertScheduleEntry = conn.prepareStatement("INSERT INTO schedule_course VALUES " +
-                        "(?,?,?)");
-                insertScheduleEntry.setInt(1, schedule.getUserID());
-                insertScheduleEntry.setInt(2, schedule.getScheduleID());
-                insertScheduleEntry.setInt(3, course.getId());
-                if (insertScheduleEntry.executeUpdate() == 0) {
-                    courseRows = 0;
-                }
-            }
-
-            // if we inserted at least one row in each table, return true
-            if (addedRows > 0 && courseRows > 0) {
-                //System.out.println("Schedule successfully saved with ID = " + schedule.getScheduleID());
-                return true;
-            }
-        } catch(SQLException e) {
-            System.out.println("Failed to save schedule, Exception: " + e.getMessage());
-            return false;
-        }
-        return false;
-    }
-
-    /**
-     * Deletes all entries from the schedule and schedule_course tables that match the given parameter
-     * @param scheduleID the schedule to be deleted
-     * @return true if at least one entry was deleted, and false otherwise
-     */
-    public boolean deleteSchedule(int scheduleID) {
-        try {
-            PreparedStatement ps1 = conn.prepareStatement("" +
-                    "DELETE FROM schedule WHERE scheduleID = ?");
-            ps1.setInt(1, scheduleID);
-
-            PreparedStatement ps2 = conn.prepareStatement("" +
-                    "DELETE FROM schedule_course WHERE scheduleID = ?");
-            ps2.setInt(1, scheduleID);
-
-            int rows1 = ps1.executeUpdate();
-            int rows2 = ps2.executeUpdate();
-
-            if(rows1 > 0 && rows2 > 0) {
-                return true;
-            }
-        } catch(SQLException e) {
-            System.out.println("Failed to delete, Exception:  " + e.getMessage());
-            return false;
-        }
-        return false;
-    }
-
-    public int loginUser(String username, String password) {
-        try {
-            PreparedStatement ps = conn.prepareStatement("" +
-                    "SELECT userID FROM user WHERE username = ? AND password = ?");
-            ps.setString(1, username);
-            ps.setString(2, password);
-
-            ResultSet rs = ps.executeQuery();
-            while(rs.next()) {
-                int id = rs.getInt(1);
-                return id;
-            }
-
-        } catch(SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return -999;
-    }
-
-    public int get_MAJOR_LIMIT() {
-        return MAJOR_LIMIT;
-    }
-
-    public int get_MINOR_LIMIT() {
-        return MINOR_LIMIT;
-    }
-
-    public String get_SPRING_GRAD_MONTH() {
-        return SPRING_GRAD_MONTH;
-    }
-
-    public String get_FALL_GRAD_MONTH() {
-        return FALL_GRAD_MONTH;
-    }
 }

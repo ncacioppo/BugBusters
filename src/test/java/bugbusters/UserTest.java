@@ -149,19 +149,4 @@ class UserTest {
 //        System.out.println(user.getCollegeYear());
 //    }
 
-    @Test
-    void getFirstName() {
-    }
-
-    @Test
-    void getLastName() {
-    }
-
-    @Test
-    void getMajors() {
-    }
-
-    @Test
-    void getMinors() {
-    }
 }

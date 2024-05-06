@@ -215,20 +215,24 @@ public class DatabaseSearch {
             removed = false;
             // 1. check user majors for match
             for (Major major : user.getUserMajors()) {
-                if (major.getDepartment().equals(course.getDepartment())) {
-                    majorCourses.add(course);
-                    removed = true;
-                    break;
+                if (major.getMajorName() != null) {
+                    if (major.getDepartment().equals(course.getDepartment())) {
+                        majorCourses.add(course);
+                        removed = true;
+                        break;
+                    }
                 }
             }
             // 2. check user minors for match
             if (!removed) {
                 for (Minor minor : user.getUserMinors()) {
-                    if (minor.getMinorName().equals(course.getDepartment())) {
-                        if (!majorCourses.contains(course)) {
-                            minorCourses.add(course);
-                            removed = true;
-                            break;
+                    if (minor.getMinorName() != null) {
+                        if (minor.getMinorName().equals(course.getDepartment())) {
+                            if (!majorCourses.contains(course)) {
+                                minorCourses.add(course);
+                                removed = true;
+                                break;
+                            }
                         }
                     }
                 }

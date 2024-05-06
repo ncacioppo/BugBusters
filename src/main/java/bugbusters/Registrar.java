@@ -282,11 +282,16 @@ public class Registrar {
 
         UpdatedCourses updatedCoursesObject = new UpdatedCourses();
 
+
         if (updatedCoursesObject.status) {
             ArrayList<Pair<Course, Pair<Integer, Integer>>> updatedCourses = updatedCoursesObject.updatedCourseList;
 
+            int countSize = 0;
+
             try {
-                for (Pair pair : updatedCourses) {
+                for (Pair<Course, Pair<Integer, Integer>> pair : updatedCourses) {
+                    System.out.println(((Course) pair.getLeft()).getTerm().getYear());
+                    countSize += 1;
                     PreparedStatement count = this.getConn().prepareStatement("" +
                             "SELECT COUNT(*) " +
                             "FROM course " +
@@ -305,76 +310,101 @@ public class Registrar {
                     }
 
                     if (numCourses == 0) {
-                        PreparedStatement max = this.getConn().prepareStatement("Select MAX(CourseID) From course");
-                        ResultSet rs1 = max.executeQuery();
-                        int maxNum = 0;
-                        if (rs1.next()) {
-                            maxNum = rs1.getInt(1);
-                        }
+                        if (((Course) pair.getLeft()).getDepartment().length() > 4){
 
-                        PreparedStatement ps = this.getConn().prepareStatement("INSERT INTO course VALUES " +
-                                "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? + 1);");
-                        ps.setInt(1, ((Course) pair.getLeft()).getTerm().getYear());
-                        ps.setString(2, ((Course) pair.getLeft()).getTerm().getSeason());
-                        ps.setString(3, ((Course) pair.getLeft()).getDepartment());
-                        ps.setInt(4, ((Course) pair.getLeft()).getCode());
-                        ps.setString(5, String.valueOf(((Course) pair.getLeft()).getSection()));
-                        ps.setString(6, ((Course) pair.getLeft()).getName());
-                        ps.setInt(7, ((Course) pair.getLeft()).getCredits());
-                        //total capacity
-                        ps.setInt(8, ((int) ((Pair) pair.getRight()).getRight()));
-                        //enrolled
-                        ps.setInt(9, ((int) ((Pair) pair.getRight()).getRight()) - ((int) ((Pair) pair.getRight()).getLeft()));
+                        } else {
+                            String realDept = "";
 
-                        String mon = "";
-                        String tue = "";
-                        String wed = "";
-                        String thu = "";
-                        String fri = "";
-                        for (MeetingTime meetingTime : ((Course) pair.getLeft()).getMeetingTimes()) {
-                            switch (meetingTime.getDay()) {
-                                case Day.MONDAY:
-                                    mon = "M";
-                                    break;
-                                case Day.TUESDAY:
-                                    tue = "T";
-                                    break;
-                                case Day.WEDNESDAY:
-                                    wed = "W";
-                                    break;
-                                case Day.THURSDAY:
-                                    thu = "R";
-                                    break;
-                                case Day.FRIDAY:
-                                    fri = "F";
+                            PreparedStatement dept = this.getConn().prepareStatement("" +
+                                    "SELECT * FROM department WHERE Dept = ?");
+                            dept.setString(1, ((Course) pair.getLeft()).getDepartment());
+
+                            ResultSet rs2 = dept.executeQuery();
+                            while (rs2.next()) {
+                                realDept = rs2.getString(1);
                             }
+
+                            if (realDept.equalsIgnoreCase("")) {
+                                PreparedStatement addDept = this.getConn().prepareStatement("" +
+                                        "INSERT INTO department VALUES(?)");
+                                addDept.setString(1, ((Course) pair.getLeft()).getDepartment());
+                                addDept.executeUpdate();
+                                realDept = ((Course) pair.getLeft()).getDepartment();
+                            }
+
+                            PreparedStatement max = this.getConn().prepareStatement("Select MAX(CourseID) From course");
+                            ResultSet rs1 = max.executeQuery();
+                            int maxNum = 0;
+                            if (rs1.next()) {
+                                maxNum = rs1.getInt(1);
+                            }
+
+                            PreparedStatement ps = this.getConn().prepareStatement("INSERT INTO course VALUES " +
+                                    "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? + 1);");
+                            ps.setInt(1, ((Course) pair.getLeft()).getTerm().getYear());
+                            ps.setString(2, ((Course) pair.getLeft()).getTerm().getSeason());
+
+                            ps.setString(3, realDept);
+
+                            ps.setInt(4, ((Course) pair.getLeft()).getCode());
+                            ps.setString(5, String.valueOf(((Course) pair.getLeft()).getSection()));
+                            ps.setString(6, ((Course) pair.getLeft()).getName());
+                            ps.setInt(7, ((Course) pair.getLeft()).getCredits());
+                            //total capacity
+                            ps.setInt(8, ((int) ((Pair) pair.getRight()).getRight()));
+                            //enrolled
+                            ps.setInt(9, ((int) ((Pair) pair.getRight()).getRight()) - ((int) ((Pair) pair.getRight()).getLeft()));
+
+                            String mon = "";
+                            String tue = "";
+                            String wed = "";
+                            String thu = "";
+                            String fri = "";
+                            for (MeetingTime meetingTime : ((Course) pair.getLeft()).getMeetingTimes()) {
+                                switch (meetingTime.getDay()) {
+                                    case Day.MONDAY:
+                                        mon = "M";
+                                        break;
+                                    case Day.TUESDAY:
+                                        tue = "T";
+                                        break;
+                                    case Day.WEDNESDAY:
+                                        wed = "W";
+                                        break;
+                                    case Day.THURSDAY:
+                                        thu = "R";
+                                        break;
+                                    case Day.FRIDAY:
+                                        fri = "F";
+                                }
+                            }
+                            ps.setString(10, mon);
+                            ps.setString(11, tue);
+                            ps.setString(12, wed);
+                            ps.setString(13, thu);
+                            ps.setString(14, fri);
+
+                            if (((Course) pair.getLeft()).getMeetingTimes().size() > 0) {
+                                ps.setTime(15, Time.valueOf(((Course) pair.getLeft()).getMeetingTimes().get(0).getStartTime()));
+                                ps.setTime(16, Time.valueOf(((Course) pair.getLeft()).getMeetingTimes().get(0).getEndTime()));
+                            } else {
+                                ps.setString(15, "");
+                                ps.setString(16, "");
+                            }
+
+
+                            if ((((Course) pair.getLeft()).getInstructor().split(" ")).length > 1) {
+                                ps.setString(17, ((Course) pair.getLeft()).getInstructor().split(" ")[1]);
+                            } else {
+                                ps.setString(17, "");
+                            }
+                            ps.setString(18, ((Course) pair.getLeft()).getInstructor().split(" ")[0]);
+                            ps.setString(19, "");
+                            ps.setString(20, "");
+                            ps.setInt(21, maxNum);
+
+                            int rows = ps.executeUpdate();
                         }
-                        ps.setString(10, mon);
-                        ps.setString(11, tue);
-                        ps.setString(12, wed);
-                        ps.setString(13, thu);
-                        ps.setString(14, fri);
-
-                        if (((Course) pair.getLeft()).getMeetingTimes().size() > 0) {
-                            ps.setTime(15, Time.valueOf(((Course) pair.getLeft()).getMeetingTimes().get(0).getStartTime()));
-                            ps.setTime(16, Time.valueOf(((Course) pair.getLeft()).getMeetingTimes().get(0).getEndTime()));
-                        } else {
-                            ps.setString(15, "");
-                            ps.setString(16, "");
-                        }
-
-
-                        if ((((Course) pair.getLeft()).getInstructor().split(" ")).length > 1) {
-                            ps.setString(17, ((Course) pair.getLeft()).getInstructor().split(" ")[1]);
-                        } else {
-                            ps.setString(17, "");
-                        }
-                        ps.setString(18, ((Course) pair.getLeft()).getInstructor().split(" ")[0]);
-                        ps.setString(19, "");
-                        ps.setString(20, "");
-                        ps.setInt(21, maxNum);
-
-                        int rows = ps.executeUpdate();
                     } else {
                         PreparedStatement updateCapacity = this.getConn().prepareStatement("" +
                                 "UPDATE course " +
@@ -404,10 +434,11 @@ public class Registrar {
                     }
                 }
                 System.out.println("Completely Done");
+                System.out.println("Size Coompleted = " + countSize);
                 return true;
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
-                System.out.println("Failed");
+                System.out.println("UhOh");
                 return false;
             }
         } else {

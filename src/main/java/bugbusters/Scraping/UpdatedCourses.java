@@ -39,6 +39,7 @@ public class UpdatedCourses {
             JSONArray jsonCourses = jsonObject.getJSONArray("classes");
              int count = 1;
 
+             int countSize = 0;
             for (Object bigObject : jsonCourses){
 
                 JSONObject object = (JSONObject)  bigObject;
@@ -63,6 +64,7 @@ public class UpdatedCourses {
 
                 Term term = null;
                 if (potSemester.split("_").length>1) {
+//                    System.out.println("Year: " + Integer.parseInt(potSemester.split("_")[0]));
                     term = new Term(potSemester.split("_")[1], Integer.parseInt(potSemester.split("_")[0]));
                 }
 
@@ -113,15 +115,23 @@ public class UpdatedCourses {
                     count += 1;
 
                     updatedCourseList.add(Pair.of(tempCourse, Pair.of(openSeats, totalSeats)));
+                    countSize += 1;
                 } else {
                     Course tempCourse = new Course(count, name, "Description", department, number, term, 'A', faculty, meetingTimes, credits);
                     count += 1;
+                    countSize += 1;
 
                     updatedCourseList.add(Pair.of(tempCourse, Pair.of(openSeats, totalSeats)));
                 }
 
 
-                System.out.println(name);
+//                System.out.println(name);
+            }
+            int maxYear = 0;
+            for (Pair<Course, Pair<Integer, Integer>> pair : updatedCourseList){
+                if (pair.getLeft().getTerm().getYear() > maxYear ){
+                    maxYear = pair.getLeft().getTerm().getYear();
+                }
             }
             System.out.println("Done");
             status = true;

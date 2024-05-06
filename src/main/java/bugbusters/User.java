@@ -2,6 +2,8 @@ package bugbusters;
 
 import bugbusters.Scraping.MyGCC;
 import org.apache.commons.lang3.tuple.Pair;
+import org.checkerframework.checker.units.qual.A;
+import org.jooq.SQL;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,7 +36,7 @@ public class User {
         this.minors = new ArrayList<Minor>();
         this.schedules = new ArrayList<>();
         this.registrar = new Registrar("schemaBugBuster","u111111","p111111");
-        this.userID = addUserToDatabase();
+//        this.userID = addUserToDatabase();
     }
 
     public User(String username, String password, String firstName, String lastName, int gradYear, String gradMonth) {
@@ -56,8 +58,8 @@ public class User {
         this.registrar = new Registrar("schemaBugBuster","u222222","p222222");
         this.majors = new ArrayList<>();
         this.minors = new ArrayList<>();
-        this.schedules = new ArrayList<>();
         this.userID = registrar.loginUser(username, password);
+        this.schedules = new ArrayList<>();
         if (userID == -999) {
             this.firstName = "";
             this.lastName = "";
@@ -65,8 +67,43 @@ public class User {
             setUserAttributesFromDB();
             setMajorsFromDB();
             setMinorsFromDB();
-            setSchedulesFromDB();
+            this.schedules = getSchedulesFromDB();
         }
+    }
+
+    public ArrayList<Schedule> getSchedulesFromDB(){
+
+        ArrayList<Schedule> out = new ArrayList<>();
+        DatabaseSearch dbs = new DatabaseSearch(this.getRegistrar().getConn(), this);
+        try{
+            PreparedStatement getSched = registrar.getConn().prepareStatement("" +
+                    "SELECT ScheduleID, Name, Year, Semester FROM schedule WHERE UserID = ?");
+            getSched.setInt(1, this.userID);
+            ResultSet rs1 = getSched.executeQuery();
+            while (rs1.next()){
+                int schedId = rs1.getInt(1);
+                Schedule addSched = new Schedule(schedId, this.userID, rs1.getString(2), new Term(rs1.getString(4), rs1.getInt(3)), new ArrayList<>(), new ArrayList<>());
+                PreparedStatement getCourseID = registrar.getConn().prepareStatement("" +
+                        "SELECT CourseID FROM schedule_course WHERE ScheduleID = ?");
+                getCourseID.setInt(1, schedId);
+                ResultSet rs2 = getCourseID.executeQuery();
+                while (rs2.next()){
+                    int courseID = rs2.getInt(1);
+                    dbs.applyFilter(Filter.ID, String.valueOf(courseID));
+                    addSched.addCourse(dbs.getResults().get(0));
+                    dbs.removeFilter(Filter.ID, String.valueOf(courseID));
+                }
+                out.add(addSched);
+            }
+
+
+
+        } catch (SQLException e){
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            System.out.println("Error in retrieving user schedule");
+        }
+        return out;
     }
 
     /**
@@ -229,33 +266,6 @@ public class User {
                 this.minors.add(minor);
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    /**
-     * Pulls user's schedules from database into user's ArrayList of Schedule objects.
-     */
-    private void setSchedulesFromDB() {
-        try {
-            PreparedStatement ps = registrar.getConn().prepareStatement("" +
-                    "SELECT ScheduleID, Name, Year, Semester " +
-                    "FROM schedule " +
-                    "WHERE UserID = ?;");
-            ps.setInt(1, userID);
-
-            ResultSet rs = ps.executeQuery();
-            while(rs.next()) {
-                int scheduleID = rs.getInt(1);
-                String name = rs.getString(2);
-                int year = rs.getInt(3);
-                String semester = rs.getString(4);
-                Term term = new Term(semester, year);
-                Schedule schedule = new Schedule(scheduleID, userID, name, term, new ArrayList<>(), new ArrayList<>());
-                schedule.setCoursesFromDB(registrar.getConn());
-                this.schedules.add(schedule);
-            }
-        } catch(SQLException e) {
             System.out.println(e.getMessage());
         }
     }

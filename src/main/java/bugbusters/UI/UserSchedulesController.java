@@ -76,9 +76,13 @@ public class    UserSchedulesController implements Initializable {
             }
         });
 
-        currentSchedule = userSchedules.get((new ArrayList<>(userSchedules.keySet())).get(0));
+        if (userSchedules.keySet().size() >0) {
+            currentSchedule = userSchedules.get((new ArrayList<>(userSchedules.keySet())).get(0));
+        }
 
-        scrlCalendar.setContent(createCalendarView(currentSchedule));
+        if (currentSchedule != null) {
+            scrlCalendar.setContent(createCalendarView(currentSchedule));
+        }
 
     }
 
@@ -135,7 +139,7 @@ public class    UserSchedulesController implements Initializable {
             int schedYear = year.getValue();
             String schedSemester = semester.getValue();
 
-            actualUser.addSchedule(new Schedule(0, shcedName, new Term(schedSemester, schedYear), new ArrayList<>(), new ArrayList<>()));
+            actualUser.addSchedule(new Schedule(actualUser, shcedName, new Term(schedSemester, schedYear), new ArrayList<>(), new ArrayList<>()));
 
             tbSchedules.getTabs().clear();
             for (Schedule sched : actualUser.getSchedules()){

@@ -74,6 +74,19 @@ class RegistrarTest {
 
     @Test
     void isReqYr() {
+        // 2020, 2021, 2022, 2023, and 2024 will all be considered valid requirement years
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+
+        assertFalse(registrar.isReqYr(2018));
+        assertFalse(registrar.isReqYr(2019));
+        assertTrue(registrar.isReqYr(2020));
+        assertTrue(registrar.isReqYr(2021));
+        assertTrue(registrar.isReqYr(2022));
+        assertTrue(registrar.isReqYr(2023));
+        assertTrue(registrar.isReqYr(2024));
+        assertFalse(registrar.isReqYr(2025));
+        assertFalse(registrar.isReqYr(-3492));
+        assertFalse(registrar.isReqYr(0));
     }
 
     @Test

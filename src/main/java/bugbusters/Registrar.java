@@ -9,6 +9,8 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Year;
 import java.util.*;
@@ -280,171 +282,219 @@ public class Registrar {
      */
     public boolean updateCourses(){
 
-        UpdatedCourses updatedCoursesObject = new UpdatedCourses();
+        boolean shouldUpdate = false;
+
+        try{
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime lastUpdate = LocalDateTime.now();
+            PreparedStatement getLastUpdate = this.getConn().prepareStatement("" +
+                    "SELECT MAX(lastUpdated) FROM updateTimeStamp;");
+            ResultSet rsLastUpdate = getLastUpdate.executeQuery();
+            while (rsLastUpdate.next()){
+                lastUpdate = rsLastUpdate.getTimestamp(1).toLocalDateTime();
+            }
+
+            if (Duration.between(lastUpdate, now).toSeconds() > 86400){
+                shouldUpdate = true;
+            }
+        } catch (Exception e){
+            shouldUpdate = true;
+            e.printStackTrace();
+            System.out.println("Error finding timestamp!");
+        }
+
+        if (shouldUpdate) {
+            UpdatedCourses updatedCoursesObject = new UpdatedCourses();
 
 
-        if (updatedCoursesObject.status) {
-            ArrayList<Pair<Course, Pair<Integer, Integer>>> updatedCourses = updatedCoursesObject.updatedCourseList;
+            if (updatedCoursesObject.status) {
+                ArrayList<Pair<Course, Pair<Integer, Integer>>> updatedCourses = updatedCoursesObject.updatedCourseList;
 
-            int countSize = 0;
+                int countSize = 0;
 
-            try {
-                for (Pair<Course, Pair<Integer, Integer>> pair : updatedCourses) {
-                    System.out.println(((Course) pair.getLeft()).getTerm().getYear());
-                    countSize += 1;
-                    PreparedStatement count = this.getConn().prepareStatement("" +
-                            "SELECT COUNT(*) " +
-                            "FROM course " +
-                            "WHERE CourseName = ? AND CourseCode = ? AND Section = ? AND Semester = ? AND Year = ?;");
-                    count.setString(1, ((Course) pair.getLeft()).getName());
-                    count.setInt(2, ((Course) pair.getLeft()).getCode());
-                    count.setString(3, String.valueOf(((Course) pair.getLeft()).getSection()));
-                    count.setString(4, ((Course) pair.getLeft()).getTerm().getSeason());
-                    count.setInt(5, ((Course) pair.getLeft()).getTerm().getYear());
+                try {
+                    for (Pair<Course, Pair<Integer, Integer>> pair : updatedCourses) {
+                        countSize += 1;
+                        PreparedStatement count = this.getConn().prepareStatement("" +
+                                "SELECT COUNT(*) " +
+                                "FROM course " +
+                                "WHERE CourseName = ? AND CourseCode = ? AND Section = ? AND Semester = ? AND Year = ?;");
+                        count.setString(1, ((Course) pair.getLeft()).getName());
+                        count.setInt(2, ((Course) pair.getLeft()).getCode());
+                        count.setString(3, String.valueOf(((Course) pair.getLeft()).getSection()));
+                        count.setString(4, ((Course) pair.getLeft()).getTerm().getSeason());
+                        count.setInt(5, ((Course) pair.getLeft()).getTerm().getYear());
 
-                    ResultSet rs = count.executeQuery();
+                        ResultSet rs = count.executeQuery();
 
-                    int numCourses = 0;
-                    if (rs.next()) {
-                        numCourses = rs.getInt(1);
-                    }
-
-                    if (numCourses == 0) {
-                        if (((Course) pair.getLeft()).getDepartment().length() > 4){
-
-                        } else {
-                            String realDept = "";
-
-                            PreparedStatement dept = this.getConn().prepareStatement("" +
-                                    "SELECT * FROM department WHERE Dept = ?");
-                            dept.setString(1, ((Course) pair.getLeft()).getDepartment());
-
-                            ResultSet rs2 = dept.executeQuery();
-                            while (rs2.next()) {
-                                realDept = rs2.getString(1);
-                            }
-
-                            if (realDept.equalsIgnoreCase("")) {
-                                PreparedStatement addDept = this.getConn().prepareStatement("" +
-                                        "INSERT INTO department VALUES(?)");
-                                addDept.setString(1, ((Course) pair.getLeft()).getDepartment());
-                                addDept.executeUpdate();
-                                realDept = ((Course) pair.getLeft()).getDepartment();
-                            }
-
-                            PreparedStatement max = this.getConn().prepareStatement("Select MAX(CourseID) From course");
-                            ResultSet rs1 = max.executeQuery();
-                            int maxNum = 0;
-                            if (rs1.next()) {
-                                maxNum = rs1.getInt(1);
-                            }
-
-                            PreparedStatement ps = this.getConn().prepareStatement("INSERT INTO course VALUES " +
-                                    "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? + 1);");
-                            ps.setInt(1, ((Course) pair.getLeft()).getTerm().getYear());
-                            ps.setString(2, ((Course) pair.getLeft()).getTerm().getSeason());
-
-                            ps.setString(3, realDept);
-
-                            ps.setInt(4, ((Course) pair.getLeft()).getCode());
-                            ps.setString(5, String.valueOf(((Course) pair.getLeft()).getSection()));
-                            ps.setString(6, ((Course) pair.getLeft()).getName());
-                            ps.setInt(7, ((Course) pair.getLeft()).getCredits());
-                            //total capacity
-                            ps.setInt(8, ((int) ((Pair) pair.getRight()).getRight()));
-                            //enrolled
-                            ps.setInt(9, ((int) ((Pair) pair.getRight()).getRight()) - ((int) ((Pair) pair.getRight()).getLeft()));
-
-                            String mon = "";
-                            String tue = "";
-                            String wed = "";
-                            String thu = "";
-                            String fri = "";
-                            for (MeetingTime meetingTime : ((Course) pair.getLeft()).getMeetingTimes()) {
-                                switch (meetingTime.getDay()) {
-                                    case Day.MONDAY:
-                                        mon = "M";
-                                        break;
-                                    case Day.TUESDAY:
-                                        tue = "T";
-                                        break;
-                                    case Day.WEDNESDAY:
-                                        wed = "W";
-                                        break;
-                                    case Day.THURSDAY:
-                                        thu = "R";
-                                        break;
-                                    case Day.FRIDAY:
-                                        fri = "F";
-                                }
-                            }
-                            ps.setString(10, mon);
-                            ps.setString(11, tue);
-                            ps.setString(12, wed);
-                            ps.setString(13, thu);
-                            ps.setString(14, fri);
-
-                            if (((Course) pair.getLeft()).getMeetingTimes().size() > 0) {
-                                ps.setTime(15, Time.valueOf(((Course) pair.getLeft()).getMeetingTimes().get(0).getStartTime()));
-                                ps.setTime(16, Time.valueOf(((Course) pair.getLeft()).getMeetingTimes().get(0).getEndTime()));
-                            } else {
-                                ps.setString(15, "");
-                                ps.setString(16, "");
-                            }
-
-
-                            if ((((Course) pair.getLeft()).getInstructor().split(" ")).length > 1) {
-                                ps.setString(17, ((Course) pair.getLeft()).getInstructor().split(" ")[1]);
-                            } else {
-                                ps.setString(17, "");
-                            }
-                            ps.setString(18, ((Course) pair.getLeft()).getInstructor().split(" ")[0]);
-                            ps.setString(19, "");
-                            ps.setString(20, "");
-                            ps.setInt(21, maxNum);
-
-                            int rows = ps.executeUpdate();
+                        int numCourses = 0;
+                        if (rs.next()) {
+                            numCourses = rs.getInt(1);
                         }
-                    } else {
-                        PreparedStatement updateCapacity = this.getConn().prepareStatement("" +
-                                "UPDATE course " +
-                                "SET Capacity = ? " +
-                                "WHERE CourseName = ? AND CourseCode = ? AND Section = ? AND Semester = ? AND Year = ?;");
 
-                        updateCapacity.setInt(1, (int) ((Pair)pair.getRight()).getRight());
-                        updateCapacity.setString(2, ((Course) pair.getLeft()).getName());
-                        updateCapacity.setInt(3, ((Course) pair.getLeft()).getCode());
-                        updateCapacity.setString(4, String.valueOf(((Course) pair.getLeft()).getSection()));
-                        updateCapacity.setString(5, ((Course) pair.getLeft()).getTerm().getSeason());
-                        updateCapacity.setInt(6, ((Course) pair.getLeft()).getTerm().getYear());
+                        if (numCourses == 0) {
+                            if (((Course) pair.getLeft()).getDepartment().length() > 4) {
 
-                        updateCapacity.executeUpdate();
+                            } else {
+                                String realDept = "";
 
-                        PreparedStatement updateEnrolled = this.getConn().prepareStatement("" +
-                                "UPDATE course " +
-                                "SET Enrolled = ? " +
-                                "WHERE CourseName = ? AND CourseCode = ? AND Section = ? AND Semester = ? AND Year = ?;");
+                                PreparedStatement dept = this.getConn().prepareStatement("" +
+                                        "SELECT * FROM department WHERE Dept = ?");
+                                dept.setString(1, ((Course) pair.getLeft()).getDepartment());
 
-                        updateCapacity.setInt(1, (int) ((Pair)pair.getRight()).getRight() - (int) ((Pair)pair.getRight()).getLeft());
-                        updateCapacity.setString(2, ((Course) pair.getLeft()).getName());
-                        updateCapacity.setInt(3, ((Course) pair.getLeft()).getCode());
-                        updateCapacity.setString(4, String.valueOf(((Course) pair.getLeft()).getSection()));
-                        updateCapacity.setString(5, ((Course) pair.getLeft()).getTerm().getSeason());
-                        updateCapacity.setInt(6, ((Course) pair.getLeft()).getTerm().getYear());
+                                ResultSet rs2 = dept.executeQuery();
+                                while (rs2.next()) {
+                                    realDept = rs2.getString(1);
+                                }
+
+                                if (realDept.equalsIgnoreCase("")) {
+                                    PreparedStatement addDept = this.getConn().prepareStatement("" +
+                                            "INSERT INTO department VALUES(?)");
+                                    addDept.setString(1, ((Course) pair.getLeft()).getDepartment());
+                                    addDept.executeUpdate();
+                                    realDept = ((Course) pair.getLeft()).getDepartment();
+                                }
+
+                                PreparedStatement max = this.getConn().prepareStatement("Select MAX(CourseID) From course");
+                                ResultSet rs1 = max.executeQuery();
+                                int maxNum = 0;
+                                if (rs1.next()) {
+                                    maxNum = rs1.getInt(1);
+                                }
+
+                                PreparedStatement ps = this.getConn().prepareStatement("INSERT INTO course VALUES " +
+                                        "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? + 1);");
+                                ps.setInt(1, ((Course) pair.getLeft()).getTerm().getYear());
+                                ps.setString(2, ((Course) pair.getLeft()).getTerm().getSeason());
+
+                                ps.setString(3, realDept);
+
+                                ps.setInt(4, ((Course) pair.getLeft()).getCode());
+                                ps.setString(5, String.valueOf(((Course) pair.getLeft()).getSection()));
+                                ps.setString(6, ((Course) pair.getLeft()).getName());
+                                ps.setInt(7, ((Course) pair.getLeft()).getCredits());
+                                //total capacity
+                                ps.setInt(8, ((int) ((Pair) pair.getRight()).getRight()));
+                                //enrolled
+                                ps.setInt(9, ((int) ((Pair) pair.getRight()).getRight()) - ((int) ((Pair) pair.getRight()).getLeft()));
+
+                                String mon = "";
+                                String tue = "";
+                                String wed = "";
+                                String thu = "";
+                                String fri = "";
+                                for (MeetingTime meetingTime : ((Course) pair.getLeft()).getMeetingTimes()) {
+                                    switch (meetingTime.getDay()) {
+                                        case Day.MONDAY:
+                                            mon = "M";
+                                            break;
+                                        case Day.TUESDAY:
+                                            tue = "T";
+                                            break;
+                                        case Day.WEDNESDAY:
+                                            wed = "W";
+                                            break;
+                                        case Day.THURSDAY:
+                                            thu = "R";
+                                            break;
+                                        case Day.FRIDAY:
+                                            fri = "F";
+                                    }
+                                }
+                                ps.setString(10, mon);
+                                ps.setString(11, tue);
+                                ps.setString(12, wed);
+                                ps.setString(13, thu);
+                                ps.setString(14, fri);
+
+                                if (((Course) pair.getLeft()).getMeetingTimes().size() > 0) {
+                                    ps.setTime(15, Time.valueOf(((Course) pair.getLeft()).getMeetingTimes().get(0).getStartTime()));
+                                    ps.setTime(16, Time.valueOf(((Course) pair.getLeft()).getMeetingTimes().get(0).getEndTime()));
+                                } else {
+                                    ps.setString(15, "");
+                                    ps.setString(16, "");
+                                }
+
+
+                                if ((((Course) pair.getLeft()).getInstructor().split(" ")).length > 1) {
+                                    ps.setString(17, ((Course) pair.getLeft()).getInstructor().split(" ")[1]);
+                                } else {
+                                    ps.setString(17, "");
+                                }
+                                ps.setString(18, ((Course) pair.getLeft()).getInstructor().split(" ")[0]);
+                                ps.setString(19, "");
+                                ps.setString(20, "");
+                                ps.setInt(21, maxNum);
+
+                                int rows = ps.executeUpdate();
+                            }
+                            try {
+                                PreparedStatement psUpdateTimeStamp = this.getConn().prepareStatement("" +
+                                        "INSERT INTO updateTimestamp VALUES(?);");
+                                psUpdateTimeStamp.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
+                                psUpdateTimeStamp.executeUpdate();
+                            } catch (SQLException e){
+                                System.out.println("Failed to update updateTimestamp");
+                            }
+                        } else {
+                            PreparedStatement updateCapacity = this.getConn().prepareStatement("" +
+                                    "UPDATE course " +
+                                    "SET Capacity = ? " +
+                                    "WHERE CourseName = ? AND CourseCode = ? AND Section = ? AND Semester = ? AND Year = ?;");
+
+                            updateCapacity.setInt(1, (int) ((Pair) pair.getRight()).getRight());
+                            updateCapacity.setString(2, ((Course) pair.getLeft()).getName());
+                            updateCapacity.setInt(3, ((Course) pair.getLeft()).getCode());
+                            updateCapacity.setString(4, String.valueOf(((Course) pair.getLeft()).getSection()));
+                            updateCapacity.setString(5, ((Course) pair.getLeft()).getTerm().getSeason());
+                            updateCapacity.setInt(6, ((Course) pair.getLeft()).getTerm().getYear());
+
+                            updateCapacity.executeUpdate();
+
+                            PreparedStatement updateEnrolled = this.getConn().prepareStatement("" +
+                                    "UPDATE course " +
+                                    "SET Enrolled = ? " +
+                                    "WHERE CourseName = ? AND CourseCode = ? AND Section = ? AND Semester = ? AND Year = ?;");
+
+                            updateEnrolled.setInt(1, (int) ((Pair) pair.getRight()).getRight() - (int) ((Pair) pair.getRight()).getLeft());
+                            updateEnrolled.setString(2, ((Course) pair.getLeft()).getName());
+                            updateEnrolled.setInt(3, ((Course) pair.getLeft()).getCode());
+                            updateEnrolled.setString(4, String.valueOf(((Course) pair.getLeft()).getSection()));
+                            updateEnrolled.setString(5, ((Course) pair.getLeft()).getTerm().getSeason());
+                            updateEnrolled.setInt(6, ((Course) pair.getLeft()).getTerm().getYear());
+
+                            updateEnrolled.executeUpdate();
+                        }
                     }
+
+                    System.out.println("Completely Done");
+                    System.out.println("Size Coompleted = " + countSize);
+
+
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                    System.out.println("UhOh");
+                    return false;
                 }
-                System.out.println("Completely Done");
-                System.out.println("Size Coompleted = " + countSize);
-                return true;
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-                System.out.println("UhOh");
+            } else {
+                System.out.println("Failed to scrape");
                 return false;
             }
-        } else {
-            System.out.println("Failed to scrape");
-            return false;
         }
+
+        try {
+            System.out.println("HELOOOOOOOOOO");
+
+            PreparedStatement psUpdateTimeStamp = this.getConn().prepareStatement("" +
+                    "INSERT INTO updateTimestamp VALUES(?);");
+            psUpdateTimeStamp.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
+            System.out.println(Timestamp.valueOf(LocalDateTime.now()));
+            psUpdateTimeStamp.executeUpdate();
+        } catch (SQLException ex){
+            System.out.println("Failed to update updateTimestamp");
+        }
+
+        return true;
     }
 
 

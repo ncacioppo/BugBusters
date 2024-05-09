@@ -325,6 +325,7 @@ public class Registrar {
                     for (Pair<Course, Pair<Integer, Integer>> pair : updatedCourses) {
                         countSize += 1;
                         System.out.println(countSize);
+                        System.out.println(countSize);
                         PreparedStatement count = this.getConn().prepareStatement("" +
                                 "SELECT COUNT(*) " +
                                 "FROM course " +
@@ -483,6 +484,7 @@ public class Registrar {
 
                 } catch (SQLException e) {
                     System.out.println(e.getMessage());
+                    e.printStackTrace();
                     System.out.println("UhOh");
                     return false;
                 }

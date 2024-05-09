@@ -96,8 +96,8 @@ public class UpdatedCourses {
                             actualDay = Day.FRIDAY;
                     }
 
-                    LocalTime startTime = LocalTime.of(Integer.parseInt(start.split(":")[0]), Integer.parseInt(start.split(":")[1]), Integer.parseInt(start.split(":")[0]));
-                    LocalTime endTime = LocalTime.of(Integer.parseInt(end.split(":")[0]), Integer.parseInt(end.split(":")[1]), Integer.parseInt(end.split(":")[0]));
+                    LocalTime startTime = LocalTime.of(Integer.parseInt(start.split(":")[0]), Integer.parseInt(start.split(":")[1]), Integer.parseInt(start.split(":")[2]));
+                    LocalTime endTime = LocalTime.of(Integer.parseInt(end.split(":")[0]), Integer.parseInt(end.split(":")[1]), Integer.parseInt(end.split(":")[2]));
 
                     if (actualDay != null) {
                         MeetingTime meetingTime = new MeetingTime(actualDay, startTime, endTime);

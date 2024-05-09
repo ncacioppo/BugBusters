@@ -646,7 +646,7 @@ public class Registrar {
         //TODO: factcheck this. may need to get from db
         int endYr = Year.now().getValue();
         int startYr = Year.now().minusYears(4).getValue();
-        int[] reqYrs = new int[endYr-startYr];
+        int[] reqYrs = new int[endYr - startYr + 1];
 
         int currYr = startYr;
         for(int i = 0; i < reqYrs.length; i++) {

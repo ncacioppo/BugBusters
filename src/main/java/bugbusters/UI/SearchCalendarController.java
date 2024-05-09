@@ -7,6 +7,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -14,6 +18,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
 import javax.swing.text.html.ImageView;
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -111,6 +116,8 @@ public class SearchCalendarController implements Initializable {
             tab.setContent(scrlPane);
             tbSched.getTabs().add(tab);
         }
+
+        selectTab(tbSched, currentSchedule.getName());
 
         deptFilter.setOnAction(event -> {
             if (!deptFilter.getValue().toString().equalsIgnoreCase("")) {
@@ -307,7 +314,31 @@ public class SearchCalendarController implements Initializable {
 
     @FXML
     public void handleRemove(MouseEvent event){
-        currentSchedule.removeCourse(currentCourse);
+        GridPane grid = new GridPane();
+        grid.addRow(0, new Label("Please select the course you would like to delete from your " + currentSchedule.getName() + " schedule"));
+        ChoiceBox courseOptions = new ChoiceBox();
+
+        ObservableList<Course> coursesInSchedule = FXCollections.observableArrayList(currentSchedule.getCourses());
+        courseOptions.getItems().add("");
+        courseOptions.getItems().addAll(coursesInSchedule);
+        grid.addRow(1, courseOptions);
+
+        ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType confirmButton = new ButtonType("Delete Course", ButtonBar.ButtonData.OK_DONE);
+
+        Alert alert = new Alert(Alert.AlertType.NONE);
+
+        alert.setTitle("Delete course");
+        alert.setHeaderText("Please select the course you would like to delete from your " + currentSchedule.getName() + " schedule");
+        alert.getDialogPane().setContent(grid);
+        alert.getButtonTypes().setAll(cancelButton, confirmButton);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == confirmButton) {
+            try {
+                currentSchedule.removeCourse((Course) courseOptions.getSelectionModel().getSelectedItem());
+                actualUser.getRegistrar().saveSchedule(currentSchedule);
+            } catch (Exception e){}
+        }
 
         tbSched.getTabs().clear();
         for (Schedule sched : actualUser.getSchedules()){

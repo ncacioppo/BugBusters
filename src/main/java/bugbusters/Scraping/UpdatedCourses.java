@@ -34,13 +34,12 @@ public class UpdatedCourses {
             JSONTokener tokener = new JSONTokener(uri.toURL().openStream());
             JSONObject jsonObject = new JSONObject(tokener);
 
-            ArrayList<MeetingTime> meetingTimes = new ArrayList<>();
-
             JSONArray jsonCourses = jsonObject.getJSONArray("classes");
-             int count = 1;
-
-             int countSize = 0;
+            int count = 1;
+            int countSize = 0;
             for (Object bigObject : jsonCourses){
+
+                ArrayList<MeetingTime> meetingTimes = new ArrayList<>();
 
                 JSONObject object = (JSONObject)  bigObject;
 
@@ -64,13 +63,14 @@ public class UpdatedCourses {
 
                 Term term = null;
                 if (potSemester.split("_").length>1) {
-//                    System.out.println("Year: " + Integer.parseInt(potSemester.split("_")[0]));
+    //                    System.out.println("Year: " + Integer.parseInt(potSemester.split("_")[0]));
                     term = new Term(potSemester.split("_")[1], Integer.parseInt(potSemester.split("_")[0]));
                 }
 
                 String department = object.getString("subject");
 
                 JSONArray times = object.getJSONArray("times");
+
 
                 for (Object meetingBigObject : times){
                     JSONObject meetingObject = (JSONObject) meetingBigObject;
@@ -125,7 +125,7 @@ public class UpdatedCourses {
                 }
 
 
-//                System.out.println(name);
+    //                System.out.println(name);
             }
             int maxYear = 0;
             for (Pair<Course, Pair<Integer, Integer>> pair : updatedCourseList){

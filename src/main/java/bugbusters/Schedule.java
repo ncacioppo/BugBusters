@@ -306,6 +306,10 @@ public class Schedule {
 
                     Changelog.logChange("Added course " + course.getName() + " to schedule " + name);
                     System.out.println("logging statement passed");
+
+                    Registrar reg = new Registrar("schemaBugBuster","u111111","p111111");
+                    reg.saveSchedule(this);
+
                     return true;
                 }
             }
@@ -371,6 +375,9 @@ public class Schedule {
                     //quickSort(0, this.courses.size()-1);
 
                     Changelog.logChange("Added course " + course.getName() + " to schedule " + name);
+
+                    Registrar reg = new Registrar("schemaBugBuster","u111111","p111111");
+                    reg.saveSchedule(this);
 
                     return true;
                 }

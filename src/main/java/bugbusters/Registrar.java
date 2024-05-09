@@ -195,14 +195,16 @@ public class Registrar {
      */
     public boolean saveSchedule(Schedule schedule) {
         try {
+
             PreparedStatement checkIfExists = conn.prepareStatement("" +
-                    "SELECT * FROM schedule WHERE ScheduleID = ?");
-            checkIfExists.setInt(1, schedule.getScheduleID());
+                    "SELECT * FROM schedule WHERE UserID = ? AND Name = ?");
+            checkIfExists.setInt(1, schedule.getUserID());
+            checkIfExists.setString(2, schedule.getName());
             ResultSet rows = checkIfExists.executeQuery();
             // if this schedule already exists, delete the old version and make a new entry for the correct version
             if (rows.next()) {
-                deleteSchedule(schedule.getScheduleID());
-                schedule.setScheduleID(0);
+                deleteSchedule(rows.getInt(1));
+                schedule.setScheduleID(1);
             }
 
             // insert into schedule first, where we save the schedule object itself
@@ -215,7 +217,9 @@ public class Registrar {
             newInsertion.setString(4, schedule.getTerm().getSeason());
 
             int addedRows = newInsertion.executeUpdate();
-            newInsertion = conn.prepareStatement("SELECT LAST_INSERT_ID();");
+            newInsertion = conn.prepareStatement("SELECT ScheduleID FROM schedule WHERE UserID = ? AND Name = ?");
+            newInsertion.setInt(1, schedule.getUserID());
+            newInsertion.setString(2, schedule.getName());
             ResultSet results = newInsertion.executeQuery();
             while (results.next()) {
                 id = results.getInt(1);
@@ -224,6 +228,12 @@ public class Registrar {
 
             // now insert into schedule_course for each course in the schedule, where we save all the course objects
             int courseRows = 1;
+
+            PreparedStatement deleteOldCourses = conn.prepareStatement("" +
+                    "DELETE FROM schedule_course WHERE ScheduleID = ?");
+            deleteOldCourses.setInt(1, schedule.getScheduleID());
+            deleteOldCourses.executeUpdate();
+
             for (Course course : schedule.getCourses()) {
                 PreparedStatement insertScheduleEntry = conn.prepareStatement("INSERT INTO schedule_course VALUES " +
                         "(?,?,?)");
@@ -262,8 +272,8 @@ public class Registrar {
                     "DELETE FROM schedule_course WHERE scheduleID = ?");
             ps2.setInt(1, scheduleID);
 
-            int rows1 = ps1.executeUpdate();
             int rows2 = ps2.executeUpdate();
+            int rows1 = ps1.executeUpdate();
 
             if(rows1 > 0 && rows2 > 0) {
                 return true;
@@ -299,7 +309,6 @@ public class Registrar {
             }
         } catch (Exception e){
             shouldUpdate = true;
-            e.printStackTrace();
             System.out.println("Error finding timestamp!");
         }
 
@@ -315,6 +324,7 @@ public class Registrar {
                 try {
                     for (Pair<Course, Pair<Integer, Integer>> pair : updatedCourses) {
                         countSize += 1;
+                        System.out.println(countSize);
                         PreparedStatement count = this.getConn().prepareStatement("" +
                                 "SELECT COUNT(*) " +
                                 "FROM course " +

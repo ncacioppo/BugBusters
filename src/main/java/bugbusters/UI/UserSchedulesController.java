@@ -30,6 +30,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -38,7 +39,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import static bugbusters.UI.Globals.*;
 import static bugbusters.UI.Navigation.*;
-//import static bugbusters.UI.Navigation.toSearchCalendar;
 
 public class    UserSchedulesController implements Initializable {
 
@@ -97,7 +97,6 @@ public class    UserSchedulesController implements Initializable {
 
     @FXML
     public void handleAddSchedule(MouseEvent event){
-//User doesn't exist on database
         TextField name = new TextField();
         name.setPromptText("Schedule Name");
 
@@ -139,24 +138,63 @@ public class    UserSchedulesController implements Initializable {
             int schedYear = year.getValue();
             String schedSemester = semester.getValue();
 
-            actualUser.addSchedule(new Schedule(actualUser, shcedName, new Term(schedSemester, schedYear), new ArrayList<>(), new ArrayList<>()));
-
-            tbSchedules.getTabs().clear();
-            for (Schedule sched : actualUser.getSchedules()){
-                userSchedules.put(sched.getName(), sched);
-                Tab tab = new Tab(sched.getName());
-                ScrollPane scrlPane = new ScrollPane();
-                GridPane gridPane = new GridPane();
-                Text schedText = new Text();
-                schedText.setText(sched.toString());
-                gridPane.getChildren().add(schedText);
-                scrlPane.setContent(gridPane);
-                tab.setContent(scrlPane);
-                tbSchedules.getTabs().add(tab);
-            }
-
+            Schedule newSchedule = new Schedule(actualUser, shcedName, new Term(schedSemester, schedYear), new ArrayList<>(), new ArrayList<>());
+            Tab tab = new Tab(newSchedule.getName());
+            ScrollPane scrlPane = new ScrollPane();
+            GridPane gridPane = new GridPane();
+            Text schedText = new Text();
+            schedText.setText(newSchedule.toString());
+            gridPane.getChildren().add(schedText);
+            scrlPane.setContent(gridPane);
+            tab.setContent(scrlPane);
+            tbSchedules.getTabs().add(tab);
 
         } else {}
+    }
+
+    @FXML
+    public void handleUndo(MouseEvent event){
+        currentSchedule.undoChange();
+        actualUser.getRegistrar().saveSchedule(currentSchedule);
+
+        userSchedules = new HashMap<>();
+        tbSchedules.getTabs().clear();
+        for (Schedule sched : actualUser.getSchedules()){
+            userSchedules.put(sched.getName(), sched);
+            Tab tab = new Tab(sched.getName());
+            ScrollPane scrlPane = new ScrollPane();
+            GridPane gridPane = new GridPane();
+            Text schedText = new Text();
+            schedText.setText(sched.toString());
+            gridPane.getChildren().add(schedText);
+            scrlPane.setContent(gridPane);
+            tab.setContent(scrlPane);
+            tbSchedules.getTabs().add(tab);
+        }
+
+    }
+
+    @FXML
+    public void handleRedo(MouseEvent event){
+
+        currentSchedule.redoChange();
+        actualUser.getRegistrar().saveSchedule(currentSchedule);
+
+        userSchedules = new HashMap<>();
+        tbSchedules.getTabs().clear();
+        for (Schedule sched : actualUser.getSchedules()){
+            userSchedules.put(sched.getName(), sched);
+            Tab tab = new Tab(sched.getName());
+            ScrollPane scrlPane = new ScrollPane();
+            GridPane gridPane = new GridPane();
+            Text schedText = new Text();
+            schedText.setText(sched.toString());
+            gridPane.getChildren().add(schedText);
+            scrlPane.setContent(gridPane);
+            tab.setContent(scrlPane);
+            tbSchedules.getTabs().add(tab);
+        }
+
     }
 
 }

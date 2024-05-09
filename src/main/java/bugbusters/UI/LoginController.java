@@ -183,6 +183,7 @@ public class LoginController implements Initializable {
         } else {
             //User does exist
             actualUser = tempUser;
+            dbSearch = new DatabaseSearch(actualUser.getRegistrar().getConn(), actualUser);
 
             if (chkRemember.isSelected()){
                 if (userInfo.get(username) == null){
@@ -261,6 +262,7 @@ public class LoginController implements Initializable {
                 String gradMonth = month.getValue();
 
                 actualUser = new User(username, password, fName, lName, gradYear, gradMonth);
+                dbSearch = new DatabaseSearch(actualUser.getRegistrar().getConn(), actualUser);
 
                 if (chkRemember.isSelected()){
                     if (userInfo.get(username) == null){

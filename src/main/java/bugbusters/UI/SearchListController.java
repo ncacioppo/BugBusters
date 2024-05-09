@@ -16,9 +16,7 @@ import javafx.scene.text.Text;
 import javax.swing.text.html.ImageView;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static bugbusters.UI.Globals.*;
 import static bugbusters.UI.Navigation.*;
@@ -38,11 +36,11 @@ public class SearchListController implements Initializable {
     @FXML
     private TextField maxCode;
     @FXML
-    private ChoiceBox deptFilter;
+    private ChoiceBox<String> deptFilter;
     @FXML
-    private ChoiceBox termFilter;
+    private ChoiceBox<String> termFilter;
     @FXML
-    private ChoiceBox professorFilter;
+    private ChoiceBox<String> professorFilter;
     @FXML
     private TextField txtKeyWord;
     @FXML
@@ -52,13 +50,27 @@ public class SearchListController implements Initializable {
     @FXML
     private TabPane tbSched;
 
-    private DatabaseSearch dbSearch;
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle){
-        dbSearch = new DatabaseSearch(actualUser.getRegistrar().getConn(), actualUser);
+        searchCourses = dbSearch.getResults();
         ObservableList<Course> items = FXCollections.observableArrayList(searchCourses);
         lstCourses.setItems(items);
+
+        if (currentCourse.getId() != -999){
+            lstCourses.getSelectionModel().select(currentCourse);
+            lstCourses.getFocusModel().focus(lstCourses.getSelectionModel().getSelectedIndex());
+            txtCourseInfo.setText("Course info:\n" + Globals.currentCourse.toLongString());
+            txtDescription.setText("Description: \n" + Globals.currentCourse.getDescription());
+        }
+
+        txtKeyWord.setText(currentKeyword);
+        deptFilter.getSelectionModel().select(currentDept);
+        termFilter.getSelectionModel().select(currentTerm);
+        professorFilter.getSelectionModel().select(currentProfessor);
+        MWFfilter.setSelected(currentMWF);
+        TRfilter.setSelected(currentTR);
+        minCode.setText(String.valueOf(currentMinCode));
+        maxCode.setText(String.valueOf(currentMaxCode));
 
         for (Schedule sched : actualUser.getSchedules()){
             userSchedules.put(sched.getName(), sched);
@@ -85,13 +97,16 @@ public class SearchListController implements Initializable {
         }
         ArrayList<String> temp = new ArrayList<>(professors);
         Collections.sort(temp);
+
         ObservableList<String> departmentList = FXCollections.observableArrayList(departments);
         deptFilter.getItems().add("");
         deptFilter.getItems().addAll(departmentList);
+        deptFilter.setValue("");
 
         ObservableList<String> seasonList = FXCollections.observableArrayList(terms);
         termFilter.getItems().add("");
         termFilter.getItems().addAll(seasonList);
+        termFilter.setValue("");
 
         ObservableList<String> professorList = FXCollections.observableArrayList(temp);
         professorFilter.getItems().add("");
@@ -102,12 +117,15 @@ public class SearchListController implements Initializable {
                 dbSearch.removeFilter(Filter.DEPARTMENT, prevDept);
                 prevDept = deptFilter.getValue().toString();
                 dbSearch.applyFilter(Filter.DEPARTMENT, deptFilter.getValue().toString());
+                currentDept = deptFilter.getValue().toString();
             } else {
                 dbSearch.removeFilter(Filter.DEPARTMENT, prevDept);
                 prevDept = deptFilter.getValue().toString();
+                currentDept = "";
             }
             ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
             lstCourses.setItems(searchResults);
+            updateChoices();
         });
 
         termFilter.setOnAction(event-> {
@@ -115,12 +133,15 @@ public class SearchListController implements Initializable {
                 dbSearch.removeFilter(Filter.TERM, prevTerm);
                 prevTerm = termFilter.getValue().toString();
                 dbSearch.applyFilter(Filter.TERM, termFilter.getValue().toString());
+                currentTerm = termFilter.getValue().toString();
             } else {
                 dbSearch.removeFilter(Filter.TERM, prevTerm);
                 prevTerm = termFilter.getValue().toString();
+                currentTerm = "";
             }
             ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
             lstCourses.setItems(searchResults);
+            updateChoices();
         });
 
         professorFilter.setOnAction(event-> {
@@ -128,12 +149,15 @@ public class SearchListController implements Initializable {
                 dbSearch.removeFilter(Filter.PROFESSOR, prevProf);
                 prevProf = professorFilter.getValue().toString();
                 dbSearch.applyFilter(Filter.PROFESSOR, professorFilter.getValue().toString());
+                currentProfessor = professorFilter.getValue().toString();
             } else {
                 dbSearch.removeFilter(Filter.PROFESSOR, prevProf);
                 prevProf = professorFilter.getValue().toString();
+                currentProfessor = "";
             }
             ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
             lstCourses.setItems(searchResults);
+            updateChoices();
         });
 
     }
@@ -141,28 +165,33 @@ public class SearchListController implements Initializable {
     @FXML
     public void handleMinCode(KeyEvent event){
         String min = minCode.getText() + event.getText();
+        currentMinCode = Integer.parseInt(min);
         dbSearch.removeFilter(Filter.CODE_MIN, prevMin);
         prevMin = min;
         dbSearch.applyFilter(Filter.CODE_MIN, min);
 
         ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
         lstCourses.setItems(searchResults);
+        updateChoices();
     }
 
     @FXML
     public void handleMaxCode(KeyEvent event){
         String max = maxCode.getText() + event.getText();
+        currentMaxCode = Integer.parseInt(max);
         dbSearch.removeFilter(Filter.CODE_MAX, prevMax);
         prevMax = max;
         dbSearch.applyFilter(Filter.CODE_MAX, max);
 
         ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
         lstCourses.setItems(searchResults);
+        updateChoices();
     }
 
     @FXML void handleKeyword(KeyEvent event){
 
         String keyWord = txtKeyWord.getText() + event.getText();
+        currentKeyword = keyWord;
 
 //        dbSearch.removeFilter(Filter.KEYWORD, prevKeyword);
 //        prevKeyword = keyWord;
@@ -170,6 +199,7 @@ public class SearchListController implements Initializable {
 
         ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
         lstCourses.setItems(searchResults);
+        updateChoices();
     }
 
     @FXML
@@ -199,6 +229,7 @@ public class SearchListController implements Initializable {
 
         TabPane temp = new TabPane();
 
+        userSchedules = new HashMap<>();
         tbSched.getTabs().clear();
         for (Schedule sched : actualUser.getSchedules()){
             userSchedules.put(sched.getName(), sched);
@@ -217,23 +248,29 @@ public class SearchListController implements Initializable {
     @FXML
     public void handleMWF(ActionEvent event){
         if (MWFfilter.isSelected()){
+            currentMWF = true;
             dbSearch.applyFilter(Filter.DAY, "MWF");
         } else {
+            currentMWF = false;
             dbSearch.removeFilter(Filter.DAY, "MWF");
         }
         ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
         lstCourses.setItems(searchResults);
+        updateChoices();
     }
 
     @FXML
     public void handleTR(ActionEvent event){
         if (TRfilter.isSelected()){
+            currentTR = true;
             dbSearch.applyFilter(Filter.DAY, "TR");
         } else {
+            currentTR = false;
             dbSearch.removeFilter(Filter.DAY, "TR");
         }
         ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
         lstCourses.setItems(searchResults);
+        updateChoices();
     }
 
     @FXML
@@ -253,5 +290,81 @@ public class SearchListController implements Initializable {
             tab.setContent(scrlPane);
             tbSched.getTabs().add(tab);
         }
+    }
+
+    @FXML
+    public void updateChoices(){
+
+//        departments = new HashSet<>();
+//        terms = new HashSet<>();
+//        professors = new HashSet<>();
+//
+//        for (Course course : dbSearch.getResults()){
+//            departments.add(course.getDepartment());
+//            terms.add(course.getTerm().toString());
+//            professors.add(course.getInstructor());
+//        }
+//        ArrayList<String> temp = new ArrayList<>(professors);
+//        Collections.sort(temp);
+//
+//        String deptSelected = deptFilter.getValue();
+//        deptFilter.getItems().clear();
+//        ObservableList<String> departmentList = FXCollections.observableArrayList(departments);
+//        deptFilter.getItems().add("");
+//        deptFilter.getItems().addAll(departmentList);
+//        deptFilter.setValue(deptSelected);
+//
+//        ObservableList<String> seasonList = FXCollections.observableArrayList(terms);
+//        termFilter.getItems().add("");
+//        termFilter.getItems().addAll(seasonList);
+//
+//        ObservableList<String> professorList = FXCollections.observableArrayList(temp);
+//        professorFilter.getItems().add("");
+//        professorFilter.getItems().addAll(professorList);
+    }
+
+    @FXML
+    public void handleUndo(MouseEvent event){
+        currentSchedule.undoChange();
+        actualUser.getRegistrar().saveSchedule(currentSchedule);
+
+        userSchedules = new HashMap<>();
+        tbSched.getTabs().clear();
+        for (Schedule sched : actualUser.getSchedules()){
+            userSchedules.put(sched.getName(), sched);
+            Tab tab = new Tab(sched.getName());
+            ScrollPane scrlPane = new ScrollPane();
+            GridPane gridPane = new GridPane();
+            Text schedText = new Text();
+            schedText.setText(sched.toString());
+            gridPane.getChildren().add(schedText);
+            scrlPane.setContent(gridPane);
+            tab.setContent(scrlPane);
+            tbSched.getTabs().add(tab);
+        }
+
+    }
+
+    @FXML
+    public void handleRedo(MouseEvent event){
+
+        currentSchedule.redoChange();
+        actualUser.getRegistrar().saveSchedule(currentSchedule);
+
+        userSchedules = new HashMap<>();
+        tbSched.getTabs().clear();
+        for (Schedule sched : actualUser.getSchedules()){
+            userSchedules.put(sched.getName(), sched);
+            Tab tab = new Tab(sched.getName());
+            ScrollPane scrlPane = new ScrollPane();
+            GridPane gridPane = new GridPane();
+            Text schedText = new Text();
+            schedText.setText(sched.toString());
+            gridPane.getChildren().add(schedText);
+            scrlPane.setContent(gridPane);
+            tab.setContent(scrlPane);
+            tbSched.getTabs().add(tab);
+        }
+
     }
 }

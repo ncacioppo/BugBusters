@@ -137,6 +137,8 @@ public class    UserSchedulesController implements Initializable {
             String schedSemester = semester.getValue();
 
             Schedule newSchedule = new Schedule(actualUser, shcedName, new Term(schedSemester, schedYear), new ArrayList<>(), new ArrayList<>());
+
+            userSchedules.put(newSchedule.getName(), newSchedule);
             Tab tab = new Tab(newSchedule.getName());
             ScrollPane scrlPane = new ScrollPane();
             GridPane gridPane = new GridPane();

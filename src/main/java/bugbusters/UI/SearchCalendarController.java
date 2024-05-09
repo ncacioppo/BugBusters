@@ -56,11 +56,13 @@ public class SearchCalendarController implements Initializable {
         ObservableList<Course> items = FXCollections.observableArrayList(searchCourses);
         lstCourses.setItems(items);
 
-        if (currentCourse.getId() != -999){
-            lstCourses.getSelectionModel().select(currentCourse);
-            lstCourses.getFocusModel().focus(lstCourses.getSelectionModel().getSelectedIndex());
-            txtCourseInfo.setText("Course info:\n" + Globals.currentCourse.toLongString());
-            txtDescription.setText("Description: \n" + Globals.currentCourse.getDescription());
+        if (currentCourse != null) {
+            if (currentCourse.getId() != -999) {
+                lstCourses.getSelectionModel().select(currentCourse);
+                lstCourses.getFocusModel().focus(lstCourses.getSelectionModel().getSelectedIndex());
+                txtCourseInfo.setText("Course info:\n" + Globals.currentCourse.toLongString());
+                txtDescription.setText("Description: \n" + Globals.currentCourse.getDescription());
+            }
         }
 
         txtKeyWord.setText(currentKeyword);
@@ -223,7 +225,44 @@ public class SearchCalendarController implements Initializable {
 
     @FXML
     public void toConflict(MouseEvent event) throws IOException {
-        handleConflict(mainPane);
+
+        try {
+            handleConflict(mainPane);
+        } catch (NullPointerException e){
+            ButtonType cancelButton = new ButtonType("OK", ButtonBar.ButtonData.CANCEL_CLOSE);
+            ButtonType confirmButton = new ButtonType("Show me potential alternatives", ButtonBar.ButtonData.OK_DONE);
+
+            Alert alert = new Alert(Alert.AlertType.NONE);
+
+            alert.setTitle("Course Conflict");
+            alert.setHeaderText("The course you tried to add conflicts with another course in your " + currentSchedule.getName() + "schedule");
+            alert.getButtonTypes().setAll(cancelButton, confirmButton);
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == confirmButton) {
+                currentKeyword = currentCourse.getDepartment() + " " + currentCourse.getCode() + " " + currentCourse.getSection();
+                currentTerm = "";
+                currentProfessor = "";
+                currentDept = "";
+                currentMinCode = 0;
+                currentMaxCode = 699;
+                currentMWF = false;
+                currentTR = false;
+                txtKeyWord.setText(currentKeyword);
+                deptFilter.getSelectionModel().select(currentDept);
+                termFilter.getSelectionModel().select(currentTerm);
+                professorFilter.getSelectionModel().select(currentProfessor);
+                MWFfilter.setSelected(currentMWF);
+                TRfilter.setSelected(currentTR);
+                minCode.setText(String.valueOf(currentMinCode));
+                maxCode.setText(String.valueOf(currentMaxCode));
+
+                dbSearch = new DatabaseSearch(actualUser.getRegistrar().getConn(), actualUser);
+                dbSearch.keywordSearch(currentKeyword);
+
+                ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
+                lstCourses.setItems(searchResults);
+            }
+        }
 
         TabPane temp = new TabPane();
 

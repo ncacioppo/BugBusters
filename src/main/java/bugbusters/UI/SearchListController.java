@@ -85,6 +85,8 @@ public class SearchListController implements Initializable {
             tbSched.getTabs().add(tab);
         }
 
+        selectTab(tbSched, currentSchedule.getName());
+
         ArrayList<Integer> codes = new ArrayList<>();
         for (int i=1; i<1000; i++){
             codes.add(i);
@@ -225,7 +227,43 @@ public class SearchListController implements Initializable {
 
     @FXML
     public void toConflict(MouseEvent event) throws IOException {
-        handleConflict(mainPane);
+        try {
+            handleConflict(mainPane);
+        } catch (NullPointerException e){
+            ButtonType cancelButton = new ButtonType("OK", ButtonBar.ButtonData.CANCEL_CLOSE);
+            ButtonType confirmButton = new ButtonType("Show me potential alternatives", ButtonBar.ButtonData.OK_DONE);
+
+            Alert alert = new Alert(Alert.AlertType.NONE);
+
+            alert.setTitle("Course Conflict");
+            alert.setHeaderText("The course you tried to add conflicts with another course in your " + currentSchedule.getName() + "schedule");
+            alert.getButtonTypes().setAll(cancelButton, confirmButton);
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == confirmButton) {
+                currentKeyword = currentCourse.getDepartment() + " " + currentCourse.getCode() + " " + currentCourse.getSection();
+                currentTerm = "";
+                currentProfessor = "";
+                currentDept = "";
+                currentMinCode = 0;
+                currentMaxCode = 699;
+                currentMWF = false;
+                currentTR = false;
+                txtKeyWord.setText(currentKeyword);
+                deptFilter.getSelectionModel().select(currentDept);
+                termFilter.getSelectionModel().select(currentTerm);
+                professorFilter.getSelectionModel().select(currentProfessor);
+                MWFfilter.setSelected(currentMWF);
+                TRfilter.setSelected(currentTR);
+                minCode.setText(String.valueOf(currentMinCode));
+                maxCode.setText(String.valueOf(currentMaxCode));
+
+                dbSearch = new DatabaseSearch(actualUser.getRegistrar().getConn(), actualUser);
+                dbSearch.keywordSearch(currentKeyword);
+
+                ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());
+                lstCourses.setItems(searchResults);
+            }
+        }
 
         TabPane temp = new TabPane();
 
@@ -275,7 +313,31 @@ public class SearchListController implements Initializable {
 
     @FXML
     public void handleRemove(MouseEvent event){
-        currentSchedule.removeCourse(currentCourse);
+        GridPane grid = new GridPane();
+        grid.addRow(0, new Label("Please select the course you would like to delete from your " + currentSchedule.getName() + " schedule"));
+        ChoiceBox courseOptions = new ChoiceBox();
+
+        ObservableList<Course> coursesInSchedule = FXCollections.observableArrayList(currentSchedule.getCourses());
+        courseOptions.getItems().add("");
+        courseOptions.getItems().addAll(coursesInSchedule);
+        grid.addRow(1, courseOptions);
+
+        ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType confirmButton = new ButtonType("Delete Course", ButtonBar.ButtonData.OK_DONE);
+
+        Alert alert = new Alert(Alert.AlertType.NONE);
+
+        alert.setTitle("Delete course");
+        alert.setHeaderText("Please select the course you would like to delete from your " + currentSchedule.getName() + " schedule");
+        alert.getDialogPane().setContent(grid);
+        alert.getButtonTypes().setAll(cancelButton, confirmButton);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == confirmButton) {
+            try {
+                currentSchedule.removeCourse((Course) courseOptions.getSelectionModel().getSelectedItem());
+                actualUser.getRegistrar().saveSchedule(currentSchedule);
+            } catch (Exception e){}
+        }
 
         tbSched.getTabs().clear();
         for (Schedule sched : actualUser.getSchedules()){

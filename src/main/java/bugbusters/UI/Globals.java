@@ -1,6 +1,8 @@
 package bugbusters.UI;
 
 import bugbusters.*;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import org.checkerframework.checker.units.qual.A;
 
 import java.util.*;
@@ -34,4 +36,13 @@ public class Globals {
     public static boolean currentTR = false;
 
     private Globals(){}
+
+    public static void selectTab(TabPane tabPane, String tabName){
+        for (Tab tab : tabPane.getTabs()) {
+            if (tab.getText().equals(tabName)) {
+                tabPane.getSelectionModel().select(tab);
+                break;
+            }
+        }
+    }
 }

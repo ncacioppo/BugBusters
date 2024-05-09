@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -11,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class DatabaseSearchTest {
     //TODO: Handle queries like "comp sci spring 2020" as
     // select CourseID, CourseName,Dept from course where CourseName LIKE '%comp%' and coursename like '%sci%' and semester = 'spring' and year = 2020;
+
 
     @Test
     public void DatabaseSearchConstructorTest() {
@@ -281,6 +283,24 @@ class DatabaseSearchTest {
         registrar.disconnectFromDB();
     }
 
+    @Test
+    public void kwsearch1() {
+        ArrayList<Course> results;
+        Registrar registrar = new Registrar("schemaBugBuster","u222222","p222222");
+        User user = new User("JDusername", "JDpassword");
+        DatabaseSearch search = new DatabaseSearch(registrar.getConn());
+
+        ArrayList<String> queries = new ArrayList<>(List.of(
+                "comp","c","comp 350","comp", "comp350","comp"
+        ));
+        for (String q : queries) {
+            search.keywordSearch(q);
+            System.out.println(q + " " + search.getResults().size());
+        }
+
+
+        registrar.disconnectFromDB();
+    }
 
     @Test
     public void RemoveAllFilters() {

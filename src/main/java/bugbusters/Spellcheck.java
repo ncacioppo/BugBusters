@@ -260,6 +260,7 @@ public class Spellcheck {
             cleanData.removeAll(Collections.singleton("&"));
 
             PrintWriter pw = new PrintWriter(DICTIONARY);
+            pw.print("");
             // write all our strings to the text file and to our reference trie
             for (String s : cleanData) {
                 pw.println(s.toLowerCase());

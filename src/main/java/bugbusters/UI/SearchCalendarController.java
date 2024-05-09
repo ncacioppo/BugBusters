@@ -152,12 +152,14 @@ public class SearchCalendarController implements Initializable {
         professorFilter.setOnAction(event-> {
             if (!professorFilter.getValue().toString().equalsIgnoreCase("")) {
                 dbSearch.removeFilter(Filter.PROFESSOR, prevProf);
-                prevProf = professorFilter.getValue().toString();
-                dbSearch.applyFilter(Filter.PROFESSOR, professorFilter.getValue().toString());
+                String[] del = professorFilter.getValue().toString().split(" ");
+                prevProf = del[del.length-1];
+                dbSearch.applyFilter(Filter.PROFESSOR, del[del.length-1]);
                 currentProfessor = professorFilter.getValue().toString();
             } else {
                 dbSearch.removeFilter(Filter.PROFESSOR, prevProf);
-                prevProf = professorFilter.getValue().toString();
+                String[] del = professorFilter.getValue().toString().split(" ");
+                prevProf = del[del.length-1];
                 currentProfessor = "";
             }
             ObservableList<Course> searchResults = FXCollections.observableArrayList(dbSearch.getResults());

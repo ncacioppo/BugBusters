@@ -96,29 +96,28 @@ public class Navigation {
     public static void handleConflict(BorderPane pane) throws IOException {
         boolean courseAdded = currentSchedule.addCourse(currentCourse);
 
-        System.out.println(courseAdded);
         if (courseAdded) return;
 
-        Course currentCourse = currentSchedule.currentConflict.getKey();
-        Course conflictingCourse = currentSchedule.currentConflict.getValue();
+        Course conflictingCourse = currentSchedule.findConflict(currentCourse);
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Conflict Alert");
         alert.setHeaderText("There is a conflict with an existing course on the schedule.");
         alert.setContentText("Choose which course you would like to keep.");
 
-        ButtonType buttonTypeOne = new ButtonType("Keep " + currentCourse.getName());
-        ButtonType buttonTypeTwo = new ButtonType("Replace with " + conflictingCourse.getName());
+        ButtonType buttonTypeOne = new ButtonType("Keep " + conflictingCourse.getName());
+        ButtonType buttonTypeTwo = new ButtonType("Replace with " + currentCourse.getName());
         ButtonType buttonTypeThree = new ButtonType("Find Other Options");
         ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
 
         alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeThree, buttonTypeCancel);
 
+
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == buttonTypeOne){
-            currentSchedule.resolveConflict(currentCourse, conflictingCourse);
-        } else if (result.get() == buttonTypeTwo) {
             currentSchedule.resolveConflict(conflictingCourse, currentCourse);
+        } else if (result.get() == buttonTypeTwo) {
+            currentSchedule.resolveConflict(currentCourse, conflictingCourse);
         } else if (result.get() == buttonTypeThree) {
             // search for other classes/sections // todo: figure out how to refer back to search
         } else if (result.get() == buttonTypeCancel){

@@ -81,7 +81,7 @@
                   </Rectangle>
                </children>
             </GridPane>
-            <Rectangle fill="#1f93ff00" height="60.0" stroke="#d00404" strokeLineCap="BUTT" strokeLineJoin="ROUND" strokeType="OUTSIDE" width="60.0" />
+            <Rectangle fill="#1f93ff00" height="60.0" onMouseClicked="#handleAvatarClick" pickOnBounds="true" stroke="#d00404" strokeLineCap="BUTT" strokeLineJoin="ROUND" strokeType="OUTSIDE" width="60.0" />
          </children>
       </GridPane>
    </left>

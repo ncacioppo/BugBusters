@@ -79,6 +79,7 @@ public class DatabaseSearch {
         }
         applySearchTermFilter(Filter.NAME, userQuery);
         applySearchTermFilter(Filter.DEPARTMENT, userQuery);
+        applySearchTermFilter(Filter.PROFESSOR, userQuery);
         String[] words = userQuery.strip().split("\\s+");
 
         if(words.length > 1) {
@@ -202,7 +203,7 @@ public class DatabaseSearch {
         CacheItem item = cache.getItem(ps);
         results = (ArrayList<Course>) item.getElement();
 
-        majorMinorSort();
+//        majorMinorSort();
         cache.checkAndRefresh();
     }
 

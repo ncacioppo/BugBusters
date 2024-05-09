@@ -22,6 +22,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -161,6 +164,8 @@ public class LoginController implements Initializable {
 
     @FXML
     void handleLoginClick(ActionEvent event) throws IOException {
+
+
         username = txtUsername.getText();
         password = txtPassword.getText();
         User tempUser = new User(username, password);
@@ -178,6 +183,7 @@ public class LoginController implements Initializable {
         } else {
             //User does exist
             actualUser = tempUser;
+            dbSearch = new DatabaseSearch(actualUser.getRegistrar().getConn(), actualUser);
 
             if (chkRemember.isSelected()){
                 if (userInfo.get(username) == null){
@@ -256,6 +262,7 @@ public class LoginController implements Initializable {
                 String gradMonth = month.getValue();
 
                 actualUser = new User(username, password, fName, lName, gradYear, gradMonth);
+                dbSearch = new DatabaseSearch(actualUser.getRegistrar().getConn(), actualUser);
 
                 if (chkRemember.isSelected()){
                     if (userInfo.get(username) == null){

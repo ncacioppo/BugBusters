@@ -24,6 +24,8 @@ public class User {
     private Registrar registrar;
     private int userID;
 
+    public MyGCC myGCC;
+
     /**
      * Constructor for User.
      * Creates a registrar object (i.e., a connection to the database for GCC).
@@ -279,8 +281,8 @@ public class User {
      */
     public boolean importInfo(String username, String password) {
         try {
-            MyGCC test = new MyGCC(username, password);
-            Pair<ArrayList<Major>, ArrayList<Minor>> majorMinors = test.getInfo();
+            myGCC = new MyGCC(username, password);
+            Pair<ArrayList<Major>, ArrayList<Minor>> majorMinors = myGCC.getInfo();
             if (majorMinors.getLeft().get(0).getMajorName().equalsIgnoreCase("Failed")){
                 return false;
             } else {

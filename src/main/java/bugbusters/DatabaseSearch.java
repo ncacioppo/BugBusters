@@ -39,6 +39,8 @@ public class DatabaseSearch {
         filtered = false;
         rebuildingQuery = false;
 
+        results = (new Registrar("schemaBugBuster","u222222","p222222")).getAllCourses();
+
         spellcheck = new Spellcheck("spellcheck_dictionary.txt");
         spellcheck.readToFile(conn);
     }
@@ -59,6 +61,7 @@ public class DatabaseSearch {
         spellcheck.readToFile(conn);
 
         this.user = user;
+        results = user.getRegistrar().getAllCourses();
     }
     /**
      * Searches for courses based on user input in search bar.

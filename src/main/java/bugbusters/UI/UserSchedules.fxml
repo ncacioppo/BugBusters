@@ -72,14 +72,6 @@
                               <Insets left="10.0" />
                            </GridPane.margin>
                         </ImageView>
-                        <ImageView fitHeight="40.0" fitWidth="40.0" onMouseClicked="#handleAddSchedule" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
-                           <image>
-                              <Image url="@../../../../../Icons/Plus.png" />
-                           </image>
-                           <GridPane.margin>
-                              <Insets left="10.0" />
-                           </GridPane.margin>
-                        </ImageView>
                      </children>
                   </GridPane>
                   <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#d00404" height="625.0" stroke="BLACK" strokeType="INSIDE" width="5.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
@@ -89,7 +81,7 @@
                   </Rectangle>
                </children>
             </GridPane>
-            <Rectangle fill="#1f93ff00" height="60.0" stroke="#d00404" strokeLineCap="BUTT" strokeLineJoin="ROUND" strokeType="OUTSIDE" width="60.0" />
+            <Rectangle fill="#1f93ff00" height="60.0" onMouseClicked="#handleAvatarClick" pickOnBounds="true" stroke="#d00404" strokeLineCap="BUTT" strokeLineJoin="ROUND" strokeType="OUTSIDE" width="60.0" />
          </children>
       </GridPane>
    </left>
@@ -109,11 +101,49 @@
                   <Insets left="5.0" />
                </GridPane.margin>
             </Rectangle>
-            <TabPane fx:id="tbSchedules" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
-               <GridPane.margin>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </GridPane.margin></TabPane>
             <ScrollPane fx:id="scrlCalendar" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2" />
+            <GridPane>
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <TabPane fx:id="tbSchedules" maxWidth="1215.0" minWidth="1215.0" prefHeight="200.0" prefWidth="1215.0" tabClosingPolicy="UNAVAILABLE">
+                     <GridPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" />
+                     </GridPane.margin>
+                  </TabPane>
+                  <ImageView fitHeight="20.0" fitWidth="20.0" onMouseClicked="#handleAddSchedule" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                     <image>
+                        <Image url="@../../../../../Icons/Plus.png" />
+                     </image>
+                     <GridPane.margin>
+                        <Insets right="160.0" top="4.0" />
+                     </GridPane.margin>
+                  </ImageView>
+                  <ImageView fitHeight="20.0" fitWidth="20.0" onMouseClicked="#handleRedo" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                     <GridPane.margin>
+                        <Insets right="70.0" top="4.0" />
+                     </GridPane.margin>
+                     <image>
+                        <Image url="@../../../../../Icons/Redo.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="20.0" fitWidth="20.0" onMouseClicked="#handleUndo" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                     <GridPane.margin>
+                        <Insets right="110.0" top="4.0" />
+                     </GridPane.margin>
+                     <image>
+                        <Image url="@../../../../../Icons/Undo.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </GridPane>
          </children>
       </GridPane>
    </center>

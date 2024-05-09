@@ -21,7 +21,6 @@ public class Schedule {
     Stack<Pair<String, Course>> redoStack;
     Stack<Pair<Course, Course>> undoResolvedConflicts;
     Stack<Pair<Course, Course>> redoResolvedConflicts;
-    public Pair<Course, Course> currentConflict;
 
 
     // used for testing
@@ -156,6 +155,7 @@ public class Schedule {
 //                }
 //            }
 //        }
+//
 //        return true;
 //    }
 
@@ -163,20 +163,20 @@ public class Schedule {
         // loop through our courses
         for (Course course1 : courses) {
             // check for conflicts with other courses
-            if (checkCourseConflict(course1)) {
+            if (checkCourseConflict(course1) != null) {
                 return false;
             // check for conflicts with other events
-            } else if (checkEventConflict(course1)) {
+            } else if (checkEventConflict(course1) != null) {
                 return false;
             }
         }
         // loop through our events
         for (Course event1 : events) {
             // check for conflicts with other courses
-            if (checkCourseConflict(event1)) {
+            if (checkCourseConflict(event1) != null) {
                 return false;
             // check for conflicts with other events
-            } else if (checkEventConflict(event1)) {
+            } else if (checkEventConflict(event1) != null) {
                 return false;
             }
         }
@@ -184,7 +184,19 @@ public class Schedule {
         return true;
     }
 
-    public boolean checkCourseConflict(Course course1) {
+    private boolean eventsAreValidTest(Course course1){
+        // loop through our courses
+        if (checkCourseConflict(course1) != null) {
+            return false;
+            // check for conflicts with other events
+        } else if (checkEventConflict(course1) != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public Course checkCourseConflict(Course course1) {
         ArrayList<MeetingTime> course1Times = course1.getMeetingTimes();
         for (Course course2 : courses) {
             // if the courses are different
@@ -198,8 +210,7 @@ public class Schedule {
                         if (course1MT.getDay().equals(course2MT.getDay())) {
                             if (course1MT.getStartTime().isBefore(course2MT.getEndTime())
                                     && course1MT.getEndTime().isAfter(course2MT.getStartTime())) {
-                                currentConflict = new Pair<>(course2, course1);
-                                return true;
+                                return course2;
                             }
                         }
                     }
@@ -207,14 +218,13 @@ public class Schedule {
             }
             if (course1.getName().equals(course2.getName())
                     && course1.getSection() != course2.getSection()) {
-                currentConflict = new Pair<>(course2, course1);
-                return true;
+                return course2;
             }
         }
-        return false;
+        return null;
     }
 
-    public boolean checkEventConflict(Course course1) {
+    public Course checkEventConflict(Course course1) {
         ArrayList<MeetingTime> course1Times = course1.getMeetingTimes();
         for (Course event : events) {
             // if the courses are different
@@ -228,8 +238,7 @@ public class Schedule {
                         if (course1MT.getDay().equals(eventMT.getDay())) {
                             if (course1MT.getStartTime().isBefore(eventMT.getEndTime())
                                     && course1MT.getEndTime().isAfter(eventMT.getStartTime())) {
-                                currentConflict = new Pair<>(event, course1);
-                                return true;
+                                return event;
                             }
                         }
                     }
@@ -237,40 +246,14 @@ public class Schedule {
             }
         }
 
-        return false;
+        return null;
     }
 
-//    public void findConflict(Course course1){
-//        ArrayList<MeetingTime> course1Times = course1.getMeetingTimes();
-//
-//        // loop through every course for every course
-//        for (Course course2 : courses) {
-//            // if the courses are different
-//            if (!course1.equals(course2)) {
-//                ArrayList<MeetingTime> course2Times = course2.getMeetingTimes();
-//                // for the meeting times of course 1
-//                for (MeetingTime course1MT : course1Times) {
-//                    // compare to the meeting times of course 2
-//                    for (MeetingTime course2MT : course2Times) {
-//                        // if the course times overlap return false
-//                        if (course1MT.getDay().equals(course2MT.getDay())) {
-//                            if (course1MT.getStartTime().isBefore(course2MT.getEndTime())
-//                                    && course1MT.getEndTime().isAfter(course2MT.getStartTime())) {
-//                                currentConflict = new Pair<>(course2, course1);
-//                                return;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//            // if course1 and course2 are two sections of the same class
-//            if (course1.getName().equals(course2.getName())
-//                    && course1.getSection() != course2.getSection()) {
-//                currentConflict = new Pair<>(course2, course1);
-//                return;
-//            }
-//        }
-//    }
+    public Course findConflict(Course course1){
+        if (checkCourseConflict(course1) != null) return checkCourseConflict(course1);
+        if (checkEventConflict(course1) != null) return checkEventConflict(course1);
+        return null;
+    }
 
     public void resolveConflict(Course kept, Course removed){
         conflictResolveRemoveCourse(removed);
@@ -292,8 +275,9 @@ public class Schedule {
         if (course != null) {
             Schedule scheduleCopy = new Schedule(this);
             // if our schedule doesn't already contain this course
-            if (!scheduleCopy.getCourses().contains(course))  {
+            if (!scheduleCopy.getCourses().contains(course)) {
                 scheduleCopy.getCourses().add(course);
+
                 // if our resulting schedule is valid, add it to the real schedule
                 if (scheduleCopy.eventsAreValid()) {
                     this.courses.add(course);
@@ -305,7 +289,10 @@ public class Schedule {
                     //quickSort(0, this.courses.size()-1);
 
                     Changelog.logChange("Added course " + course.getName() + " to schedule " + name);
-                    System.out.println("logging statement passed");
+
+                    Registrar reg = new Registrar("schemaBugBuster","u111111","p111111");
+                    reg.saveSchedule(this);
+
                     return true;
                 }
             }
@@ -371,6 +358,9 @@ public class Schedule {
                     //quickSort(0, this.courses.size()-1);
 
                     Changelog.logChange("Added course " + course.getName() + " to schedule " + name);
+
+                    Registrar reg = new Registrar("schemaBugBuster","u111111","p111111");
+                    reg.saveSchedule(this);
 
                     return true;
                 }
